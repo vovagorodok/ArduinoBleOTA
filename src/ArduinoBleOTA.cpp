@@ -6,6 +6,17 @@ namespace
 #define OTA_SERVICE_UUID           "c68680a2-d922-11ec-bd40-7ff604147105"
 #define OTA_CHARACTERISTIC_UUID_RX "c6868174-d922-11ec-bd41-c71bb0ce905a"
 #define OTA_CHARACTERISTIC_UUID_TX "c6868246-d922-11ec-bd42-7b10244d223f"
+
+#define OK 0x00
+#define NOK 0x01
+#define INCORRECT_FORMAT 0x02
+#define INCORRECT_FIRMWARE_SIZE 0x03
+#define CHECKSUM_ERROR 0x04
+#define INTERNAL_STORAGE_ERROR 0x05
+
+#define BEGIN 0x10
+#define PACKAGE 0x11
+#define END 0x12
 }
 
 void ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storage)
@@ -60,65 +71,133 @@ void ArduinoBleOTAClass::begin(
 
 void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)
 {
-    if (contentLength == 0)
-        onStartUpdate(characteristic);
-    else
-        onUpdate(characteristic);
-}
-
-void ArduinoBleOTAClass::onStartUpdate(BLECharacteristic* characteristic)
-{
-    long contentLength = characteristic->getValue<long>();
-
-    if (contentLength <= 0) {
-        send("Incorrect length");
-        return;
-    }
-
-    if (storage == NULL || !storage->open(contentLength)) {
-        send("Storage error");
-        return;
-    }
-
-    if (storage->maxSize() && contentLength > storage->maxSize()) {
-        storage->close();
-        send("Payload too large");
-        return;
-    }
-
-    this->contentLength = contentLength;
-    this->contentUploaded = 0;
-}
-
-void ArduinoBleOTAClass::onUpdate(BLECharacteristic* characteristic)
-{
     auto data = characteristic->getValue<uint8_t*>();
     auto length = characteristic->getDataLength();
-    contentUploaded += length;
 
-    if (contentUploaded > contentLength)
+    if (length == 0)
     {
-        storage->clear();
-        contentUploaded = contentLength = 0;
-        send("Payload size wrong");
-        delay(500);
+        send(INCORRECT_FORMAT);
+        return;
+    }
+
+    switch (data[0])
+    {
+    case BEGIN:
+        beginUpdate(data + 1, length - 1);
+        break;
+    case PACKAGE:
+        handlePackage(data + 1, length - 1);
+        break;
+    case END:
+        endUpdate(data + 1, length - 1);
+        break;
+    default:
+        send(INCORRECT_FORMAT);
+        break;
+    }
+}
+
+void ArduinoBleOTAClass::beginUpdate(uint8_t* data, size_t length)
+{
+    if (updating)
+        stopUpdate();
+
+    if (length != sizeof(uint32_t))
+    {
+        send(INCORRECT_FORMAT);
+        return;
+    }
+    firmwareLength = *reinterpret_cast<uint32_t*>(data);
+
+    if (storage == nullptr or not storage->open(firmwareLength))
+    {
+        firmwareLength = 0;
+        send(INTERNAL_STORAGE_ERROR);
+        return;
+    }
+
+    if (storage->maxSize() and currentLength > storage->maxSize())
+    {
+        send(INCORRECT_FIRMWARE_SIZE);
+        stopUpdate();
+        return;
+    }
+
+    currentLength = 0;
+    updating = true;
+    crc.reset();
+    send(OK);
+}
+
+void ArduinoBleOTAClass::handlePackage(uint8_t* data, size_t length)
+{
+    if (not updating)
+    {
+        send(NOK);
+        return;
+    }
+
+    currentLength += length;
+
+    if (currentLength > firmwareLength)
+    {
+        send(INCORRECT_FIRMWARE_SIZE);
+        stopUpdate();
         return;
     }
 
     for (size_t i = 0; i < length; i++)
-        storage->write(data[i]);
-
-    if (contentUploaded == contentLength)
     {
-        send("OK");
-        delay(500);
-        storage->apply();
-        while (true);
+        storage->write(data[i]);
+        crc.update(data[i]);
     }
+
+    send(OK);
 }
 
-void ArduinoBleOTAClass::send(const std::string& str)
+void ArduinoBleOTAClass::endUpdate(uint8_t* data, size_t length)
 {
-    txCharacteristic->setValue(str);
+    if (not updating)
+    {
+        send(NOK);
+        return;
+    }
+    if (currentLength != firmwareLength)
+    {
+        send(INCORRECT_FIRMWARE_SIZE);
+        stopUpdate();
+        return;
+    }
+    if (length != sizeof(uint32_t))
+    {
+        send(INCORRECT_FORMAT);
+        return;
+    }
+    auto firmwareCrc = *reinterpret_cast<uint32_t*>(data);
+
+    if (crc.finalize() != firmwareCrc)
+    {
+        send(CHECKSUM_ERROR);
+        stopUpdate();
+        return;
+    }
+
+    send(OK);
+    delay(500);
+    storage->apply();
+    while (true);
+}
+
+void ArduinoBleOTAClass::send(uint8_t head)
+{
+    txCharacteristic->setValue(&head, 1);
     txCharacteristic->notify();
+}
+
+void ArduinoBleOTAClass::stopUpdate()
+{
+    storage->clear();
+    storage->close();
+    updating = false;
+    currentLength = firmwareLength = 0;
 }

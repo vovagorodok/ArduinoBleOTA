@@ -1,6 +1,7 @@
 #pragma once
 #include "OTAStorage.h"
 #include <NimBLEDevice.h>
+#include <CRC32.h>
 
 class ArduinoBleOTAClass: public BLECharacteristicCallbacks
 {
@@ -12,13 +13,17 @@ public:
     void onWrite(BLECharacteristic* characteristic) override;
 
 private:
-    void onStartUpdate(BLECharacteristic* characteristic);
-    void onUpdate(BLECharacteristic* characteristic);
-    void send(const std::string& str);
+    void beginUpdate(uint8_t* data, size_t length);
+    void handlePackage(uint8_t* data, size_t length);
+    void endUpdate(uint8_t* data, size_t length);
+    void send(uint8_t head);
+    void stopUpdate();
+    CRC32 crc;
     BLECharacteristic* txCharacteristic;
     OTAStorage* storage;
-    long contentUploaded;
-    long contentLength = 0;
+    uint32_t currentLength;
+    uint32_t firmwareLength = 0;
+    bool updating = false;
 };
 
 static ArduinoBleOTAClass ArduinoBleOTA;
