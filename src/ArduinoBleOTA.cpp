@@ -72,8 +72,9 @@ bool ArduinoBleOTAClass::begin(
 
 void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)
 {
-    auto data = characteristic->getValue<uint8_t*>();
-    auto length = characteristic->getDataLength();
+    auto value = characteristic->getValue();
+    auto data = value.data();
+    auto length = value.length();
 
     if (length == 0)
     {
@@ -98,7 +99,7 @@ void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)
     }
 }
 
-void ArduinoBleOTAClass::beginUpdate(uint8_t* data, size_t length)
+void ArduinoBleOTAClass::beginUpdate(const uint8_t* data, size_t length)
 {
     if (updating)
         stopUpdate();
@@ -108,7 +109,7 @@ void ArduinoBleOTAClass::beginUpdate(uint8_t* data, size_t length)
         send(INCORRECT_FORMAT);
         return;
     }
-    firmwareLength = *reinterpret_cast<uint32_t*>(data);
+    firmwareLength = *reinterpret_cast<const uint32_t*>(data);
 
     if (storage == nullptr or not storage->open(firmwareLength))
     {
@@ -130,7 +131,7 @@ void ArduinoBleOTAClass::beginUpdate(uint8_t* data, size_t length)
     send(OK);
 }
 
-void ArduinoBleOTAClass::handlePackage(uint8_t* data, size_t length)
+void ArduinoBleOTAClass::handlePackage(const uint8_t* data, size_t length)
 {
     if (not updating)
     {
@@ -156,7 +157,7 @@ void ArduinoBleOTAClass::handlePackage(uint8_t* data, size_t length)
     send(OK);
 }
 
-void ArduinoBleOTAClass::endUpdate(uint8_t* data, size_t length)
+void ArduinoBleOTAClass::endUpdate(const uint8_t* data, size_t length)
 {
     if (not updating)
     {
@@ -174,7 +175,7 @@ void ArduinoBleOTAClass::endUpdate(uint8_t* data, size_t length)
         send(INCORRECT_FORMAT);
         return;
     }
-    auto firmwareCrc = *reinterpret_cast<uint32_t*>(data);
+    auto firmwareCrc = *reinterpret_cast<const uint32_t*>(data);
 
     if (crc.finalize() != firmwareCrc)
     {

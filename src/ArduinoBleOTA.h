@@ -13,9 +13,9 @@ public:
 
 private:
     void onWrite(BLECharacteristic* characteristic) override;
-    void beginUpdate(uint8_t* data, size_t length);
-    void handlePackage(uint8_t* data, size_t length);
-    void endUpdate(uint8_t* data, size_t length);
+    void beginUpdate(const uint8_t* data, size_t length);
+    void handlePackage(const uint8_t* data, size_t length);
+    void endUpdate(const uint8_t* data, size_t length);
     void send(uint8_t head);
     void stopUpdate();
     CRC32 crc;
