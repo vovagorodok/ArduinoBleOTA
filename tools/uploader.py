@@ -46,10 +46,10 @@ class Updater:
 
     def on_write(self, iface, changed_props, invalidated_props):
         value = self.tx_char.value
+        print("Recived: " + value)
         if not value:
             return
 
-        print("Recived: " + value)
 
 if __name__ == '__main__':
     updater = Updater()
