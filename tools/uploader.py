@@ -29,7 +29,7 @@ def connect_and_run(dev):
 
     tx_char.start_notify()
     tx_char.add_characteristic_cb(on_write)
-    rx_char.value = 0
+    rx_char.value = 0x00
 
     try:
         monitor.run()
