@@ -10,9 +10,9 @@ public:
     bool begin(NimBLEServer* server, OTAStorage& storage);
     bool begin(NimBLEServer* server, OTAStorage& storage,
                const char* serviceUUID, const char* rxChUUID, const char* txChUUID);
-    void onWrite(BLECharacteristic* characteristic) override;
 
 private:
+    void onWrite(BLECharacteristic* characteristic) override;
     void beginUpdate(uint8_t* data, size_t length);
     void handlePackage(uint8_t* data, size_t length);
     void endUpdate(uint8_t* data, size_t length);
