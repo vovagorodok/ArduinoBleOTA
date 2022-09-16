@@ -27,9 +27,9 @@ def connect_and_run(dev):
         print("Didn't connect to device!")
         return
 
-    rx_char.value = 0
     tx_char.start_notify()
     tx_char.add_characteristic_cb(on_write)
+    rx_char.value = 0
 
     try:
         monitor.run()
@@ -51,4 +51,5 @@ if __name__ == '__main__':
     devices = scan_ota_devices()
     for device in devices:
         print("OTA Device Found!")
+        connect_and_run(device)
         break
