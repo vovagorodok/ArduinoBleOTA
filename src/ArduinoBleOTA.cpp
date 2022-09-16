@@ -19,30 +19,31 @@ namespace
 #define END 0x12
 }
 
-void ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storage)
+bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storage)
 {
     BLEDevice::init(deviceName);
     auto* server = BLEDevice::createServer();
 
-    begin(server, storage);
+    if(!begin(server, storage))
+        return false;
 
     auto* advertising = server->getAdvertising();
     advertising->setScanResponse(true);
     advertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
     advertising->setMaxPreferred(0x12);
-    advertising->start();
+    return advertising->start();
 }
 
-void ArduinoBleOTAClass::begin(NimBLEServer* server, OTAStorage& storage)
+bool ArduinoBleOTAClass::begin(NimBLEServer* server, OTAStorage& storage)
 {
-    begin(server,
-          storage,
-          OTA_SERVICE_UUID,
-          OTA_CHARACTERISTIC_UUID_RX,
-          OTA_CHARACTERISTIC_UUID_TX);
+    return begin(server,
+                 storage,
+                 OTA_SERVICE_UUID,
+                 OTA_CHARACTERISTIC_UUID_RX,
+                 OTA_CHARACTERISTIC_UUID_TX);
 }
 
-void ArduinoBleOTAClass::begin(
+bool ArduinoBleOTAClass::begin(
     NimBLEServer* server,
     OTAStorage& storage,
     const char* serviceUUID,
@@ -64,9 +65,9 @@ void ArduinoBleOTAClass::begin(
     );
     this->txCharacteristic = txCharacteristic;
 
-    service->start();
     auto* advertising = server->getAdvertising();
     advertising->addServiceUUID(serviceUUID);
+    return service->start();
 }
 
 void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)
