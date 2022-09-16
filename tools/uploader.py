@@ -16,6 +16,37 @@ def scan_ota_devices(adapter_address=None, timeout=5.0):
             if OTA_SERVICE_UUID.lower() in dev.uuids:
                 yield dev
 
+def connect_and_run(dev):
+    monitor = central.Central(adapter_addr=dev.adapter, device_addr=dev.address)
+    rx_char = monitor.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_RX)
+    tx_char = monitor.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_TX)
+
+    print("Connecting to " + dev.alias)
+    monitor.connect()
+    if not monitor.connected:
+        print("Didn't connect to device!")
+        return
+
+    rx_char.value = 0
+    tx_char.start_notify()
+    tx_char.add_characteristic_cb(on_write)
+
+    try:
+        monitor.run()
+    except KeyboardInterrupt:
+        print("Disconnecting")
+
+    tx_char.stop_notify()
+    monitor.disconnect()
+
+
+def on_write(iface, changed_props, invalidated_props):
+    value = changed_props.get('Value', None)
+    if not value:
+        return
+
+    print("Recived: " + value)
+
 if __name__ == '__main__':
     devices = scan_ota_devices()
     for device in devices:
