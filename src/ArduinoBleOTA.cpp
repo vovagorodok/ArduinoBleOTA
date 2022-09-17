@@ -21,14 +21,28 @@ namespace
 #define BEGIN 0x10
 #define PACKAGE 0x11
 #define END 0x12
+
+#define UNKNOWN "UNKNOWN"
 }
 
 bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storage)
 {
+    return begin(deviceName, storage, UNKNOWN, {}, UNKNOWN, {});
+}
+
+bool ArduinoBleOTAClass::begin(OTAStorage& storage)
+{
+    return begin(storage, UNKNOWN, {}, UNKNOWN, {});
+}
+
+bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storage,
+                               const std::string &hwName, Version hwVersion,
+                               const std::string &swName, Version swVersion)
+{
     BLEDevice::init(deviceName);
     auto* server = BLEDevice::createServer();
 
-    if(!begin(storage))
+    if(!begin(storage, hwName, hwVersion, swName, swVersion))
         return false;
 
     auto* advertising = server->getAdvertising();
@@ -38,7 +52,9 @@ bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storag
     return advertising->start();
 }
 
-bool ArduinoBleOTAClass::begin(OTAStorage& storage)
+bool ArduinoBleOTAClass::begin(OTAStorage& storage,
+                               const std::string &hwName, Version hwVersion,
+                               const std::string &swName, Version swVersion)
 {
     auto* server = BLEDevice::createServer();
     BLEDevice::setMTU(BLE_ATT_MTU_MAX);
@@ -58,9 +74,37 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage)
     );
     this->txCharacteristic = txCharacteristic;
 
+    begin(*service, hwName, hwVersion, swName, swVersion);
+
     auto* advertising = server->getAdvertising();
     advertising->addServiceUUID(OTA_SERVICE_UUID);
     return service->start();
+}
+
+void ArduinoBleOTAClass::begin(BLEService& service,
+                               const std::string &hwName, Version hwVersion,
+                               const std::string &swName, Version swVersion)
+{
+    auto* hwNameCharacteristic = service.createCharacteristic(
+        OTA_CHARACTERISTIC_UUID_HW_NAME,
+        NIMBLE_PROPERTY::READ
+    );
+    hwNameCharacteristic->setValue(hwName);
+    auto* swNameCharacteristic = service.createCharacteristic(
+        OTA_CHARACTERISTIC_UUID_SW_NAME,
+        NIMBLE_PROPERTY::READ
+    );
+    swNameCharacteristic->setValue(swName);
+    auto* hwVerCharacteristic = service.createCharacteristic(
+        OTA_CHARACTERISTIC_UUID_HW_VER,
+        NIMBLE_PROPERTY::READ
+    );
+    hwVerCharacteristic->setValue(reinterpret_cast<uint8_t*>(&hwVersion), sizeof(Version));
+    auto* swVerCharacteristic = service.createCharacteristic(
+        OTA_CHARACTERISTIC_UUID_SW_VER,
+        NIMBLE_PROPERTY::READ
+    );
+    swVerCharacteristic->setValue(reinterpret_cast<uint8_t*>(&swVersion), sizeof(Version));
 }
 
 void ArduinoBleOTAClass::update()
