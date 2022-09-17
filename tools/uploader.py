@@ -3,6 +3,7 @@ from bluezero import central
 import sys
 import zlib
 import os
+import datetime
 
 OTA_SERVICE_UUID = "c68680a2-d922-11ec-bd40-7ff604147105"
 OTA_CHARACTERISTIC_UUID_RX = "c6868174-d922-11ec-bd41-c71bb0ce905a"
@@ -72,6 +73,7 @@ def upload(dev, path):
         print("Didn't connect to device!")
         return
 
+    time = datetime.datetime.now()
     crc = 0
     uploaded_len = 0
     firmware_len = file_size(path)
@@ -100,6 +102,8 @@ def upload(dev, path):
         device.disconnect()
         return
 
+    upload_time = datetime.datetime.now() - time
+    print("Installing. Upload time: " + str(upload_time))
     rx_char.value = int_to_u8_bytes(INSTALL)
     print("Success!")
 
