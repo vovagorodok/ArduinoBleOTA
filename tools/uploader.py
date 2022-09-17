@@ -1,5 +1,6 @@
 from bluezero import adapter
 from bluezero import central
+from time import sleep
 import sys
 import zlib
 import os
@@ -68,10 +69,14 @@ def handleResponse(resp):
     print(respToStr[resp])
     return False
 
-def upload(dev, path):
+def connect(dev):
     device = central.Central(adapter_addr=dev.adapter, device_addr=dev.address)
     rx_char = device.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_RX)
     tx_char = device.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_TX)
+    hw_name_char = device.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_HW_NAME)
+    hw_ver_char = device.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_HW_VER)
+    sw_name_char = device.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_SW_NAME)
+    sw_ver_char = device.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_SW_VER)
 
     print("Connecting to " + dev.alias)
     device.connect()
@@ -79,6 +84,14 @@ def upload(dev, path):
         print("Didn't connect to device!")
         return
 
+    print(", ".join(["HW: "  + str(bytearray(hw_name_char.value), 'utf-8'),
+                     "VER: " + str(list(bytearray(hw_ver_char.value))),
+                     "SW: "  + str(bytearray(sw_name_char.value), 'utf-8'),
+                     "VER: " + str(list(bytearray(sw_ver_char.value)))]))
+    
+    return device, rx_char, tx_char
+
+def upload(device, rx_char, tx_char, path):
     time = datetime.datetime.now()
     crc = 0
     uploaded_len = 0
@@ -110,15 +123,28 @@ def upload(dev, path):
 
     upload_time = datetime.datetime.now() - time
     print("Installing. Upload time: " + str(upload_time))
-    print("Success!")
-
     device.disconnect()
 
+def connect_and_upload(dev, path):
+    res = connect(dev)
+    if not res:
+        return
+    device, rx_char, tx_char = res
+
+    upload(device, rx_char, tx_char, path)
+    sleep(1)
+
+    res = connect(dev)    
+    if not res:
+        return
+    device, rx_char, tx_char = res
+    device.disconnect()
+    print("Success!")
 
 if __name__ == '__main__':
     path = sys.argv[1]
     devices = scan_ota_devices()
     for device in devices:
         print("OTA Device Found!")
-        upload(device, path)
+        connect_and_upload(device, path)
         break
