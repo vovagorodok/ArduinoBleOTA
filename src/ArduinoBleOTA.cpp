@@ -124,8 +124,8 @@ void ArduinoBleOTAClass::handleBegin(const uint8_t* data, size_t length)
 
     if (storage->maxSize() and currentLength > storage->maxSize())
     {
-        send(INCORRECT_FIRMWARE_SIZE);
         stopUpdate();
+        send(INCORRECT_FIRMWARE_SIZE);
         return;
     }
 
@@ -147,8 +147,8 @@ void ArduinoBleOTAClass::handlePackage(const uint8_t* data, size_t length)
 
     if (currentLength > firmwareLength)
     {
-        send(INCORRECT_FIRMWARE_SIZE);
         stopUpdate();
+        send(INCORRECT_FIRMWARE_SIZE);
         return;
     }
 
@@ -170,8 +170,8 @@ void ArduinoBleOTAClass::handleEnd(const uint8_t* data, size_t length)
     }
     if (currentLength != firmwareLength)
     {
-        send(INCORRECT_FIRMWARE_SIZE);
         stopUpdate();
+        send(INCORRECT_FIRMWARE_SIZE);
         return;
     }
     if (length != sizeof(uint32_t))
@@ -183,8 +183,8 @@ void ArduinoBleOTAClass::handleEnd(const uint8_t* data, size_t length)
 
     if (crc.finalize() != firmwareCrc)
     {
-        send(CHECKSUM_ERROR);
         stopUpdate();
+        send(CHECKSUM_ERROR);
         return;
     }
 
