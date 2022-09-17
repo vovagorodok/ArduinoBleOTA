@@ -5,4 +5,5 @@ void setup() {
 }
 
 void loop() {
+  ArduinoBleOTA.update();
 }

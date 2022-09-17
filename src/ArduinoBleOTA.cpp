@@ -17,7 +17,6 @@ namespace
 #define BEGIN 0x10
 #define PACKAGE 0x11
 #define END 0x12
-#define INSTALL 0x13
 }
 
 bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storage)
@@ -60,6 +59,12 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage)
     return service->start();
 }
 
+void ArduinoBleOTAClass::update()
+{
+    if (installing)
+        handleInstall();
+}
+
 void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)
 {
     auto value = characteristic->getValue();
@@ -83,9 +88,6 @@ void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)
     case END:
         handleEnd(data + 1, length - 1);
         break;
-    case INSTALL:
-        handleInstall();
-        break;
     default:
         send(INCORRECT_FORMAT);
         break;
@@ -95,7 +97,7 @@ void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)
 void ArduinoBleOTAClass::handleBegin(const uint8_t* data, size_t length)
 {
     if (updating)
-        stopUpdate();
+        stopUpload();
 
     if (length != sizeof(uint32_t))
     {
@@ -113,7 +115,7 @@ void ArduinoBleOTAClass::handleBegin(const uint8_t* data, size_t length)
 
     if (storage->maxSize() and currentLength > storage->maxSize())
     {
-        stopUpdate();
+        stopUpload();
         send(INCORRECT_FIRMWARE_SIZE);
         return;
     }
@@ -136,7 +138,7 @@ void ArduinoBleOTAClass::handlePackage(const uint8_t* data, size_t length)
 
     if (currentLength > firmwareLength)
     {
-        stopUpdate();
+        stopUpload();
         send(INCORRECT_FIRMWARE_SIZE);
         return;
     }
@@ -159,7 +161,7 @@ void ArduinoBleOTAClass::handleEnd(const uint8_t* data, size_t length)
     }
     if (currentLength != firmwareLength)
     {
-        stopUpdate();
+        stopUpload();
         send(INCORRECT_FIRMWARE_SIZE);
         return;
     }
@@ -172,11 +174,12 @@ void ArduinoBleOTAClass::handleEnd(const uint8_t* data, size_t length)
 
     if (crc.finalize() != firmwareCrc)
     {
-        stopUpdate();
+        stopUpload();
         send(CHECKSUM_ERROR);
         return;
     }
 
+    installing = true;
     send(OK);
 }
 
@@ -194,7 +197,7 @@ void ArduinoBleOTAClass::send(uint8_t head)
     txCharacteristic->notify();
 }
 
-void ArduinoBleOTAClass::stopUpdate()
+void ArduinoBleOTAClass::stopUpload()
 {
     storage->clear();
     storage->close();

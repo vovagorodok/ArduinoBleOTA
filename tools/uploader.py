@@ -22,7 +22,6 @@ INTERNAL_STORAGE_ERROR = 0x05
 BEGIN = 0x10
 PACKAGE = 0x11
 END = 0x12
-INSTALL = 0x13
 
 respToStr = {
     NOK: "Not ok",
@@ -106,7 +105,6 @@ def upload(dev, path):
 
     upload_time = datetime.datetime.now() - time
     print("Installing. Upload time: " + str(upload_time))
-    rx_char.value = int_to_u8_bytes(INSTALL)
     print("Success!")
 
     device.disconnect()
