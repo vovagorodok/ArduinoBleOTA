@@ -67,6 +67,9 @@ void ArduinoBleOTAClass::update()
 
 void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)
 {
+    if (installing)
+        return;
+
     auto value = characteristic->getValue();
     auto data = value.data();
     auto length = value.length();
