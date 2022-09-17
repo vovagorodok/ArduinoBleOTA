@@ -23,10 +23,9 @@ namespace
 bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storage)
 {
     BLEDevice::init(deviceName);
-    BLEDevice::setMTU(BLE_ATT_MTU_MAX);
     auto* server = BLEDevice::createServer();
 
-    if(!begin(server, storage))
+    if(!begin(storage))
         return false;
 
     auto* advertising = server->getAdvertising();
@@ -36,39 +35,28 @@ bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storag
     return advertising->start();
 }
 
-bool ArduinoBleOTAClass::begin(NimBLEServer* server, OTAStorage& storage)
+bool ArduinoBleOTAClass::begin(OTAStorage& storage)
 {
-    return begin(server,
-                 storage,
-                 OTA_SERVICE_UUID,
-                 OTA_CHARACTERISTIC_UUID_RX,
-                 OTA_CHARACTERISTIC_UUID_TX);
-}
+    auto* server = BLEDevice::createServer();
+    BLEDevice::setMTU(BLE_ATT_MTU_MAX);
 
-bool ArduinoBleOTAClass::begin(
-    NimBLEServer* server,
-    OTAStorage& storage,
-    const char* serviceUUID,
-    const char* rxChUUID,
-    const char* txChUUID)
-{
     this->storage = &storage;
-    auto* service = server->createService(serviceUUID);
+    auto* service = server->createService(OTA_SERVICE_UUID);
 
     auto* rxCharacteristic = service->createCharacteristic(
-        rxChUUID,
+        OTA_CHARACTERISTIC_UUID_RX,
         NIMBLE_PROPERTY::WRITE
     );
     rxCharacteristic->setCallbacks(this);
 
     auto* txCharacteristic = service->createCharacteristic(
-        txChUUID,
+        OTA_CHARACTERISTIC_UUID_TX,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY
     );
     this->txCharacteristic = txCharacteristic;
 
     auto* advertising = server->getAdvertising();
-    advertising->addServiceUUID(serviceUUID);
+    advertising->addServiceUUID(OTA_SERVICE_UUID);
     return service->start();
 }
 

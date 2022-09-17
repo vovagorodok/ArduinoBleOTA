@@ -7,9 +7,7 @@ class ArduinoBleOTAClass: public BLECharacteristicCallbacks
 {
 public:
     bool begin(const std::string &deviceName, OTAStorage& storage);
-    bool begin(NimBLEServer* server, OTAStorage& storage);
-    bool begin(NimBLEServer* server, OTAStorage& storage,
-               const char* serviceUUID, const char* rxChUUID, const char* txChUUID);
+    bool begin(OTAStorage& storage);
 
 private:
     void onWrite(BLECharacteristic* characteristic) override;
