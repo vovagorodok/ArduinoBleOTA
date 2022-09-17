@@ -23,6 +23,7 @@ namespace
 bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storage)
 {
     BLEDevice::init(deviceName);
+    BLEDevice::setMTU(BLE_ATT_MTU_MAX);
     auto* server = BLEDevice::createServer();
 
     if(!begin(server, storage))
