@@ -17,6 +17,7 @@ namespace
 #define BEGIN 0x10
 #define PACKAGE 0x11
 #define END 0x12
+#define INSTALL 0x13
 }
 
 bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storage)
@@ -85,13 +86,16 @@ void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)
     switch (data[0])
     {
     case BEGIN:
-        beginUpdate(data + 1, length - 1);
+        handleBegin(data + 1, length - 1);
         break;
     case PACKAGE:
         handlePackage(data + 1, length - 1);
         break;
     case END:
-        endUpdate(data + 1, length - 1);
+        handleEnd(data + 1, length - 1);
+        break;
+    case INSTALL:
+        handleInstall();
         break;
     default:
         send(INCORRECT_FORMAT);
@@ -99,7 +103,7 @@ void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)
     }
 }
 
-void ArduinoBleOTAClass::beginUpdate(const uint8_t* data, size_t length)
+void ArduinoBleOTAClass::handleBegin(const uint8_t* data, size_t length)
 {
     if (updating)
         stopUpdate();
@@ -157,7 +161,7 @@ void ArduinoBleOTAClass::handlePackage(const uint8_t* data, size_t length)
     send(OK);
 }
 
-void ArduinoBleOTAClass::endUpdate(const uint8_t* data, size_t length)
+void ArduinoBleOTAClass::handleEnd(const uint8_t* data, size_t length)
 {
     if (not updating)
     {
@@ -185,6 +189,10 @@ void ArduinoBleOTAClass::endUpdate(const uint8_t* data, size_t length)
     }
 
     send(OK);
+}
+
+void ArduinoBleOTAClass::handleInstall()
+{
     storage->close();
     delay(500);
     storage->apply();
