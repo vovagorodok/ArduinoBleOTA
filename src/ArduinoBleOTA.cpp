@@ -22,7 +22,7 @@ namespace
 #define PACKAGE 0x11
 #define END 0x12
 
-#define UNKNOWN "UNKNOWN"
+constexpr auto UNKNOWN = "UNKNOWN";
 }
 
 bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storage)
