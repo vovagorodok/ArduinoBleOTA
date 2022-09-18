@@ -30,7 +30,7 @@ Designations for examples:\
 <- OK
 ```
 Maximal `<uint8[] data>` size 511 bytes.\
-In order to implement protocol on central side can be just checked if responce equal `OK`.\
+In order to implement protocol on central side can be just checked if response equal `OK`.\
 In order to know more about error codes ckeck scenarios below.
 
 ## Comunication lost scenario
