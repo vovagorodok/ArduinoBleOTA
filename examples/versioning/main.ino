@@ -11,5 +11,5 @@ void setup() {
 }
 
 void loop() {
-  ArduinoBleOTA.update();
+  ArduinoBleOTA.pull();
 }

@@ -21,7 +21,7 @@ public:
     bool begin(OTAStorage& storage,
                const std::string &hwName, Version hwVersion,
                const std::string &swName, Version swVersion);
-    void update();
+    void pull();
 
 private:
     void begin(BLEService& service,

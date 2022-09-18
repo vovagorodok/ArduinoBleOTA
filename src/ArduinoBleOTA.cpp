@@ -107,7 +107,7 @@ void ArduinoBleOTAClass::begin(BLEService& service,
     swVerCharacteristic->setValue(reinterpret_cast<uint8_t*>(&swVersion), sizeof(Version));
 }
 
-void ArduinoBleOTAClass::update()
+void ArduinoBleOTAClass::pull()
 {
     if (installing)
         handleInstall();
