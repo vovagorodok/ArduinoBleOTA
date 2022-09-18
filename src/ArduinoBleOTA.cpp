@@ -147,7 +147,7 @@ void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)
 
 void ArduinoBleOTAClass::handleBegin(const uint8_t* data, size_t length)
 {
-    if (updating)
+    if (uploading)
         stopUpload();
 
     if (length != sizeof(uint32_t))
@@ -172,14 +172,14 @@ void ArduinoBleOTAClass::handleBegin(const uint8_t* data, size_t length)
     }
 
     currentLength = 0;
-    updating = true;
+    uploading = true;
     crc.reset();
     send(OK);
 }
 
 void ArduinoBleOTAClass::handlePackage(const uint8_t* data, size_t length)
 {
-    if (not updating)
+    if (not uploading)
     {
         send(NOK);
         return;
@@ -205,7 +205,7 @@ void ArduinoBleOTAClass::handlePackage(const uint8_t* data, size_t length)
 
 void ArduinoBleOTAClass::handleEnd(const uint8_t* data, size_t length)
 {
-    if (not updating)
+    if (not uploading)
     {
         send(NOK);
         return;
@@ -252,6 +252,6 @@ void ArduinoBleOTAClass::stopUpload()
 {
     storage->clear();
     storage->close();
-    updating = false;
+    uploading = false;
     currentLength = firmwareLength = 0;
 }

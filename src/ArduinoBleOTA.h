@@ -39,7 +39,7 @@ private:
     OTAStorage* storage;
     uint32_t currentLength;
     uint32_t firmwareLength = 0;
-    bool updating = false;
+    bool uploading = false;
     bool installing = false;
 };
 

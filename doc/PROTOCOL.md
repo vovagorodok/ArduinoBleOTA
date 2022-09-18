@@ -34,7 +34,7 @@ In order to implement protocol on central side can be just checked if response e
 In order to know more about error codes ckeck scenarios below.
 
 ## Comunication lost scenario
-In this case nothing done and updating starts from begining when `BEGIN` recives again.
+In this case nothing done and uploading starts from begining when `BEGIN` recives again.
 
 ## Incorrect transfer block scenarios
 Zero length transfer block:
