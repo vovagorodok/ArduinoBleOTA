@@ -1,5 +1,4 @@
 #include "ArduinoBleOTA.h"
-#include <iostream>
 
 namespace
 {
