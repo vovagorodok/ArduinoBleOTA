@@ -71,14 +71,14 @@ Transfer start without BEGIN:
 ```
 
 ## Package failure scenarios
-Summary uploaded packets size is higher than firmware size:
+Uploaded packets size is higher than firmware size:
 ```
 -> PACKAGE
 <- INCORRECT_FIRMWARE_SIZE
 ```
 
 ## End failure scenarios
-Summary uploaded packets size is lower than firmware size:
+Uploaded packets size is lower than firmware size:
 ```
 -> END
 <- INCORRECT_FIRMWARE_SIZE
