@@ -29,7 +29,12 @@ Designations for examples:\
 -> END <uint32 crc32 checksum>
 <- OK
 ```
-Maximal `<uint8[] data>` size 511 bytes.
+Maximal `<uint8[] data>` size 511 bytes.\
+In order to implement protocol on central side can be just checked if responce equal `OK`.\
+In order to know more about error codes ckeck scenarios below.
+
+## Comunication lost scenario
+In this case nothing done and updating starts from begining when `BEGIN` recives again.
 
 ## Incorrect transfer block scenarios
 Zero length transfer block:
@@ -44,3 +49,18 @@ Incorrect head code:
 ```
 
 ## Begin failure scenarios
+Incorrect firmware size format:
+```
+-> BEGIN <not uint32 firmware size>
+<- INCORRECT_FORMAT
+```
+Firmware size to large:
+```
+-> BEGIN
+<- INCORRECT_FIRMWARE_SIZE
+```
+Internal storage error:
+```
+-> BEGIN
+<- INTERNAL_STORAGE_ERROR
+```
