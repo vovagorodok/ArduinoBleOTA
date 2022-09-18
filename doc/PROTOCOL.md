@@ -76,3 +76,20 @@ Summary uploaded packets size is higher than firmware size:
 -> PACKAGE
 <- INCORRECT_FIRMWARE_SIZE
 ```
+
+## End failure scenarios
+Summary uploaded packets size is lower than firmware size:
+```
+-> END
+<- INCORRECT_FIRMWARE_SIZE
+```
+Incorrect checksum size format:
+```
+-> END <not uint32 crc32 checksum>
+<- INCORRECT_FORMAT
+```
+Checksum doesn't match:
+```
+-> END
+<- CHECKSUM_ERROR
+```
