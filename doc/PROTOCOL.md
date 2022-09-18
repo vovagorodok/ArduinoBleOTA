@@ -64,3 +64,15 @@ Internal storage error:
 -> BEGIN
 <- INTERNAL_STORAGE_ERROR
 ```
+Transfer start without BEGIN:
+```
+-> not BEGIN
+<- NOK
+```
+
+## Package failure scenarios
+Summary uploaded packets size is higher than firmware size:
+```
+-> PACKAGE
+<- INCORRECT_FIRMWARE_SIZE
+```
