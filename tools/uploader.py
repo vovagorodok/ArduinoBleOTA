@@ -91,7 +91,7 @@ def connect(dev):
     
     return device, rx_char, tx_char
 
-def upload(device, rx_char, tx_char, path):
+def upload(rx_char, tx_char, path):
     time = datetime.datetime.now()
     crc = 0
     uploaded_len = 0
@@ -128,7 +128,7 @@ def connect_and_upload(dev, path):
         return
     device, rx_char, tx_char = res
 
-    if not upload(device, rx_char, tx_char, path):
+    if not upload(rx_char, tx_char, path):
         device.disconnect()
         return
     device.disconnect()
