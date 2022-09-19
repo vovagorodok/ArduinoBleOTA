@@ -63,7 +63,7 @@ def scan_ota_devices(adapter_address=None, timeout=5.0):
                 yield dev
 
 def handleResponse(resp):
-    if (resp == OK):
+    if resp == OK:
         return True
 
     print(respToStr[resp])
@@ -97,9 +97,8 @@ def upload(device, rx_char, tx_char, path):
     uploaded_len = 0
     firmware_len = file_size(path)
     rx_char.value = int_to_u8_bytes(BEGIN) + int_to_u32_bytes(firmware_len)
-    if (not handleResponse(u8_bytes_to_int(tx_char.value))):
-        device.disconnect()
-        return
+    if not handleResponse(u8_bytes_to_int(tx_char.value)):
+        return False
 
     with open(path, 'rb') as f:
         while True:
@@ -108,22 +107,20 @@ def upload(device, rx_char, tx_char, path):
                 break
 
             rx_char.value = int_to_u8_bytes(PACKAGE) + list(data)
-            if (not handleResponse(u8_bytes_to_int(tx_char.value))):
-                device.disconnect()
-                return
+            if not handleResponse(u8_bytes_to_int(tx_char.value)):
+                return False
 
             uploaded_len += len(data)
             print("Uploaded: " + str(uploaded_len) + "/" + str(firmware_len))
             crc = zlib.crc32(data, crc)
 
     rx_char.value = int_to_u8_bytes(END) + int_to_u32_bytes(crc)
-    if (not handleResponse(u8_bytes_to_int(tx_char.value))):
-        device.disconnect()
-        return
+    if not handleResponse(u8_bytes_to_int(tx_char.value)):
+        return False
 
     upload_time = datetime.datetime.now() - time
     print("Installing. Upload time: " + str(upload_time))
-    device.disconnect()
+    return True
 
 def connect_and_upload(dev, path):
     res = connect(dev)
@@ -131,7 +128,10 @@ def connect_and_upload(dev, path):
         return
     device, rx_char, tx_char = res
 
-    upload(device, rx_char, tx_char, path)
+    if not upload(device, rx_char, tx_char, path):
+        device.disconnect()
+        return
+    device.disconnect()
     sleep(1)
 
     res = connect(dev)    
