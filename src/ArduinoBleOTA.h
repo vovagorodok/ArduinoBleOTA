@@ -43,4 +43,4 @@ private:
     bool installing = false;
 };
 
-static ArduinoBleOTAClass ArduinoBleOTA;
+extern ArduinoBleOTAClass ArduinoBleOTA;

@@ -254,3 +254,5 @@ void ArduinoBleOTAClass::stopUpload()
     uploading = false;
     currentLength = firmwareLength = 0;
 }
+
+ArduinoBleOTAClass ArduinoBleOTA{};
