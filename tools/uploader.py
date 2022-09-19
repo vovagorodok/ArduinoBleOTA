@@ -88,7 +88,7 @@ def connect(dev):
                      "VER: " + str(list(bytearray(hw_ver_char.value))),
                      "SW: "  + str(bytearray(sw_name_char.value), 'utf-8'),
                      "VER: " + str(list(bytearray(sw_ver_char.value)))]))
-    
+
     return device, rx_char, tx_char
 
 def upload(rx_char, tx_char, path):
@@ -96,6 +96,7 @@ def upload(rx_char, tx_char, path):
     crc = 0
     uploaded_len = 0
     firmware_len = file_size(path)
+
     rx_char.value = int_to_u8_bytes(BEGIN) + int_to_u32_bytes(firmware_len)
     if not handleResponse(u8_bytes_to_int(tx_char.value)):
         return False
@@ -134,10 +135,11 @@ def connect_and_upload(dev, path):
     device.disconnect()
     sleep(1)
 
-    res = connect(dev)    
+    res = connect(dev)
     if not res:
         return
     device, rx_char, tx_char = res
+
     device.disconnect()
     print("Success!")
 
