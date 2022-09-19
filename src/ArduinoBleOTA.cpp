@@ -63,7 +63,7 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
 
     auto* rxCharacteristic = service->createCharacteristic(
         OTA_CHARACTERISTIC_UUID_RX,
-        NIMBLE_PROPERTY::WRITE
+        NIMBLE_PROPERTY::WRITE_NR
     );
     rxCharacteristic->setCallbacks(this);
 
