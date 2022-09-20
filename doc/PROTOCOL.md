@@ -36,7 +36,7 @@ Designations for examples:\
 `<uint32 buffer size>` internal buffer stored in RAM in order to handle packages without responses.\
 Maximal `<uint8[] data>` size is `<uint32 attribute size> - <head size>` bytes, where `<head size>` is 1 byte.\
 Internal buffer is created in order to increase upload speed. Packages can be handled immediately, because are stored in RAM instead of flash.
-Central should wait response only when buffer is full.
+Central should wait response only when buffer is full.\
 In order to know more about error codes ckeck scenarios below.
 
 ## Comunication lost scenario
