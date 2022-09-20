@@ -1,22 +1,17 @@
-#include "ArduinoBleOTA.h"
+#include "BleOtaDefines.h"
+#if defined(NIM_BLE_ARDUINO_LIB)
+#include "ArduinoBleOtaNimBle.h"
 #include "BleOtaUploader.h"
+#include "BleOtaCharacteristics.h"
 #include "BleOtaUtils.h"
 #include "BleOtaSizes.h"
 
 namespace
 {
-#define OTA_SERVICE_UUID                "15c155ca-36c5-11ed-adc0-9741d6a72f04"
-#define OTA_CHARACTERISTIC_UUID_RX      "15c1564c-36c5-11ed-adc1-a3d6cf5cc2a4"
-#define OTA_CHARACTERISTIC_UUID_TX      "15c156e2-36c5-11ed-adc2-7396d4fd413a"
-#define OTA_CHARACTERISTIC_UUID_HW_NAME "15c1576e-36c5-11ed-adc3-8799895de51e"
-#define OTA_CHARACTERISTIC_UUID_HW_VER  "15c157fa-36c5-11ed-adc4-579c60267b47"
-#define OTA_CHARACTERISTIC_UUID_SW_NAME "15c15886-36c5-11ed-adc5-1bc0d0a6069d"
-#define OTA_CHARACTERISTIC_UUID_SW_VER  "15c1591c-36c5-11ed-adc6-dbe9603dbf19"
-
 constexpr auto UNKNOWN = "UNKNOWN";
 }
 
-bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storage)
+bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage)
 {
     return begin(deviceName, storage, UNKNOWN, {}, UNKNOWN, {});
 }
@@ -26,9 +21,9 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage)
     return begin(storage, UNKNOWN, {}, UNKNOWN, {});
 }
 
-bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storage,
-                               const std::string &hwName, Version hwVersion,
-                               const std::string &swName, Version swVersion)
+bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage,
+                               const std::string& hwName, Version hwVersion,
+                               const std::string& swName, Version swVersion)
 {
     BLEDevice::init(deviceName);
     auto* server = BLEDevice::createServer();
@@ -44,8 +39,8 @@ bool ArduinoBleOTAClass::begin(const std::string &deviceName, OTAStorage& storag
 }
 
 bool ArduinoBleOTAClass::begin(OTAStorage& storage,
-                               const std::string &hwName, Version hwVersion,
-                               const std::string &swName, Version swVersion)
+                               const std::string& hwName, Version hwVersion,
+                               const std::string& swName, Version swVersion)
 {
     auto* server = BLEDevice::createServer();
     BLEDevice::setMTU(BLE_OTA_MTU_SIZE);
@@ -73,8 +68,8 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
 }
 
 void ArduinoBleOTAClass::begin(BLEService& service,
-                               const std::string &hwName, Version hwVersion,
-                               const std::string &swName, Version swVersion)
+                               const std::string& hwName, Version hwVersion,
+                               const std::string& swName, Version swVersion)
 {
     auto* hwNameCharacteristic = service.createCharacteristic(
         OTA_CHARACTERISTIC_UUID_HW_NAME,
@@ -119,3 +114,4 @@ void ArduinoBleOTAClass::send(const uint8_t* data, size_t length)
 }
 
 ArduinoBleOTAClass ArduinoBleOTA{};
+#endif
