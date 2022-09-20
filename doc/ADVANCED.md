@@ -8,7 +8,7 @@ build_flags =
 It gives more RAM for application, but upload speed will be slower.
 
 ## Tuning
-Attribute size and buffer size can be tuned by:
+Attribute size and buffer size are predefined experimentally. Can be tuned by:
 ```
 build_flags =
 	-D BLE_OTA_ATTRIBUTE_SIZE=256
