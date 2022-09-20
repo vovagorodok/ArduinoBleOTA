@@ -19,8 +19,8 @@ namespace
 struct BeginResponse
 {
     uint8_t head;
-    uint32_t attrLength;
-    uint32_t bufferLength;
+    uint32_t attributeSize;
+    uint32_t bufferSize;
 };
 #pragma pack(pop)
 }
