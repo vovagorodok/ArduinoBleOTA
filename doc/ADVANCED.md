@@ -1,5 +1,5 @@
 ## Internal buffer
-Buffer is storred in RAM (static memory).
+Buffer is storred in RAM (in static memory).
 Can be disabled by:
 ```
 build_flags =
@@ -16,5 +16,5 @@ build_flags =
 ```
 
 ## Uploading failure case
-When uploading fails then internal buffer turns off.
-Only after reset it turns on.
+When uploading fails then internal buffer usage turn off.
+Only after reset it turn on.
