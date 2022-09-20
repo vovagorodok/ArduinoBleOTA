@@ -1,6 +1,6 @@
 ## Internal buffer
 Buffer is storred in RAM (in static memory).
-Can be disabled by:
+Can be disabled by adding:
 ```
 build_flags =
 	-D BLE_OTA_NO_BUFFER
@@ -8,7 +8,7 @@ build_flags =
 It gives more RAM for application, but upload speed will be slower.
 
 ## Tuning
-Attribute size and buffer size are predefined experimentally. Can be tuned by:
+Attribute size and buffer size are predefined experimentally. Can be tuned by adding:
 ```
 build_flags =
 	-D BLE_OTA_ATTRIBUTE_SIZE=256
