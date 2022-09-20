@@ -5,5 +5,8 @@ void setup() {
 }
 
 void loop() {
+#if defined(BLE_PULL_REQUIRED)
+  BLE.poll();
+#endif
   ArduinoBleOTA.pull();
 }
