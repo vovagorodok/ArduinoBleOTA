@@ -20,17 +20,23 @@ Designations for examples:\
 `<-` - send to central
 ```
 -> BEGIN <uint32 firmware size>
-<- OK
+<- OK <uint32 attribute size> <uint32 buffer size>
+-> PACKAGE <uint8[] data>
+-> PACKAGE <uint8[] data>
+...
 -> PACKAGE <uint8[] data>
 <- OK
 ...
 -> PACKAGE <uint8[] data>
-<- OK
+-> PACKAGE <uint8[] data>
 -> END <uint32 crc32 checksum>
 <- OK
 ```
-Maximal `<uint8[] data>` size 511 bytes.\
-In order to implement protocol on central side can be just checked if response equal `OK`.\
+<uint32 attribute size> maximal trensfer block.\
+<uint32 buffer size> internal buffer stored in RAM in order to handle packages without responses.\
+Maximal `<uint8[] data>` size is `<uint32 attribute size> - <head size>` bytes, where <head size> is 1 byte.\
+Internal buffer is created in order to increase upload speed. Packages can be handled immediately, because are stored in RAM instead of flash.
+Central should wait response only when buffer is full.
 In order to know more about error codes ckeck scenarios below.
 
 ## Comunication lost scenario

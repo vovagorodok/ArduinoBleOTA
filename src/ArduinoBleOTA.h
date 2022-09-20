@@ -1,7 +1,8 @@
 #pragma once
-#include "OTAStorage.h"
+#include "BleOtaStorage.h"
 #include <NimBLEDevice.h>
-#include <CRC32.h>
+
+class BleOtaUploader;
 
 struct Version
 {
@@ -24,23 +25,13 @@ public:
     void pull();
 
 private:
+    friend BleOtaUploader;
     void begin(BLEService& service,
                const std::string &hwName, Version hwVersion,
                const std::string &swName, Version swVersion);
     void onWrite(BLECharacteristic* characteristic) override;
-    void handleBegin(const uint8_t* data, size_t length);
-    void handlePackage(const uint8_t* data, size_t length);
-    void handleEnd(const uint8_t* data, size_t length);
-    void handleInstall();
-    void send(uint8_t head);
-    void stopUpload();
-    CRC32 crc;
+    void send(const uint8_t* data, size_t length);
     BLECharacteristic* txCharacteristic;
-    OTAStorage* storage;
-    uint32_t currentLength;
-    uint32_t firmwareLength = 0;
-    bool uploading = false;
-    bool installing = false;
 };
 
 extern ArduinoBleOTAClass ArduinoBleOTA;

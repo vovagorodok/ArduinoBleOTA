@@ -10,6 +10,7 @@ python3 tools/uploader.py .pio/build/esp32dev/firmware.bin
 ```
 
 ## Documentation
+Advanced usage at `ADVANCED.md`.\
 More about uuids advertising at `ADVERTISING.md`.\
 More about protocol at `PROTOCOL.md`.
 
