@@ -40,7 +40,7 @@ Central should wait response only when buffer is full.\
 In order to know more about error codes ckeck scenarios below.
 
 ## Comunication lost scenario
-In this case nothing happens and uploading starts from begining when `BEGIN` recives again.
+In this case buffer usage turns of and uploading starts from begining when `BEGIN` recives again.
 
 ## Incorrect transfer block scenarios
 Zero length transfer block:
