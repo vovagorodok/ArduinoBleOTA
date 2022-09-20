@@ -16,5 +16,5 @@ build_flags =
 ```
 
 ## Uploading failure case
-When uploading fails then internal buffer usage turn off.
-Only after reset it turn on.
+When uploading fails then internal buffer usage turns off.
+Only after reset it turns on.
