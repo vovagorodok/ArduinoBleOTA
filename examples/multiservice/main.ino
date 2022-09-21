@@ -11,7 +11,7 @@ void setup() {
   // add your ble services here
 
   ArduinoBleOTA.begin(InternalStorage);
-  advertizeBle(NAME, MY_SECOND_SERVICE_UUID);
+  advertiseBle(NAME, MY_SECOND_SERVICE_UUID);
 }
 
 void loop() {

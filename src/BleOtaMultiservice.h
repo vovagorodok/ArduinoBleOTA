@@ -8,7 +8,7 @@ inline void initBle(const std::string& deviceName)
     BLEDevice::init(deviceName);
 }
 
-inline bool advertizeBle(const std::string& deviceName,
+inline bool advertiseBle(const std::string& deviceName,
                          const std::string& primaryUUID,
                          const std::string& secondaryUUID)
 {
@@ -28,10 +28,10 @@ inline bool advertizeBle(const std::string& deviceName,
     return advertising->start();
 }
 
-inline bool advertizeBle(const std::string& deviceName,
+inline bool advertiseBle(const std::string& deviceName,
                          const std::string& secondaryUUID)
 {
-    return advertizeBle(deviceName, BLE_OTA_SERVICE_UUID, secondaryUUID);
+    return advertiseBle(deviceName, BLE_OTA_SERVICE_UUID, secondaryUUID);
 }
 #else
 inline bool initBle(const char* deviceName)
@@ -44,7 +44,7 @@ inline bool initBle(const char* deviceName)
     return true;
 }
 
-inline bool advertizeBle(const char* deviceName,
+inline bool advertiseBle(const char* deviceName,
                          const char* primaryUUID,
                          const char* secondaryUUID)
 {
@@ -61,9 +61,9 @@ inline bool advertizeBle(const char* deviceName,
     return BLE.advertise();
 }
 
-inline bool advertizeBle(const char* deviceName,
+inline bool advertiseBle(const char* deviceName,
                          const char* secondaryUUID)
 {
-    return advertizeBle(deviceName, BLE_OTA_SERVICE_UUID, secondaryUUID);
+    return advertiseBle(deviceName, BLE_OTA_SERVICE_UUID, secondaryUUID);
 }
 #endif
