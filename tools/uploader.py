@@ -6,13 +6,13 @@ import zlib
 import os
 import datetime
 
-OTA_SERVICE_UUID                = "15c155ca-36c5-11ed-adc0-9741d6a72f04"
-OTA_CHARACTERISTIC_UUID_RX      = "15c1564c-36c5-11ed-adc1-a3d6cf5cc2a4"
-OTA_CHARACTERISTIC_UUID_TX      = "15c156e2-36c5-11ed-adc2-7396d4fd413a"
-OTA_CHARACTERISTIC_UUID_HW_NAME = "15c1576e-36c5-11ed-adc3-8799895de51e"
-OTA_CHARACTERISTIC_UUID_HW_VER  = "15c157fa-36c5-11ed-adc4-579c60267b47"
-OTA_CHARACTERISTIC_UUID_SW_NAME = "15c15886-36c5-11ed-adc5-1bc0d0a6069d"
-OTA_CHARACTERISTIC_UUID_SW_VER  = "15c1591c-36c5-11ed-adc6-dbe9603dbf19"
+BLE_OTA_SERVICE_UUID                = "15c155ca-36c5-11ed-adc0-9741d6a72f04"
+BLE_OTA_CHARACTERISTIC_UUID_RX      = "15c1564c-36c5-11ed-adc1-a3d6cf5cc2a4"
+BLE_OTA_CHARACTERISTIC_UUID_TX      = "15c156e2-36c5-11ed-adc2-7396d4fd413a"
+BLE_OTA_CHARACTERISTIC_UUID_HW_NAME = "15c1576e-36c5-11ed-adc3-8799895de51e"
+BLE_OTA_CHARACTERISTIC_UUID_HW_VER  = "15c157fa-36c5-11ed-adc4-579c60267b47"
+BLE_OTA_CHARACTERISTIC_UUID_SW_NAME = "15c15886-36c5-11ed-adc5-1bc0d0a6069d"
+BLE_OTA_CHARACTERISTIC_UUID_SW_VER  = "15c1591c-36c5-11ed-adc6-dbe9603dbf19"
 
 OK = 0x00
 NOK = 0x01
@@ -65,7 +65,7 @@ def scan_ota_devices(adapter_address=None, timeout=5.0):
         dongle.nearby_discovery(timeout=timeout)
 
         for dev in central.Central.available(dongle.address):
-            if OTA_SERVICE_UUID.lower() in dev.uuids:
+            if BLE_OTA_SERVICE_UUID.lower() in dev.uuids:
                 yield dev
 
 def handleResponse(resp):
@@ -90,12 +90,12 @@ def handleBeginResponse(resp):
 
 def connect(dev):
     device = central.Central(adapter_addr=dev.adapter, device_addr=dev.address)
-    rx_char = device.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_RX)
-    tx_char = device.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_TX)
-    hw_name_char = device.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_HW_NAME)
-    hw_ver_char = device.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_HW_VER)
-    sw_name_char = device.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_SW_NAME)
-    sw_ver_char = device.add_characteristic(OTA_SERVICE_UUID, OTA_CHARACTERISTIC_UUID_SW_VER)
+    rx_char = device.add_characteristic(BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_RX)
+    tx_char = device.add_characteristic(BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_TX)
+    hw_name_char = device.add_characteristic(BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_HW_NAME)
+    hw_ver_char = device.add_characteristic(BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_HW_VER)
+    sw_name_char = device.add_characteristic(BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_SW_NAME)
+    sw_ver_char = device.add_characteristic(BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
 
     print("Connecting to " + dev.alias)
     device.connect()

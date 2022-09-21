@@ -2,19 +2,19 @@
 #if defined(ARDUINO_BLE_LIB)
 #include "ArduinoBleOtaCommon.h"
 #include "BleOtaUploader.h"
-#include "BleOtaCharacteristics.h"
+#include "BleOtaUuids.h"
 #include "BleOtaUtils.h"
 #include "BleOtaSizes.h"
 
 namespace
 {
-BLEService service(OTA_SERVICE_UUID);
-BLECharacteristic rxCharacteristic(OTA_CHARACTERISTIC_UUID_RX, BLEWriteWithoutResponse, BLE_OTA_MAX_ATTR_SIZE);
-BLECharacteristic txCharacteristic(OTA_CHARACTERISTIC_UUID_TX, BLERead | BLENotify, BLE_OTA_MAX_ATTR_SIZE);
-BLEStringCharacteristic hwNameCharacteristic(OTA_CHARACTERISTIC_UUID_HW_NAME, BLERead, BLE_OTA_MAX_ATTR_SIZE);
-BLEStringCharacteristic swNameCharacteristic(OTA_CHARACTERISTIC_UUID_SW_NAME, BLERead, BLE_OTA_MAX_ATTR_SIZE);
-BLECharacteristic hwVerCharacteristic(OTA_CHARACTERISTIC_UUID_HW_VER, BLERead, sizeof(BleOtaVersion), true);
-BLECharacteristic swVerCharacteristic(OTA_CHARACTERISTIC_UUID_SW_VER, BLERead, sizeof(BleOtaVersion), true);
+BLEService service(BLE_OTA_SERVICE_UUID);
+BLECharacteristic rxCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_RX, BLEWriteWithoutResponse, BLE_OTA_MAX_ATTR_SIZE);
+BLECharacteristic txCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_TX, BLERead | BLENotify, BLE_OTA_MAX_ATTR_SIZE);
+BLEStringCharacteristic hwNameCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_NAME, BLERead, BLE_OTA_MAX_ATTR_SIZE);
+BLEStringCharacteristic swNameCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_NAME, BLERead, BLE_OTA_MAX_ATTR_SIZE);
+BLECharacteristic hwVerCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_VER, BLERead, sizeof(BleOtaVersion), true);
+BLECharacteristic swVerCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_VER, BLERead, sizeof(BleOtaVersion), true);
 
 constexpr auto UNKNOWN = "UNKNOWN";
 

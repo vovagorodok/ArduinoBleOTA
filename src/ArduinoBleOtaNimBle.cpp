@@ -2,7 +2,7 @@
 #if defined(NIM_BLE_ARDUINO_LIB)
 #include "ArduinoBleOtaNimBle.h"
 #include "BleOtaUploader.h"
-#include "BleOtaCharacteristics.h"
+#include "BleOtaUuids.h"
 #include "BleOtaUtils.h"
 #include "BleOtaSizes.h"
 
@@ -46,16 +46,16 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
     BLEDevice::setMTU(BLE_OTA_MTU_SIZE);
 
     bleOtaUploader.begin(storage);
-    auto* service = server->createService(OTA_SERVICE_UUID);
+    auto* service = server->createService(BLE_OTA_SERVICE_UUID);
 
     auto* rxCharacteristic = service->createCharacteristic(
-        OTA_CHARACTERISTIC_UUID_RX,
+        BLE_OTA_CHARACTERISTIC_UUID_RX,
         NIMBLE_PROPERTY::WRITE_NR
     );
     rxCharacteristic->setCallbacks(this);
 
     auto* txCharacteristic = service->createCharacteristic(
-        OTA_CHARACTERISTIC_UUID_TX,
+        BLE_OTA_CHARACTERISTIC_UUID_TX,
         NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY
     );
     this->txCharacteristic = txCharacteristic;
@@ -63,7 +63,7 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
     begin(*service, hwName, hwVersion, swName, swVersion);
 
     auto* advertising = server->getAdvertising();
-    advertising->addServiceUUID(OTA_SERVICE_UUID);
+    advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
     return service->start();
 }
 
@@ -72,22 +72,22 @@ void ArduinoBleOTAClass::begin(BLEService& service,
                                const std::string& swName, BleOtaVersion swVersion)
 {
     auto* hwNameCharacteristic = service.createCharacteristic(
-        OTA_CHARACTERISTIC_UUID_HW_NAME,
+        BLE_OTA_CHARACTERISTIC_UUID_HW_NAME,
         NIMBLE_PROPERTY::READ
     );
     hwNameCharacteristic->setValue(hwName);
     auto* swNameCharacteristic = service.createCharacteristic(
-        OTA_CHARACTERISTIC_UUID_SW_NAME,
+        BLE_OTA_CHARACTERISTIC_UUID_SW_NAME,
         NIMBLE_PROPERTY::READ
     );
     swNameCharacteristic->setValue(swName);
     auto* hwVerCharacteristic = service.createCharacteristic(
-        OTA_CHARACTERISTIC_UUID_HW_VER,
+        BLE_OTA_CHARACTERISTIC_UUID_HW_VER,
         NIMBLE_PROPERTY::READ
     );
     hwVerCharacteristic->setValue(refToAddr(hwVersion), sizeof(BleOtaVersion));
     auto* swVerCharacteristic = service.createCharacteristic(
-        OTA_CHARACTERISTIC_UUID_SW_VER,
+        BLE_OTA_CHARACTERISTIC_UUID_SW_VER,
         NIMBLE_PROPERTY::READ
     );
     swVerCharacteristic->setValue(refToAddr(swVersion), sizeof(BleOtaVersion));

@@ -1,6 +1,6 @@
 #pragma once
 #include <ArduinoBleOTA.h>
-#include "BleOtaCharacteristics.h"
+#include "BleOtaUuids.h"
 
 #ifdef NIM_BLE_ARDUINO_LIB
 inline void initBle(const std::string& deviceName)
@@ -31,7 +31,7 @@ inline bool advertizeBle(const std::string& deviceName,
 inline bool advertizeBle(const std::string& deviceName,
                          const std::string& secondaryUUID)
 {
-    return advertizeBle(deviceName, OTA_SERVICE_UUID, secondaryUUID);
+    return advertizeBle(deviceName, BLE_OTA_SERVICE_UUID, secondaryUUID);
 }
 #else
 inline bool initBle(const char* deviceName)
@@ -64,6 +64,6 @@ inline bool advertizeBle(const char* deviceName,
 inline bool advertizeBle(const char* deviceName,
                          const char* secondaryUUID)
 {
-    return advertizeBle(deviceName, OTA_SERVICE_UUID, secondaryUUID);
+    return advertizeBle(deviceName, BLE_OTA_SERVICE_UUID, secondaryUUID);
 }
 #endif
