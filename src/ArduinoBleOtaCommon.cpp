@@ -13,8 +13,8 @@ BLECharacteristic rxCharacteristic(OTA_CHARACTERISTIC_UUID_RX, BLEWriteWithoutRe
 BLECharacteristic txCharacteristic(OTA_CHARACTERISTIC_UUID_TX, BLERead | BLENotify, BLE_OTA_MAX_ATTR_SIZE);
 BLEStringCharacteristic hwNameCharacteristic(OTA_CHARACTERISTIC_UUID_HW_NAME, BLERead, BLE_OTA_MAX_ATTR_SIZE);
 BLEStringCharacteristic swNameCharacteristic(OTA_CHARACTERISTIC_UUID_SW_NAME, BLERead, BLE_OTA_MAX_ATTR_SIZE);
-BLECharacteristic hwVerCharacteristic(OTA_CHARACTERISTIC_UUID_HW_VER, BLERead, sizeof(Version), true);
-BLECharacteristic swVerCharacteristic(OTA_CHARACTERISTIC_UUID_SW_VER, BLERead, sizeof(Version), true);
+BLECharacteristic hwVerCharacteristic(OTA_CHARACTERISTIC_UUID_HW_VER, BLERead, sizeof(BleOtaVersion), true);
+BLECharacteristic swVerCharacteristic(OTA_CHARACTERISTIC_UUID_SW_VER, BLERead, sizeof(BleOtaVersion), true);
 
 constexpr auto UNKNOWN = "UNKNOWN";
 
@@ -35,8 +35,8 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage)
 }
 
 bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage,
-                               const String& hwName, Version hwVersion,
-                               const String& swName, Version swVersion)
+                               const String& hwName, BleOtaVersion hwVersion,
+                               const String& swName, BleOtaVersion swVersion)
 {
     if (!BLE.begin())
         return false;
@@ -51,8 +51,8 @@ bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage,
 }
 
 bool ArduinoBleOTAClass::begin(OTAStorage& storage,
-                               const String& hwName, Version hwVersion,
-                               const String& swName, Version swVersion)
+                               const String& hwName, BleOtaVersion hwVersion,
+                               const String& swName, BleOtaVersion swVersion)
 {
     bleOtaUploader.begin(storage);
     service.addCharacteristic(rxCharacteristic);
@@ -65,17 +65,17 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
     return BLE.setAdvertisedService(service);
 }
 
-void ArduinoBleOTAClass::begin(const String& hwName, Version hwVersion,
-                               const String& swName, Version swVersion)
+void ArduinoBleOTAClass::begin(const String& hwName, BleOtaVersion hwVersion,
+                               const String& swName, BleOtaVersion swVersion)
 {
     service.addCharacteristic(hwNameCharacteristic);
     hwNameCharacteristic.setValue(hwName);
     service.addCharacteristic(swNameCharacteristic);
     swNameCharacteristic.setValue(swName);
     service.addCharacteristic(hwVerCharacteristic);
-    hwVerCharacteristic.setValue(refToAddr(hwVersion), sizeof(Version));
+    hwVerCharacteristic.setValue(refToAddr(hwVersion), sizeof(BleOtaVersion));
     service.addCharacteristic(swVerCharacteristic);
-    swVerCharacteristic.setValue(refToAddr(swVersion), sizeof(Version));
+    swVerCharacteristic.setValue(refToAddr(swVersion), sizeof(BleOtaVersion));
 }
 
 void ArduinoBleOTAClass::pull()

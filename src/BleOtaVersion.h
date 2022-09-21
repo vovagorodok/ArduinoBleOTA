@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 #pragma pack(push, 1)
-struct Version
+struct BleOtaVersion
 {
     uint8_t major;
     uint8_t minor;

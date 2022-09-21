@@ -22,8 +22,8 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage)
 }
 
 bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage,
-                               const std::string& hwName, Version hwVersion,
-                               const std::string& swName, Version swVersion)
+                               const std::string& hwName, BleOtaVersion hwVersion,
+                               const std::string& swName, BleOtaVersion swVersion)
 {
     BLEDevice::init(deviceName);
     auto* server = BLEDevice::createServer();
@@ -39,8 +39,8 @@ bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storag
 }
 
 bool ArduinoBleOTAClass::begin(OTAStorage& storage,
-                               const std::string& hwName, Version hwVersion,
-                               const std::string& swName, Version swVersion)
+                               const std::string& hwName, BleOtaVersion hwVersion,
+                               const std::string& swName, BleOtaVersion swVersion)
 {
     auto* server = BLEDevice::createServer();
     BLEDevice::setMTU(BLE_OTA_MTU_SIZE);
@@ -68,8 +68,8 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
 }
 
 void ArduinoBleOTAClass::begin(BLEService& service,
-                               const std::string& hwName, Version hwVersion,
-                               const std::string& swName, Version swVersion)
+                               const std::string& hwName, BleOtaVersion hwVersion,
+                               const std::string& swName, BleOtaVersion swVersion)
 {
     auto* hwNameCharacteristic = service.createCharacteristic(
         OTA_CHARACTERISTIC_UUID_HW_NAME,
@@ -85,12 +85,12 @@ void ArduinoBleOTAClass::begin(BLEService& service,
         OTA_CHARACTERISTIC_UUID_HW_VER,
         NIMBLE_PROPERTY::READ
     );
-    hwVerCharacteristic->setValue(refToAddr(hwVersion), sizeof(Version));
+    hwVerCharacteristic->setValue(refToAddr(hwVersion), sizeof(BleOtaVersion));
     auto* swVerCharacteristic = service.createCharacteristic(
         OTA_CHARACTERISTIC_UUID_SW_VER,
         NIMBLE_PROPERTY::READ
     );
-    swVerCharacteristic->setValue(refToAddr(swVersion), sizeof(Version));
+    swVerCharacteristic->setValue(refToAddr(swVersion), sizeof(BleOtaVersion));
 }
 
 void ArduinoBleOTAClass::pull()
