@@ -1,15 +1,22 @@
 #include <ArduinoBleOTA.h>
+#include "BleOtaMultiservice.h"
+
+// max name size with 128 bit uuid is 11
+#define NAME "MultiSrv"
+#define MY_SECOND_SERVICE_UUID "<any uuid>"
 
 void setup() {
-  BLEDevice::init("ArduinoBleOTA");
-  auto* server = BLEDevice::createServer();
+  initBle(NAME);
 
   // add your ble services here
 
   ArduinoBleOTA.begin(InternalStorage);
-  server->startAdvertising();
+  advertizeBle(NAME, MY_SECOND_SERVICE_UUID);
 }
 
 void loop() {
+#if defined(BLE_PULL_REQUIRED)
+  BLE.poll();
+#endif
   ArduinoBleOTA.pull();
 }
