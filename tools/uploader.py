@@ -103,10 +103,15 @@ def connect(dev):
         print("Didn't connect to device!")
         return
 
-    print(", ".join(["HW: "  + str(bytearray(hw_name_char.value), 'utf-8'),
-                     "VER: " + str(list(bytearray(hw_ver_char.value))),
-                     "SW: "  + str(bytearray(sw_name_char.value), 'utf-8'),
-                     "VER: " + str(list(bytearray(sw_ver_char.value)))]))
+    try:
+        print(", ".join(["HW: "  + str(bytearray(hw_name_char.value), 'utf-8'),
+                        "VER: " + str(list(bytearray(hw_ver_char.value))),
+                        "SW: "  + str(bytearray(sw_name_char.value), 'utf-8'),
+                        "VER: " + str(list(bytearray(sw_ver_char.value)))]))
+    except:
+        print("No response from device")
+        return
+
 
     return device, rx_char, tx_char
 
