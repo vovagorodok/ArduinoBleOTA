@@ -150,7 +150,8 @@ def try_upload(rx_char, tx_char, path):
     time = datetime.datetime.now()
 
     try:
-        upload(rx_char, tx_char, path)
+        if not upload(rx_char, tx_char, path):
+            return False
     except:
         print("No response from device")
         return False
