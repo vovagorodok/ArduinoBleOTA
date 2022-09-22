@@ -111,7 +111,6 @@ def connect(dev):
     return device, rx_char, tx_char
 
 def upload(rx_char, tx_char, path):
-    time = datetime.datetime.now()
     crc = 0
     uploaded_len = 0
     firmware_len = file_size(path)
@@ -145,6 +144,17 @@ def upload(rx_char, tx_char, path):
     if not handleResponse(tx_char.value):
         return False
 
+    return True
+
+def try_upload(rx_char, tx_char, path):
+    time = datetime.datetime.now()
+
+    try:
+        upload(rx_char, tx_char, path)
+    except:
+        print("No response from device")
+        return False
+
     upload_time = datetime.datetime.now() - time
     print("Installing. Upload time: " + str(upload_time))
     return True
@@ -155,7 +165,7 @@ def connect_and_upload(dev, path):
         return
     device, rx_char, tx_char = res
 
-    if not upload(rx_char, tx_char, path):
+    if not try_upload(rx_char, tx_char, path):
         device.disconnect()
         return
     device.disconnect()
