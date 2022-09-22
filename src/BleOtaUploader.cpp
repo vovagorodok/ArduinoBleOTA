@@ -83,7 +83,7 @@ void BleOtaUploader::handleBegin(const uint8_t* data, size_t length)
         return;
     }
 
-    if (storage->maxSize() and currentLength > storage->maxSize())
+    if (storage->maxSize() and firmwareLength > storage->maxSize())
     {
         terminateUpload();
         send(INCORRECT_FIRMWARE_SIZE);
