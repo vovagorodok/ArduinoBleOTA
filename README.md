@@ -9,6 +9,9 @@ software/hardware type/version indication.
 python3 tools/uploader.py .pio/build/esp32dev/firmware.bin
 ```
 
+## Mobile/web application
+https://github.com/vovagorodok/ble_ota_app
+
 ## Documentation
 Advanced usage at `ADVANCED.md`.\
 More about uuids advertising at `ADVERTISING.md`.\
