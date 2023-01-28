@@ -10,7 +10,6 @@ python3 tools/uploader.py .pio/build/esp32dev/firmware.bin
 ```
 
 ## Upload by mobile/web/desktop application
-Under development of additional features, but basic solution (upload from file) already there:\
 https://github.com/vovagorodok/ble_ota_app
 
 ## Documentation
