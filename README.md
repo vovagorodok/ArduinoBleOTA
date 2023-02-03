@@ -4,6 +4,12 @@ Simple library for upload firmware over Bluetooth.
 Has built in checksum integrity protection and
 software/hardware type/version indication.
 
+By default `ArduinoBLE` is used. If `NimBLE-Arduino` is used, add to platformio.ini:
+```
+build_flags = 
+	-D USE_NIM_BLE_ARDUINO_LIB
+```
+
 ## Upload by python script
 ```
 python3 tools/uploader.py .pio/build/esp32dev/firmware.bin
