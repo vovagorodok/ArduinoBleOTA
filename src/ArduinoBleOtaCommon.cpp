@@ -1,5 +1,4 @@
-#include "BleOtaDefines.h"
-#if defined(ARDUINO_BLE_LIB)
+#if !defined(USE_NIM_BLE_ARDUINO_LIB)
 #include "ArduinoBleOtaCommon.h"
 #include "BleOtaUploader.h"
 #include "BleOtaUuids.h"
