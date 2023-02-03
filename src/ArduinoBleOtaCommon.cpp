@@ -58,9 +58,10 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
     service.addCharacteristic(rxCharacteristic);
     service.addCharacteristic(txCharacteristic);
     rxCharacteristic.setEventHandler(BLEWritten, onWrite);
-    BLE.addService(service);
 
     begin(hwName, hwVersion, swName, swVersion);
+
+    BLE.addService(service);
 
     return BLE.setAdvertisedService(service);
 }
