@@ -24,5 +24,7 @@
 constexpr auto BLE_OTA_ATTR_OVERHEAD = BLE_OTA_MAX_MTU_SIZE - BLE_OTA_MAX_ATTR_SIZE;
 constexpr auto BLE_OTA_MTU_SIZE = BLE_OTA_ATTRIBUTE_SIZE + BLE_OTA_ATTR_OVERHEAD;
 
-static_assert(BLE_OTA_MTU_SIZE >= BLE_OTA_MIN_MTU_SIZE);
-static_assert(BLE_OTA_MTU_SIZE <= BLE_OTA_MAX_MTU_SIZE);
+static_assert(BLE_OTA_MTU_SIZE >= BLE_OTA_MIN_MTU_SIZE,
+    "OTA MTU size should be greater than minimum size.");
+static_assert(BLE_OTA_MTU_SIZE <= BLE_OTA_MAX_MTU_SIZE,
+    "OTA MTU size should be less than maximum size.");
