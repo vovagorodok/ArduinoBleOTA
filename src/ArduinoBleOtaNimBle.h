@@ -5,7 +5,7 @@
 
 class BleOtaUploader;
 
-class ArduinoBleOTAClass: public BLECharacteristicCallbacks
+class ArduinoBleOTAClass: public BLECharacteristicCallbacks, public BLEServerCallbacks
 {
 public:
     bool begin(const std::string& deviceName, OTAStorage& storage);
@@ -25,6 +25,7 @@ private:
                const std::string& swName, BleOtaVersion swVersion);
     void onWrite(BLECharacteristic* characteristic) override;
     void send(const uint8_t* data, size_t length);
+    void onConnect(BLEServer* pServer, ble_gap_conn_desc* desc) override;
     BLECharacteristic* txCharacteristic;
 };
 

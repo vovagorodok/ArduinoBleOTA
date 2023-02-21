@@ -25,6 +25,9 @@ bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storag
                                const std::string& swName, BleOtaVersion swVersion)
 {
     BLEDevice::init(deviceName);
+    BLEDevice::setSecurityPasskey(123456);
+    BLEDevice::setSecurityAuth(true, true, true);
+    BLEDevice::setSecurityIOCap(BLE_HS_IO_DISPLAY_ONLY);
     auto* server = BLEDevice::createServer();
 
     if(!begin(storage, hwName, hwVersion, swName, swVersion))
@@ -43,6 +46,7 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
 {
     auto* server = BLEDevice::createServer();
     BLEDevice::setMTU(BLE_OTA_MTU_SIZE);
+    server->setCallbacks(this);
 
     bleOtaUploader.begin(storage);
     auto* service = server->createService(BLE_OTA_SERVICE_UUID);
@@ -110,6 +114,11 @@ void ArduinoBleOTAClass::send(const uint8_t* data, size_t length)
 {
     txCharacteristic->setValue(data, length);
     txCharacteristic->notify();
+}
+
+void ArduinoBleOTAClass::onConnect(BLEServer* pServer, ble_gap_conn_desc* desc)
+{
+    BLEDevice::startSecurity(desc->conn_handle);
 }
 
 ArduinoBleOTAClass ArduinoBleOTA{};
