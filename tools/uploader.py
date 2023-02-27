@@ -112,7 +112,6 @@ def connect(dev):
         print("No response from device")
         return
 
-
     return device, rx_char, tx_char
 
 def upload(rx_char, tx_char, path):
