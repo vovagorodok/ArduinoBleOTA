@@ -1,4 +1,4 @@
-#if defined(USE_NIM_BLE_ARDUINO_LIB)
+#ifdef USE_NIM_BLE_ARDUINO_LIB
 #include "ArduinoBleOtaNimBle.h"
 #include "BleOtaUploader.h"
 #include "BleOtaUuids.h"

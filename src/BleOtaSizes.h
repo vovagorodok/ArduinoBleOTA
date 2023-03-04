@@ -1,7 +1,7 @@
 #pragma once
 #include <ArduinoBleOTA.h>
 
-#if defined(USE_NIM_BLE_ARDUINO_LIB)
+#ifdef USE_NIM_BLE_ARDUINO_LIB
     #define BLE_OTA_MIN_MTU_SIZE BLE_ATT_MTU_DFLT
     #define BLE_OTA_MAX_MTU_SIZE BLE_ATT_MTU_MAX
     #define BLE_OTA_MAX_ATTR_SIZE BLE_ATT_ATTR_MAX_LEN

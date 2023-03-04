@@ -20,14 +20,14 @@ BleOtaSecurityOnConnect security;
 void setup() {
   ArduinoBleOTA.begin(DEVICE_NAME, InternalStorage, HW_NAME, HW_VER, SW_NAME, SW_VER);
 
-  #ifdef USE_NIM_BLE_ARDUINO_LIB
+#ifdef USE_NIM_BLE_ARDUINO_LIB
   ArduinoBleOTA.setSecurity(security);
   security.begin();
-  #endif
+#endif
 }
 
 void loop() {
-#if defined(BLE_PULL_REQUIRED)
+#ifndef USE_NIM_BLE_ARDUINO_LIB
   BLE.poll();
 #endif
   ArduinoBleOTA.pull();

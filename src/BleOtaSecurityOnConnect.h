@@ -1,6 +1,6 @@
 #pragma once
 #include "BleOtaSecurity.h"
-#if defined(USE_NIM_BLE_ARDUINO_LIB)
+#ifdef USE_NIM_BLE_ARDUINO_LIB
 #include <NimBLEDevice.h>
 #include <Preferences.h>
 
