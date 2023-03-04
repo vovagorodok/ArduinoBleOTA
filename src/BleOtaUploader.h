@@ -18,6 +18,8 @@ private:
     void handleBegin(const uint8_t* data, size_t length);
     void handlePackage(const uint8_t* data, size_t length);
     void handleEnd(const uint8_t* data, size_t length);
+    void handleSetPin(const uint8_t* data, size_t length);
+    void handleRemovePin(const uint8_t* data, size_t length);
     void handleInstall();
     void send(uint8_t head);
     void send(const uint8_t* data, size_t length);

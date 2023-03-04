@@ -15,6 +15,9 @@ namespace
 #define PACKAGE 0x11
 #define END 0x12
 
+#define SET_PIN 0x20
+#define REMOVE_PIN 0x21
+
 #pragma pack(push, 1)
 struct BeginResponse
 {
@@ -57,6 +60,12 @@ void BleOtaUploader::onData(const uint8_t* data, size_t length)
         break;
     case END:
         handleEnd(data + 1, length - 1);
+        break;
+    case SET_PIN:
+        handleSetPin(data + 1, length - 1);
+        break;
+    case REMOVE_PIN:
+        handleRemovePin(data + 1, length - 1);
         break;
     default:
         send(INCORRECT_FORMAT);
@@ -167,6 +176,39 @@ void BleOtaUploader::handleEnd(const uint8_t* data, size_t length)
 
     installing = true;
     send(OK);
+}
+
+void BleOtaUploader::handleSetPin(const uint8_t* data, size_t length)
+{
+    if (uploading)
+    {
+        send(NOK);
+        return;
+    }
+    if (length != sizeof(uint32_t))
+    {
+        send(INCORRECT_FORMAT);
+        return;
+    }
+
+    auto pin = addrToRef<uint32_t>(data);
+    ArduinoBleOTA.security->setPin(pin) ? send(OK) : send(NOK);
+}
+
+void BleOtaUploader::handleRemovePin(const uint8_t* data, size_t length)
+{
+    if (uploading)
+    {
+        send(NOK);
+        return;
+    }
+    if (length)
+    {
+        send(INCORRECT_FORMAT);
+        return;
+    }
+
+    ArduinoBleOTA.security->removePin() ? send(OK) : send(NOK);
 }
 
 void BleOtaUploader::handleInstall()

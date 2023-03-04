@@ -15,7 +15,7 @@ BLEStringCharacteristic swNameCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_NAME
 BLECharacteristic hwVerCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_VER, BLERead, sizeof(BleOtaVersion), true);
 BLECharacteristic swVerCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_VER, BLERead, sizeof(BleOtaVersion), true);
 
-constexpr auto UNKNOWN = "UNKNOWN";
+static BleOtaSecurity dummySecurity{};
 
 void onWrite(BLEDevice central, BLECharacteristic characteristic)
 {
@@ -23,15 +23,9 @@ void onWrite(BLEDevice central, BLECharacteristic characteristic)
 }
 }
 
-bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage)
-{
-    return begin(deviceName, storage, UNKNOWN, {}, UNKNOWN, {});
-}
-
-bool ArduinoBleOTAClass::begin(OTAStorage& storage)
-{
-    return begin(storage, UNKNOWN, {}, UNKNOWN, {});
-}
+ArduinoBleOTAClass::ArduinoBleOTAClass() :
+    security(&dummySecurity)
+{}
 
 bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage,
                                const String& hwName, BleOtaVersion hwVersion,
@@ -76,6 +70,11 @@ void ArduinoBleOTAClass::begin(const String& hwName, BleOtaVersion hwVersion,
     hwVerCharacteristic.setValue(refToAddr(hwVersion), sizeof(BleOtaVersion));
     service.addCharacteristic(swVerCharacteristic);
     swVerCharacteristic.setValue(refToAddr(swVersion), sizeof(BleOtaVersion));
+}
+
+void ArduinoBleOTAClass::setSecurity(BleOtaSecurity& callbacks)
+{
+    security = &callbacks;
 }
 
 void ArduinoBleOTAClass::pull()
