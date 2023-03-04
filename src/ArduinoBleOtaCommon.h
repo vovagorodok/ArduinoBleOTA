@@ -1,6 +1,7 @@
 #pragma once
 #include "BleOtaStorage.h"
 #include "BleOtaVersion.h"
+#include "BleOtaSecurity.h"
 #include <ArduinoBLE.h>
 
 class BleOtaUploader;
@@ -8,14 +9,20 @@ class BleOtaUploader;
 class ArduinoBleOTAClass
 {
 public:
-    bool begin(const String& deviceName, OTAStorage& storage);
-    bool begin(OTAStorage& storage);
-    bool begin(const String& deviceName, OTAStorage& storage,
-               const String& hwName, BleOtaVersion hwVersion,
-               const String& swName, BleOtaVersion swVersion);
+    ArduinoBleOTAClass();
+
+    bool begin(const String& deviceName,
+               OTAStorage& storage,
+               const String& hwName = {},
+               BleOtaVersion hwVersion = {},
+               const String& swName = {},
+               BleOtaVersion swVersion = {});
     bool begin(OTAStorage& storage,
-               const String& hwName, BleOtaVersion hwVersion,
-               const String& swName, BleOtaVersion swVersion);
+               const String& hwName = {},
+               BleOtaVersion hwVersion = {},
+               const String& swName = {},
+               BleOtaVersion swVersion = {});
+    void setSecurity(BleOtaSecurity& callbacks);
     void pull();
 
 private:
@@ -23,6 +30,8 @@ private:
     void begin(const String &hwName, BleOtaVersion hwVersion,
                const String &swName, BleOtaVersion swVersion);
     void send(const uint8_t* data, size_t length);
+
+    BleOtaSecurity* security;
 };
 
 extern ArduinoBleOTAClass ArduinoBleOTA;

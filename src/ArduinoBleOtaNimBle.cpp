@@ -1,4 +1,4 @@
-#if defined(USE_NIM_BLE_ARDUINO_LIB)
+#ifdef USE_NIM_BLE_ARDUINO_LIB
 #include "ArduinoBleOtaNimBle.h"
 #include "BleOtaUploader.h"
 #include "BleOtaUuids.h"
@@ -7,18 +7,13 @@
 
 namespace
 {
-constexpr auto UNKNOWN = "UNKNOWN";
+static BleOtaSecurity dummySecurity{};
 }
 
-bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage)
-{
-    return begin(deviceName, storage, UNKNOWN, {}, UNKNOWN, {});
-}
-
-bool ArduinoBleOTAClass::begin(OTAStorage& storage)
-{
-    return begin(storage, UNKNOWN, {}, UNKNOWN, {});
-}
+ArduinoBleOTAClass::ArduinoBleOTAClass() :
+    txCharacteristic(),
+    security(&dummySecurity)
+{}
 
 bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage,
                                const std::string& hwName, BleOtaVersion hwVersion,
@@ -90,6 +85,11 @@ void ArduinoBleOTAClass::begin(BLEService& service,
         NIMBLE_PROPERTY::READ
     );
     swVerCharacteristic->setValue(refToAddr(swVersion), sizeof(BleOtaVersion));
+}
+
+void ArduinoBleOTAClass::setSecurity(BleOtaSecurity& callbacks)
+{
+    security = &callbacks;
 }
 
 void ArduinoBleOTAClass::pull()
