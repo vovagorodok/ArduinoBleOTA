@@ -192,7 +192,7 @@ void BleOtaUploader::handleSetPin(const uint8_t* data, size_t length)
     }
 
     auto pin = addrToRef<uint32_t>(data);
-    ArduinoBleOTA.security->setPin(pin) ? send(OK) : send(NOK);
+    send(ArduinoBleOTA.security->setPin(pin) ? OK : NOK);
 }
 
 void BleOtaUploader::handleRemovePin(const uint8_t* data, size_t length)
@@ -208,7 +208,7 @@ void BleOtaUploader::handleRemovePin(const uint8_t* data, size_t length)
         return;
     }
 
-    ArduinoBleOTA.security->removePin() ? send(OK) : send(NOK);
+    send(ArduinoBleOTA.security->removePin() ? OK : NOK);
 }
 
 void BleOtaUploader::handleInstall()
