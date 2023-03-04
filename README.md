@@ -21,7 +21,8 @@ https://github.com/vovagorodok/ble_ota_app
 ## Documentation
 Advanced usage at `ADVANCED.md`.\
 More about uuids advertising at `ADVERTISING.md`.\
-More about protocol at `PROTOCOL.md`.
+More about protocol at `PROTOCOL.md`.\
+More about security at `SECURITY.md`.
 
 ## Opened discussions
 https://github.com/JAndrassy/ArduinoOTA/discussions/157 \
