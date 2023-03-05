@@ -53,7 +53,7 @@ public:
         return result;
     }
 
-    void onConnect(BLEServer* pServer, ble_gap_conn_desc* desc) override
+    void onConnect(BLEServer* srv, ble_gap_conn_desc* desc) override
     {
         BLEDevice::startSecurity(desc->conn_handle);
     }
