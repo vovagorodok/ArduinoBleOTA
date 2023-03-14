@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef USE_NIM_BLE_ARDUINO_LIB
-#include "ArduinoBleOtaNimBle.h"
+#include "ArduinoBleOtaClassNimBle.h"
 #else
-#include "ArduinoBleOtaCommon.h"
+#include "ArduinoBleOtaClass.h"
 #endif

@@ -1,5 +1,5 @@
 #ifndef USE_NIM_BLE_ARDUINO_LIB
-#include "ArduinoBleOtaCommon.h"
+#include "ArduinoBleOtaClass.h"
 #include "BleOtaUploader.h"
 #include "BleOtaUuids.h"
 #include "BleOtaUtils.h"
