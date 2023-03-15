@@ -1,5 +1,8 @@
 ## Overal
-Security uses same protocol. Additional head codes are used:
+There are possibilities to disable uploads or change pin.
+
+## Change Pin
+Can be used additional head codes:
 ```
 SET_PIN 0x20
 REMOVE_PIN 0x21
