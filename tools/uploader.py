@@ -20,6 +20,7 @@ INCORRECT_FORMAT = 0x02
 INCORRECT_FIRMWARE_SIZE = 0x03
 CHECKSUM_ERROR = 0x04
 INTERNAL_STORAGE_ERROR = 0x05
+UPLOAD_DISABLED = 0x06
 
 BEGIN = 0x10
 PACKAGE = 0x11
@@ -30,7 +31,8 @@ respToStr = {
     INCORRECT_FORMAT: "Incorrect format",
     INCORRECT_FIRMWARE_SIZE: "Incorrect firmware size",
     CHECKSUM_ERROR: "Checksum error",
-    INTERNAL_STORAGE_ERROR: "Internal storage error"
+    INTERNAL_STORAGE_ERROR: "Internal storage error",
+    UPLOAD_DISABLED: "Upload disabled"
 }
 
 U8_BYTES_NUM = 1
