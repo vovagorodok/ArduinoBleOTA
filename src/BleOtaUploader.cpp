@@ -89,6 +89,7 @@ void BleOtaUploader::handleBegin(const uint8_t* data, size_t length)
         send(UPLOAD_DISABLED);
         return;
     }
+
     if (length != sizeof(uint32_t))
     {
         send(INCORRECT_FORMAT);
