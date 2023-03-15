@@ -29,7 +29,8 @@ ArduinoBleOTAClass::ArduinoBleOTAClass() :
 
 bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage,
                                const String& hwName, BleOtaVersion hwVersion,
-                               const String& swName, BleOtaVersion swVersion)
+                               const String& swName, BleOtaVersion swVersion,
+                               bool enable)
 {
     if (!BLE.begin())
         return false;
@@ -37,7 +38,7 @@ bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage,
     BLE.setLocalName(deviceName.c_str());
     BLE.setDeviceName(deviceName.c_str());
 
-    if(!begin(storage, hwName, hwVersion, swName, swVersion))
+    if(!begin(storage, hwName, hwVersion, swName, swVersion, enable))
         return false;
 
     return BLE.advertise();
@@ -45,9 +46,11 @@ bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage,
 
 bool ArduinoBleOTAClass::begin(OTAStorage& storage,
                                const String& hwName, BleOtaVersion hwVersion,
-                               const String& swName, BleOtaVersion swVersion)
+                               const String& swName, BleOtaVersion swVersion,
+                               bool enable)
 {
     bleOtaUploader.begin(storage);
+    bleOtaUploader.setEnabling(enable);
     service.addCharacteristic(rxCharacteristic);
     service.addCharacteristic(txCharacteristic);
     rxCharacteristic.setEventHandler(BLEWritten, onWrite);
@@ -72,14 +75,24 @@ void ArduinoBleOTAClass::begin(const String& hwName, BleOtaVersion hwVersion,
     swVerCharacteristic.setValue(refToAddr(swVersion), sizeof(BleOtaVersion));
 }
 
-void ArduinoBleOTAClass::setSecurity(BleOtaSecurity& callbacks)
-{
-    security = &callbacks;
-}
-
 void ArduinoBleOTAClass::pull()
 {
     bleOtaUploader.pull();
+}
+
+void ArduinoBleOTAClass::enable()
+{
+    bleOtaUploader.setEnabling(true);
+}
+
+void ArduinoBleOTAClass::disable()
+{
+    bleOtaUploader.setEnabling(false);
+}
+
+void ArduinoBleOTAClass::setSecurity(BleOtaSecurity& callbacks)
+{
+    security = &callbacks;
 }
 
 void ArduinoBleOTAClass::send(const uint8_t* data, size_t length)

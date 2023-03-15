@@ -10,6 +10,7 @@ namespace
 #define INCORRECT_FIRMWARE_SIZE 0x03
 #define CHECKSUM_ERROR 0x04
 #define INTERNAL_STORAGE_ERROR 0x05
+#define UPLOAD_DISABLED 0x06
 
 #define BEGIN 0x10
 #define PACKAGE 0x11
@@ -37,6 +38,11 @@ void BleOtaUploader::pull()
 {
     if (installing)
         handleInstall();
+}
+
+void BleOtaUploader::setEnabling(bool enabling)
+{
+    enabled = enabling;
 }
 
 void BleOtaUploader::onData(const uint8_t* data, size_t length)
@@ -78,6 +84,11 @@ void BleOtaUploader::handleBegin(const uint8_t* data, size_t length)
     if (uploading)
         terminateUpload();
 
+    if (not enabled)
+    {
+        send(UPLOAD_DISABLED);
+        return;
+    }
     if (length != sizeof(uint32_t))
     {
         send(INCORRECT_FORMAT);

@@ -16,14 +16,19 @@ public:
                const String& hwName = {},
                BleOtaVersion hwVersion = {},
                const String& swName = {},
-               BleOtaVersion swVersion = {});
+               BleOtaVersion swVersion = {},
+               bool enable = true);
     bool begin(OTAStorage& storage,
                const String& hwName = {},
                BleOtaVersion hwVersion = {},
                const String& swName = {},
-               BleOtaVersion swVersion = {});
-    void setSecurity(BleOtaSecurity& callbacks);
+               BleOtaVersion swVersion = {},
+               bool enable = true);
     void pull();
+
+    void enable();
+    void disable();
+    void setSecurity(BleOtaSecurity& callbacks);
 
 private:
     friend BleOtaUploader;

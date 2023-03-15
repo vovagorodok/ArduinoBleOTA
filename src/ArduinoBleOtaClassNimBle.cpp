@@ -17,12 +17,13 @@ ArduinoBleOTAClass::ArduinoBleOTAClass() :
 
 bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage,
                                const std::string& hwName, BleOtaVersion hwVersion,
-                               const std::string& swName, BleOtaVersion swVersion)
+                               const std::string& swName, BleOtaVersion swVersion,
+                               bool enable)
 {
     BLEDevice::init(deviceName);
     auto* server = BLEDevice::createServer();
 
-    if(!begin(storage, hwName, hwVersion, swName, swVersion))
+    if(!begin(storage, hwName, hwVersion, swName, swVersion, enable))
         return false;
 
     auto* advertising = server->getAdvertising();
@@ -34,12 +35,14 @@ bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storag
 
 bool ArduinoBleOTAClass::begin(OTAStorage& storage,
                                const std::string& hwName, BleOtaVersion hwVersion,
-                               const std::string& swName, BleOtaVersion swVersion)
+                               const std::string& swName, BleOtaVersion swVersion,
+                               bool enable)
 {
     auto* server = BLEDevice::createServer();
     BLEDevice::setMTU(BLE_OTA_MTU_SIZE);
 
     bleOtaUploader.begin(storage);
+    bleOtaUploader.setEnabling(enable);
     auto* service = server->createService(BLE_OTA_SERVICE_UUID);
 
     auto* rxCharacteristic = service->createCharacteristic(
@@ -87,14 +90,24 @@ void ArduinoBleOTAClass::begin(BLEService& service,
     swVerCharacteristic->setValue(refToAddr(swVersion), sizeof(BleOtaVersion));
 }
 
-void ArduinoBleOTAClass::setSecurity(BleOtaSecurity& callbacks)
-{
-    security = &callbacks;
-}
-
 void ArduinoBleOTAClass::pull()
 {
     bleOtaUploader.pull();
+}
+
+void ArduinoBleOTAClass::enable()
+{
+    bleOtaUploader.setEnabling(true);
+}
+
+void ArduinoBleOTAClass::disable()
+{
+    bleOtaUploader.setEnabling(false);
+}
+
+void ArduinoBleOTAClass::setSecurity(BleOtaSecurity& callbacks)
+{
+    security = &callbacks;
 }
 
 void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)

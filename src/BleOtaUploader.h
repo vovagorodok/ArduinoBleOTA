@@ -12,6 +12,7 @@ class BleOtaUploader
 public:
     void begin(OTAStorage& storage);
     void pull();
+    void setEnabling(bool enabling);
     void onData(const uint8_t* data, size_t length);
 
 private:
@@ -32,6 +33,7 @@ private:
     OTAStorage* storage;
     uint32_t currentLength;
     uint32_t firmwareLength = 0;
+    bool enabled = false;
     bool uploading = false;
     bool installing = false;
 #ifndef BLE_OTA_NO_BUFFER
