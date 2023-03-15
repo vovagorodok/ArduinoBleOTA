@@ -29,6 +29,20 @@ struct BeginResponse
 #pragma pack(pop)
 }
 
+BleOtaUploader::BleOtaUploader() :
+    crc(),
+    storage(nullptr),
+#ifndef BLE_OTA_NO_BUFFER
+    buffer(),
+    withBuffer(true),
+#endif
+    enabled(false),
+    uploading(false),
+    installing(false),
+    currentLength(),
+    firmwareLength()
+{}
+
 void BleOtaUploader::begin(OTAStorage& storage)
 {
     this->storage = &storage;

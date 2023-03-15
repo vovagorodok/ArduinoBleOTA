@@ -10,6 +10,8 @@
 class BleOtaUploader
 {
 public:
+    BleOtaUploader();
+
     void begin(OTAStorage& storage);
     void pull();
     void setEnabling(bool enabling);
@@ -29,17 +31,18 @@ private:
 #ifndef BLE_OTA_NO_BUFFER
     void flushBuffer();
 #endif
+
     CRC32 crc;
     OTAStorage* storage;
-    uint32_t currentLength;
-    uint32_t firmwareLength = 0;
-    bool enabled = false;
-    bool uploading = false;
-    bool installing = false;
 #ifndef BLE_OTA_NO_BUFFER
-    bool withBuffer = true;
     CircularBuffer<uint8_t, BLE_OTA_BUFFER_SIZE> buffer;
+    bool withBuffer;
 #endif
+    bool enabled;
+    bool uploading;
+    bool installing;
+    uint32_t currentLength;
+    uint32_t firmwareLength;
 };
 
 extern BleOtaUploader bleOtaUploader;
