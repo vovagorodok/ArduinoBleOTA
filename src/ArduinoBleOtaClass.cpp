@@ -30,7 +30,7 @@ ArduinoBleOTAClass::ArduinoBleOTAClass() :
 bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage,
                                const String& hwName, BleOtaVersion hwVersion,
                                const String& swName, BleOtaVersion swVersion,
-                               bool enable)
+                               bool enableUpload)
 {
     if (!BLE.begin())
         return false;
@@ -38,7 +38,7 @@ bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage,
     BLE.setLocalName(deviceName.c_str());
     BLE.setDeviceName(deviceName.c_str());
 
-    if(!begin(storage, hwName, hwVersion, swName, swVersion, enable))
+    if(!begin(storage, hwName, hwVersion, swName, swVersion, enableUpload))
         return false;
 
     return BLE.advertise();
@@ -47,10 +47,10 @@ bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage,
 bool ArduinoBleOTAClass::begin(OTAStorage& storage,
                                const String& hwName, BleOtaVersion hwVersion,
                                const String& swName, BleOtaVersion swVersion,
-                               bool enable)
+                               bool enableUpload)
 {
     bleOtaUploader.begin(storage);
-    bleOtaUploader.setEnabling(enable);
+    bleOtaUploader.setEnabling(enableUpload);
     service.addCharacteristic(rxCharacteristic);
     service.addCharacteristic(txCharacteristic);
     rxCharacteristic.setEventHandler(BLEWritten, onWrite);
@@ -80,12 +80,12 @@ void ArduinoBleOTAClass::pull()
     bleOtaUploader.pull();
 }
 
-void ArduinoBleOTAClass::enable()
+void ArduinoBleOTAClass::enableUpload()
 {
     bleOtaUploader.setEnabling(true);
 }
 
-void ArduinoBleOTAClass::disable()
+void ArduinoBleOTAClass::disableUpload()
 {
     bleOtaUploader.setEnabling(false);
 }

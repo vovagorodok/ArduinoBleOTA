@@ -17,17 +17,17 @@ public:
                BleOtaVersion hwVersion = {},
                const String& swName = {},
                BleOtaVersion swVersion = {},
-               bool enable = true);
+               bool enableUpload = true);
     bool begin(OTAStorage& storage,
                const String& hwName = {},
                BleOtaVersion hwVersion = {},
                const String& swName = {},
                BleOtaVersion swVersion = {},
-               bool enable = true);
+               bool enableUpload = true);
     void pull();
 
-    void enable();
-    void disable();
+    void enableUpload();
+    void disableUpload();
     void setSecurity(BleOtaSecurity& callbacks);
 
 private:

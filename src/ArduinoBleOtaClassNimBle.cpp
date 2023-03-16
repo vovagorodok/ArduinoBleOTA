@@ -18,12 +18,12 @@ ArduinoBleOTAClass::ArduinoBleOTAClass() :
 bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage,
                                const std::string& hwName, BleOtaVersion hwVersion,
                                const std::string& swName, BleOtaVersion swVersion,
-                               bool enable)
+                               bool enableUpload)
 {
     BLEDevice::init(deviceName);
     auto* server = BLEDevice::createServer();
 
-    if(!begin(storage, hwName, hwVersion, swName, swVersion, enable))
+    if(!begin(storage, hwName, hwVersion, swName, swVersion, enableUpload))
         return false;
 
     auto* advertising = server->getAdvertising();
@@ -36,13 +36,13 @@ bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storag
 bool ArduinoBleOTAClass::begin(OTAStorage& storage,
                                const std::string& hwName, BleOtaVersion hwVersion,
                                const std::string& swName, BleOtaVersion swVersion,
-                               bool enable)
+                               bool enableUpload)
 {
     auto* server = BLEDevice::createServer();
     BLEDevice::setMTU(BLE_OTA_MTU_SIZE);
 
     bleOtaUploader.begin(storage);
-    bleOtaUploader.setEnabling(enable);
+    bleOtaUploader.setEnabling(enableUpload);
     auto* service = server->createService(BLE_OTA_SERVICE_UUID);
 
     auto* rxCharacteristic = service->createCharacteristic(
@@ -95,12 +95,12 @@ void ArduinoBleOTAClass::pull()
     bleOtaUploader.pull();
 }
 
-void ArduinoBleOTAClass::enable()
+void ArduinoBleOTAClass::enableUpload()
 {
     bleOtaUploader.setEnabling(true);
 }
 
-void ArduinoBleOTAClass::disable()
+void ArduinoBleOTAClass::disableUpload()
 {
     bleOtaUploader.setEnabling(false);
 }
