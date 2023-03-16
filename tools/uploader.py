@@ -110,8 +110,8 @@ def connect(dev):
                         "VER: " + str(list(bytearray(hw_ver_char.value))),
                         "SW: "  + str(bytearray(sw_name_char.value), 'utf-8'),
                         "VER: " + str(list(bytearray(sw_ver_char.value)))]))
-    except:
-        print("No response from device")
+    except Exception as e:
+        print(e)
         return
 
     return device, rx_char, tx_char
@@ -158,8 +158,8 @@ def try_upload(rx_char, tx_char, path):
     try:
         if not upload(rx_char, tx_char, path):
             return False
-    except:
-        print("No response from device")
+    except Exception as e:
+        print(e)
         return False
 
     upload_time = datetime.datetime.now() - time
