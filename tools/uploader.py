@@ -82,7 +82,7 @@ def handleBeginResponse(resp):
     respList = list(bytearray(resp))
     head = respList[HEAD_POS]
     if head != OK:
-        print(respToStr[resp])
+        print(respToStr[head])
         return
 
     if len(respList) != BEGIN_RESP_BYTES_NUM:
