@@ -4,9 +4,7 @@ void setup() {
   ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
 
   for (int i = 0; i < 5000; i++) {
-#ifndef USE_NIM_BLE_ARDUINO_LIB
-    BLE.poll();
-#endif
+    loop();
     delay(1);
   }
   
