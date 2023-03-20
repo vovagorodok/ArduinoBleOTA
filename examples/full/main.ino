@@ -4,13 +4,13 @@
 #define DEVICE_NAME "ArduinoBleOTA"
 
 #ifdef ESP32
-  #define HW_NAME "Example Hardware ESP32"
+  #define HW_NAME "Example ESP32"
 #else
-  #define HW_NAME "Example Hardware"
+  #define HW_NAME "Example HW"
 #endif
 
 #define HW_VER {1, 0, 0}
-#define SW_NAME "Example Software"
+#define SW_NAME "Example SW"
 #define SW_VER {1, 0, 0}
 
 #ifdef USE_NIM_BLE_ARDUINO_LIB

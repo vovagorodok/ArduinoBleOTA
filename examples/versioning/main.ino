@@ -1,9 +1,9 @@
 #include <ArduinoBleOTA.h>
 
 #define DEVICE_NAME "ArduinoBleOTA"
-#define HW_NAME "Hardware"
+#define HW_NAME "Example HW"
 #define HW_VER {1, 0, 0}
-#define SW_NAME "Software"
+#define SW_NAME "Example SW"
 #define SW_VER {1, 0, 0}
 
 void setup() {
