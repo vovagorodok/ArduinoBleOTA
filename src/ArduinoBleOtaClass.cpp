@@ -4,7 +4,6 @@
 #include "BleOtaUuids.h"
 #include "BleOtaUtils.h"
 #include "BleOtaSizes.h"
-#include <utility/ATT.h>
 
 namespace
 {
@@ -50,7 +49,6 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
                                const String& swName, BleOtaVersion swVersion,
                                bool enableUpload)
 {
-    ATT.setMaxMtu(BLE_OTA_MTU_SIZE);
     bleOtaUploader.begin(storage);
     bleOtaUploader.setEnabling(enableUpload);
     service.addCharacteristic(rxCharacteristic);
