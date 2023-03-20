@@ -4,9 +4,9 @@
 #define DEVICE_NAME "ArduinoBleOTA"
 
 #ifdef ESP32
-  #define HW_NAME "Example Hardware"
+  #define HW_NAME "Example Hardware ESP32"
 #else
-  #define HW_NAME "Hardware"
+  #define HW_NAME "Example Hardware"
 #endif
 
 #define HW_VER {1, 0, 0}
