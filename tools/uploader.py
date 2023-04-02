@@ -113,17 +113,17 @@ def connect(dev):
     sw_ver_char = device.add_characteristic(
         BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
 
-    print("Connecting to " + dev.alias)
+    print(f"Connecting to {dev.alias}")
     device.connect()
     if not device.connected:
         print("Didn't connect to device!")
         return
 
     try:
-        print(", ".join(["HW: " + str(bytearray(hw_name_char.value), 'utf-8'),
-                         "VER: " + str(list(bytearray(hw_ver_char.value))),
-                         "SW: " + str(bytearray(sw_name_char.value), 'utf-8'),
-                         "VER: " + str(list(bytearray(sw_ver_char.value)))]))
+        print(", ".join([f"HW: {str(bytearray(hw_name_char.value), 'utf-8')}",
+                         f"VER: {list(bytearray(hw_ver_char.value))}",
+                         f"SW: {str(bytearray(sw_name_char.value), 'utf-8')}",
+                         f"VER: {list(bytearray(sw_ver_char.value))}"]))
     except Exception as e:
         print(e)
         return
@@ -142,8 +142,7 @@ def upload(rx_char, tx_char, path):
     if not begin_resp:
         return False
     attr_size, buffer_size = begin_resp
-    print("Begin upload: attr size: " + str(attr_size) +
-          ", buffer size: " + str(buffer_size))
+    print(f"Begin upload: attr size: {attr_size}, buffer size: {buffer_size}")
 
     with open(path, 'rb') as f:
         while True:
@@ -160,7 +159,7 @@ def upload(rx_char, tx_char, path):
 
             uploaded_len += len(data)
             crc = zlib.crc32(data, crc)
-            print("Uploaded: " + str(uploaded_len) + "/" + str(firmware_len))
+            print(f"Uploaded: {uploaded_len}/{firmware_len}")
 
     rx_char.value = int_to_u8_bytes(END) + int_to_u32_bytes(crc)
     if not handleResponse(tx_char.value):
@@ -180,7 +179,7 @@ def try_upload(rx_char, tx_char, path):
         return False
 
     upload_time = datetime.datetime.now() - time
-    print("Installing. Upload time: " + str(upload_time))
+    print(f"Installing. Upload time: {upload_time}")
     return True
 
 
