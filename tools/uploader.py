@@ -6,13 +6,13 @@ import zlib
 import os
 import datetime
 
-BLE_OTA_SERVICE_UUID                = "15c155ca-36c5-11ed-adc0-9741d6a72f04"
-BLE_OTA_CHARACTERISTIC_UUID_RX      = "15c1564c-36c5-11ed-adc1-a3d6cf5cc2a4"
-BLE_OTA_CHARACTERISTIC_UUID_TX      = "15c156e2-36c5-11ed-adc2-7396d4fd413a"
+BLE_OTA_SERVICE_UUID = "15c155ca-36c5-11ed-adc0-9741d6a72f04"
+BLE_OTA_CHARACTERISTIC_UUID_RX = "15c1564c-36c5-11ed-adc1-a3d6cf5cc2a4"
+BLE_OTA_CHARACTERISTIC_UUID_TX = "15c156e2-36c5-11ed-adc2-7396d4fd413a"
 BLE_OTA_CHARACTERISTIC_UUID_HW_NAME = "15c1576e-36c5-11ed-adc3-8799895de51e"
-BLE_OTA_CHARACTERISTIC_UUID_HW_VER  = "15c157fa-36c5-11ed-adc4-579c60267b47"
+BLE_OTA_CHARACTERISTIC_UUID_HW_VER = "15c157fa-36c5-11ed-adc4-579c60267b47"
 BLE_OTA_CHARACTERISTIC_UUID_SW_NAME = "15c15886-36c5-11ed-adc5-1bc0d0a6069d"
-BLE_OTA_CHARACTERISTIC_UUID_SW_VER  = "15c1591c-36c5-11ed-adc6-dbe9603dbf19"
+BLE_OTA_CHARACTERISTIC_UUID_SW_VER = "15c1591c-36c5-11ed-adc6-dbe9603dbf19"
 
 OK = 0x00
 NOK = 0x01
@@ -40,24 +40,30 @@ U32_BYTES_NUM = 4
 HEAD_BYTES_NUM = U8_BYTES_NUM
 ATTR_SIZE_BYTES_NUM = U32_BYTES_NUM
 BUFFER_SIZE_BYTES_NUM = U32_BYTES_NUM
-BEGIN_RESP_BYTES_NUM = HEAD_BYTES_NUM + ATTR_SIZE_BYTES_NUM + BUFFER_SIZE_BYTES_NUM
+BEGIN_RESP_BYTES_NUM = HEAD_BYTES_NUM + \
+    ATTR_SIZE_BYTES_NUM + BUFFER_SIZE_BYTES_NUM
 HEAD_POS = 0
 ATTR_SIZE_POS = HEAD_POS + HEAD_BYTES_NUM
 BUFFER_SIZE_POS = ATTR_SIZE_POS + ATTR_SIZE_BYTES_NUM
+
 
 def file_size(path):
     if os.path.isfile(path):
         file_info = os.stat(path)
         return file_info.st_size
 
+
 def bytes_to_int(value):
     return int.from_bytes(value, 'little', signed=False)
+
 
 def int_to_u8_bytes(value):
     return list(int.to_bytes(value, U8_BYTES_NUM, 'little', signed=False))
 
+
 def int_to_u32_bytes(value):
     return list(int.to_bytes(value, U32_BYTES_NUM, 'little', signed=False))
+
 
 def scan_ota_devices(adapter_address=None, timeout=5.0):
     for dongle in adapter.Adapter.available():
@@ -70,6 +76,7 @@ def scan_ota_devices(adapter_address=None, timeout=5.0):
             if BLE_OTA_SERVICE_UUID.lower() in dev.uuids:
                 yield dev
 
+
 def handleResponse(resp):
     resp = bytes_to_int(resp)
     if resp == OK:
@@ -77,6 +84,7 @@ def handleResponse(resp):
 
     print(respToStr[resp])
     return False
+
 
 def handleBeginResponse(resp):
     respList = list(bytearray(resp))
@@ -90,14 +98,21 @@ def handleBeginResponse(resp):
         return
     return bytes_to_int(respList[ATTR_SIZE_POS:BUFFER_SIZE_POS]), bytes_to_int(respList[BUFFER_SIZE_POS:])
 
+
 def connect(dev):
     device = central.Central(adapter_addr=dev.adapter, device_addr=dev.address)
-    rx_char = device.add_characteristic(BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_RX)
-    tx_char = device.add_characteristic(BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_TX)
-    hw_name_char = device.add_characteristic(BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_HW_NAME)
-    hw_ver_char = device.add_characteristic(BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_HW_VER)
-    sw_name_char = device.add_characteristic(BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_SW_NAME)
-    sw_ver_char = device.add_characteristic(BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
+    rx_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_RX)
+    tx_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_TX)
+    hw_name_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_HW_NAME)
+    hw_ver_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_HW_VER)
+    sw_name_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_SW_NAME)
+    sw_ver_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
 
     print("Connecting to " + dev.alias)
     device.connect()
@@ -106,15 +121,16 @@ def connect(dev):
         return
 
     try:
-        print(", ".join(["HW: "  + str(bytearray(hw_name_char.value), 'utf-8'),
+        print(", ".join(["HW: " + str(bytearray(hw_name_char.value), 'utf-8'),
                          "VER: " + str(list(bytearray(hw_ver_char.value))),
-                         "SW: "  + str(bytearray(sw_name_char.value), 'utf-8'),
+                         "SW: " + str(bytearray(sw_name_char.value), 'utf-8'),
                          "VER: " + str(list(bytearray(sw_ver_char.value)))]))
     except Exception as e:
         print(e)
         return
 
     return device, rx_char, tx_char
+
 
 def upload(rx_char, tx_char, path):
     crc = 0
@@ -127,7 +143,8 @@ def upload(rx_char, tx_char, path):
     if not begin_resp:
         return False
     attr_size, buffer_size = begin_resp
-    print("Begin upload: attr size: " + str(attr_size) + ", buffer size: " + str(buffer_size))
+    print("Begin upload: attr size: " + str(attr_size) +
+          ", buffer size: " + str(buffer_size))
 
     with open(path, 'rb') as f:
         while True:
@@ -152,6 +169,7 @@ def upload(rx_char, tx_char, path):
 
     return True
 
+
 def try_upload(rx_char, tx_char, path):
     time = datetime.datetime.now()
 
@@ -165,6 +183,7 @@ def try_upload(rx_char, tx_char, path):
     upload_time = datetime.datetime.now() - time
     print("Installing. Upload time: " + str(upload_time))
     return True
+
 
 def connect_and_upload(dev, path):
     res = connect(dev)
@@ -185,6 +204,7 @@ def connect_and_upload(dev, path):
 
     device.disconnect()
     print("Success!")
+
 
 if __name__ == '__main__':
     path = sys.argv[1]
