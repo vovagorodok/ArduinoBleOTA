@@ -107,9 +107,9 @@ def connect(dev):
 
     try:
         print(", ".join(["HW: "  + str(bytearray(hw_name_char.value), 'utf-8'),
-                        "VER: " + str(list(bytearray(hw_ver_char.value))),
-                        "SW: "  + str(bytearray(sw_name_char.value), 'utf-8'),
-                        "VER: " + str(list(bytearray(sw_ver_char.value)))]))
+                         "VER: " + str(list(bytearray(hw_ver_char.value))),
+                         "SW: "  + str(bytearray(sw_name_char.value), 'utf-8'),
+                         "VER: " + str(list(bytearray(sw_ver_char.value)))]))
     except Exception as e:
         print(e)
         return
