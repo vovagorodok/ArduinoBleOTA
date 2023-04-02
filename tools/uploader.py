@@ -207,8 +207,28 @@ def connect_and_upload(dev, path):
 
 if __name__ == '__main__':
     path = sys.argv[1]
-    devices = scan_ota_devices()
-    for device in devices:
-        print("OTA Device Found!")
-        connect_and_upload(device, path)
-        break
+    devices = list()
+
+    print("Devices:")
+    for device in scan_ota_devices():
+        print(f"{len(devices)}. [{device.address}] {device.alias}")
+        devices.append(device)
+
+    if not len(devices):
+        print("Device not found")
+        exit()
+
+    user_input = input("Chose device [0]: ")
+
+    try:
+        device_num = int(user_input)
+        if device_num >= len(devices) or device_num < 0:
+            print("Incorrect device number")
+            exit()
+    except ValueError:
+        device_num = 0
+        if len(user_input):
+            print("Incorrect input")
+            exit()
+
+    connect_and_upload(devices[device_num], path)
