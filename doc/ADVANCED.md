@@ -20,5 +20,5 @@ build_flags =
 ```
 
 ## Uploading failure case
-When first upload fails then next attempt uploads without buffer.
+When first upload fails then next upload attempts without buffer.
 Only after reset buffer will be enabled again.
