@@ -10,7 +10,7 @@
     #define BLE_OTA_MIN_MTU_SIZE 23
     #define BLE_OTA_MAX_MTU_SIZE 143
     #define BLE_OTA_MAX_ATTR_SIZE 128
-    #define BLE_OTA_PACKAGES_NUM_IN_BUFFER 40
+    #define BLE_OTA_PACKAGES_NUM_IN_BUFFER 10
 #endif
 
 #define BLE_OTA_HEADER_SIZE sizeof(uint8_t)
