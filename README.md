@@ -10,7 +10,12 @@ build_flags =
 	-D USE_NIM_BLE_ARDUINO_LIB
 ```
 
-## Upload by python script
+## Upload by script
+Bash:
+```
+./tools/uploader.sh
+```
+Python:
 ```
 python3 tools/uploader.py .pio/build/esp32dev/firmware.bin
 ```

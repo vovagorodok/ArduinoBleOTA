@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from bluezero import adapter
 from bluezero import central
 from time import sleep
@@ -136,6 +137,10 @@ def upload(rx_char, tx_char, path):
     uploaded_len = 0
     firmware_len = file_size(path)
     current_buffer_len = 0
+
+    if not firmware_len:
+        print(f"File not exist: {path}")
+        return False
 
     rx_char.value = int_to_u8_bytes(BEGIN) + int_to_u32_bytes(firmware_len)
     begin_resp = handleBeginResponse(tx_char.value)
