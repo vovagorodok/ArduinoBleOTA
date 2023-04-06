@@ -15,8 +15,8 @@ It gives more RAM for application. But upload speed will be slower because each 
 Attribute size and buffer size are predefined experimentally. Can be tuned by adding:
 ```
 build_flags =
-	-D BLE_OTA_ATTRIBUTE_SIZE=256
-	-D BLE_OTA_BUFFER_SIZE=1020
+	-D BLE_OTA_ATTRIBUTE_SIZE=128
+	-D BLE_OTA_BUFFER_SIZE=635
 ```
 
 ## Uploading failure case
