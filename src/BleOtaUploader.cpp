@@ -1,6 +1,5 @@
 #include "BleOtaUploader.h"
 #include "ArduinoBleOTA.h"
-#include "BleOtaUtils.h"
 
 namespace
 {
@@ -109,7 +108,7 @@ void BleOtaUploader::handleBegin(const uint8_t* data, size_t length)
         send(INCORRECT_FORMAT);
         return;
     }
-    firmwareLength = addrToRef<uint32_t>(data);
+    memcpy(&firmwareLength, data, length);
 
     if (storage == nullptr or not storage->open(firmwareLength))
     {
@@ -136,7 +135,7 @@ void BleOtaUploader::handleBegin(const uint8_t* data, size_t length)
     uint32_t bufferSize = 0;
     #endif
     BeginResponse resp{OK, BLE_OTA_ATTRIBUTE_SIZE, bufferSize};
-    send(refToAddr(resp), sizeof(BeginResponse));
+    send((const uint8_t*)(&resp), sizeof(BeginResponse));
 }
 
 void BleOtaUploader::handlePackage(const uint8_t* data, size_t length)
@@ -187,7 +186,8 @@ void BleOtaUploader::handleEnd(const uint8_t* data, size_t length)
         send(INCORRECT_FORMAT);
         return;
     }
-    auto firmwareCrc = addrToRef<uint32_t>(data);
+    uint32_t firmwareCrc;
+    memcpy(&firmwareCrc, data, length);
 
     if (crc.finalize() != firmwareCrc)
     {
@@ -217,7 +217,8 @@ void BleOtaUploader::handleSetPin(const uint8_t* data, size_t length)
         return;
     }
 
-    auto pin = addrToRef<uint32_t>(data);
+    uint32_t pin;
+    memcpy(&pin, data, length);
     send(ArduinoBleOTA.security->setPin(pin) ? OK : NOK);
 }
 

@@ -2,7 +2,6 @@
 #include "ArduinoBleOtaClassNimBle.h"
 #include "BleOtaUploader.h"
 #include "BleOtaUuids.h"
-#include "BleOtaUtils.h"
 #include "BleOtaSizes.h"
 
 namespace
@@ -82,12 +81,12 @@ void ArduinoBleOTAClass::begin(BLEService& service,
         BLE_OTA_CHARACTERISTIC_UUID_HW_VER,
         NIMBLE_PROPERTY::READ
     );
-    hwVerCharacteristic->setValue(refToAddr(hwVersion), sizeof(BleOtaVersion));
+    hwVerCharacteristic->setValue((const uint8_t*)(&hwVersion), sizeof(BleOtaVersion));
     auto* swVerCharacteristic = service.createCharacteristic(
         BLE_OTA_CHARACTERISTIC_UUID_SW_VER,
         NIMBLE_PROPERTY::READ
     );
-    swVerCharacteristic->setValue(refToAddr(swVersion), sizeof(BleOtaVersion));
+    swVerCharacteristic->setValue((const uint8_t*)(&swVersion), sizeof(BleOtaVersion));
 }
 
 void ArduinoBleOTAClass::pull()

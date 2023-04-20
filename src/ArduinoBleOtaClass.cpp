@@ -2,7 +2,6 @@
 #include "ArduinoBleOtaClass.h"
 #include "BleOtaUploader.h"
 #include "BleOtaUuids.h"
-#include "BleOtaUtils.h"
 #include "BleOtaSizes.h"
 
 namespace
@@ -70,9 +69,9 @@ void ArduinoBleOTAClass::begin(const String& hwName, BleOtaVersion hwVersion,
     service.addCharacteristic(swNameCharacteristic);
     swNameCharacteristic.setValue(swName);
     service.addCharacteristic(hwVerCharacteristic);
-    hwVerCharacteristic.setValue(refToAddr(hwVersion), sizeof(BleOtaVersion));
+    hwVerCharacteristic.setValue((const uint8_t*)(&hwVersion), sizeof(BleOtaVersion));
     service.addCharacteristic(swVerCharacteristic);
-    swVerCharacteristic.setValue(refToAddr(swVersion), sizeof(BleOtaVersion));
+    swVerCharacteristic.setValue((const uint8_t*)(&swVersion), sizeof(BleOtaVersion));
 }
 
 void ArduinoBleOTAClass::pull()
