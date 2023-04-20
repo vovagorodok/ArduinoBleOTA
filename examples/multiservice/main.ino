@@ -5,38 +5,24 @@
 #define NAME "MultiSrv"
 #define MY_SECOND_SERVICE_UUID "<any uuid>"
 
+void setup() {
+  initBle(NAME);
+
 #ifndef USE_NIM_BLE_ARDUINO_LIB
-
-BLEService service(MY_SECOND_SERVICE_UUID);
-
-void setup() {
-  initBle(NAME);
-
+  static BLEService service(MY_SECOND_SERVICE_UUID);
   BLE.addService(service);
-
-  ArduinoBleOTA.begin(InternalStorage);
-  advertiseBle(NAME, MY_SECOND_SERVICE_UUID);
-}
-
-void loop() {
-  BLE.poll();
-  ArduinoBleOTA.pull();
-}
-
 #else
-
-void setup() {
-  initBle(NAME);
-
   auto* server = BLEDevice::createServer();
   auto* service = server->createService(MY_SECOND_SERVICE_UUID);
+#endif
 
   ArduinoBleOTA.begin(InternalStorage);
   advertiseBle(NAME, MY_SECOND_SERVICE_UUID);
 }
 
 void loop() {
+#ifndef USE_NIM_BLE_ARDUINO_LIB
+  BLE.poll();
+#endif
   ArduinoBleOTA.pull();
 }
-
-#endif
