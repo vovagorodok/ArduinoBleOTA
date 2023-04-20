@@ -239,8 +239,9 @@ void BleOtaUploader::handleRemovePin(const uint8_t* data, size_t length)
 
 void BleOtaUploader::handleInstall()
 {
+    delay(250);
     storage->close();
-    delay(500);
+    delay(250);
     storage->apply();
     while (true);
 }
