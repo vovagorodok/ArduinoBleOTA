@@ -14,6 +14,7 @@ void setup() {
 #else
   auto* server = BLEDevice::createServer();
   auto* service = server->createService(MY_SECOND_SERVICE_UUID);
+  service->start();
 #endif
 
   ArduinoBleOTA.begin(InternalStorage);
