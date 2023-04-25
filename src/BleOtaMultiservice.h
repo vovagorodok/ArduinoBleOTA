@@ -12,7 +12,7 @@ inline bool advertiseBle(const std::string& deviceName,
                          const std::string& primaryUUID,
                          const std::string& secondaryUUID)
 {
-    auto* server = BLEDevice::createServer();
+    auto* server = BLEDevice::getServer();
     auto* advertising = server->getAdvertising();
 
     NimBLEAdvertisementData primaryAdvertisementData{};
