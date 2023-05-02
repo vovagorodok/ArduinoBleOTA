@@ -189,7 +189,7 @@ void BleOtaUploader::handleEnd(const uint8_t* data, size_t length)
     uint32_t firmwareCrc;
     memcpy(&firmwareCrc, data, length);
 
-    if (crc.finalize() != firmwareCrc)
+    if (crc.getCRC() != firmwareCrc)
     {
         terminateUpload();
         send(CHECKSUM_ERROR);
@@ -278,7 +278,7 @@ void BleOtaUploader::fillData(const uint8_t* data, size_t length)
         #else
         storage->write(data[i]);
         #endif
-        crc.update(data[i]);
+        crc.add(data[i]);
     }
 }
 
