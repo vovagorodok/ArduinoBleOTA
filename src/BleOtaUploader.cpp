@@ -127,7 +127,11 @@ void BleOtaUploader::handleBegin(const uint8_t* data, size_t length)
     currentLength = 0;
     uploading = true;
     crc.reset();
-
+    crc.setPolynome(0x04C11DB7);
+    crc.setStartXOR(0xFFFFFFFF);
+    crc.setEndXOR(0xFFFFFFFF);
+    crc.setReverseIn(true);
+    crc.setReverseOut(true);
     #ifndef BLE_OTA_NO_BUFFER
     buffer.clear();
     uint32_t bufferSize = withBuffer ? BLE_OTA_BUFFER_SIZE : 0;
