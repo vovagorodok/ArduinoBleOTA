@@ -38,10 +38,10 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
                                bool enableUpload)
 {
     auto* server = BLEDevice::createServer();
-    return begin(server, storage, hwName, hwVersion, swName.swVersion);
+    return begin(server, storage, hwName, hwVersion, swName,swVersion);
 }
 
-NimBLEService *ArduinoBleOTAClass::begin(NimBLEServer &server, OTAStorage &storage,
+NimBLEService *ArduinoBleOTAClass::begin(NimBLEServer *server, OTAStorage &storage,
                                const std::string &hwName, BleOtaVersion hwVersion,
                                const std::string &swName, BleOtaVersion swVersion,
                                bool enableUpload)
