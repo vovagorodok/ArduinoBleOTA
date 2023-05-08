@@ -24,11 +24,11 @@ public:
                const std::string& swName = {},
                BleOtaVersion swVersion = {},
                bool enableUpload = true);
-    NimBleService* begin(NimBLEServer& server,OTAStorage& storage,
+    NimBLEService* begin(NimBLEServer * server,OTAStorage& storage,
                const std::string &hwName = {},
-               BleOtaVersion& hwVersion = {},
+               BleOtaVersion hwVersion = {},
                const std::string &swName = {},
-               BleOtaVersion& swVersion = {},
+               BleOtaVersion swVersion = {},
                bool enableUpload = true);
     void pull();
 
