@@ -2,9 +2,13 @@
 #include "BleOtaStorage.h"
 #include "BleOtaVersion.h"
 #include "BleOtaSecurity.h"
-#include <NimBLEDevice.h>
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLECharacteristic.h>
 
 class BleOtaUploader;
+
+#define NIMBLE_PROPERTY BLECharacteristic
 
 class ArduinoBleOTAClass: public BLECharacteristicCallbacks
 {
@@ -24,11 +28,11 @@ public:
                const std::string& swName = {},
                BleOtaVersion swVersion = {},
                bool enableUpload = true);
-    NimBleService* begin(NimBLEServer& server,OTAStorage& storage,
+    BLEService * begin(BLEServer *server,OTAStorage &storage,
                const std::string &hwName = {},
-               BleOtaVersion& hwVersion = {},
+               BleOtaVersion hwVersion = {},
                const std::string &swName = {},
-               BleOtaVersion& swVersion = {},
+               BleOtaVersion swVersion = {},
                bool enableUpload = true);
     void pull();
 
@@ -38,7 +42,7 @@ public:
 
 private:
     friend BleOtaUploader;
-    void begin(NimBLEService& service,
+    void begin(BLEService& service,
                const std::string& hwName, BleOtaVersion hwVersion,
                const std::string& swName, BleOtaVersion swVersion);
     void onWrite(BLECharacteristic* characteristic) override;

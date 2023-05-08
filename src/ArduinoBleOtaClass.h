@@ -1,4 +1,5 @@
 #pragma once
+#ifndef USE_ESP32_BLE_LIB
 #include "BleOtaStorage.h"
 #include "BleOtaVersion.h"
 #include "BleOtaSecurity.h"
@@ -40,3 +41,4 @@ private:
 };
 
 extern ArduinoBleOTAClass ArduinoBleOTA;
+#endif
