@@ -1,4 +1,5 @@
 #pragma once
+#ifdef USE_NIM_BLE_ARDUINO_LIB
 #include "BleOtaStorage.h"
 #include "BleOtaVersion.h"
 #include "BleOtaSecurity.h"
@@ -49,3 +50,4 @@ private:
 };
 
 extern ArduinoBleOTAClass ArduinoBleOTA;
+#endif

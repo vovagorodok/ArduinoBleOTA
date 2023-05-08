@@ -1,4 +1,5 @@
 #pragma once
+#ifdef ESP32
 #include "BleOtaStorage.h"
 #include "BleOtaVersion.h"
 #include "BleOtaSecurity.h"
@@ -53,3 +54,4 @@ private:
 };
 
 extern ArduinoBleOTAClass ArduinoBleOTA;
+#endif
