@@ -219,7 +219,7 @@ void BleOtaUploader::handleSetPin(const uint8_t* data, size_t length)
 
     uint32_t pin;
     memcpy(&pin, data, length);
-    send(ArduinoBleOTA.security->setPin(pin) ? OK : NOK);
+    send(ArduinoBleOTA.securityCallbacks->setPin(pin) ? OK : NOK);
 }
 
 void BleOtaUploader::handleRemovePin(const uint8_t* data, size_t length)
@@ -235,7 +235,7 @@ void BleOtaUploader::handleRemovePin(const uint8_t* data, size_t length)
         return;
     }
 
-    send(ArduinoBleOTA.security->removePin() ? OK : NOK);
+    send(ArduinoBleOTA.securityCallbacks->removePin() ? OK : NOK);
 }
 
 void BleOtaUploader::handleInstall()

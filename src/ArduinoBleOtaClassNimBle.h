@@ -1,7 +1,7 @@
 #pragma once
 #include "BleOtaStorage.h"
 #include "BleOtaVersion.h"
-#include "BleOtaSecurity.h"
+#include "BleOtaSecurityCallbacks.h"
 #include <NimBLEDevice.h>
 
 class BleOtaUploader;
@@ -28,7 +28,7 @@ public:
 
     void enableUpload();
     void disableUpload();
-    void setSecurity(BleOtaSecurity& callbacks);
+    void setSecurityCallbacks(BleOtaSecurityCallbacks&);
 
 private:
     friend BleOtaUploader;
@@ -39,7 +39,7 @@ private:
     void send(const uint8_t* data, size_t length);
 
     BLECharacteristic* txCharacteristic;
-    BleOtaSecurity* security;
+    BleOtaSecurityCallbacks* securityCallbacks;
 };
 
 extern ArduinoBleOTAClass ArduinoBleOTA;
