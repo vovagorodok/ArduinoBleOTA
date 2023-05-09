@@ -10,17 +10,9 @@ build_flags =
 	-D USE_NIM_BLE_ARDUINO_LIB
 ```
 
-## Upload by script
-Bash:
-```
-./tools/uploader.sh
-```
-Python:
-```
-python3 tools/uploader.py .pio/build/esp32dev/firmware.bin
-```
-
-## Upload by mobile/web/desktop application
+## Upload possibilities
+For upload using scripts see `tools` folder.\
+For upload using mobile/web/desktop application see:\
 https://github.com/vovagorodok/ble_ota_app
 
 ## Documentation
