@@ -9,7 +9,7 @@ public:
         return false;
     }
 
-    virtual  bool removePin()
+    virtual bool removePin()
     {
         return false;
     }

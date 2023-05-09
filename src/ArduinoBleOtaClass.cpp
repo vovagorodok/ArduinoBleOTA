@@ -15,6 +15,7 @@ BLECharacteristic hwVerCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_VER, BLERea
 BLECharacteristic swVerCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_VER, BLERead, sizeof(BleOtaVersion), true);
 
 static BleOtaSecurityCallbacks dummySecurityCallbacks{};
+static BleOtaUploadCallbacks dummyUploadCallbacks{};
 
 void onWrite(BLEDevice central, BLECharacteristic characteristic)
 {
@@ -23,7 +24,8 @@ void onWrite(BLEDevice central, BLECharacteristic characteristic)
 }
 
 ArduinoBleOTAClass::ArduinoBleOTAClass() :
-    securityCallbacks(&dummySecurityCallbacks)
+    securityCallbacks(&dummySecurityCallbacks),
+    uploadCallbacks(&dummyUploadCallbacks)
 {}
 
 bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage,
@@ -92,6 +94,11 @@ void ArduinoBleOTAClass::disableUpload()
 void ArduinoBleOTAClass::setSecurityCallbacks(BleOtaSecurityCallbacks& cb)
 {
     securityCallbacks = &cb;
+}
+
+void ArduinoBleOTAClass::setUploadCallbacks(BleOtaUploadCallbacks& cb)
+{
+    uploadCallbacks = &cb;
 }
 
 void ArduinoBleOTAClass::send(const uint8_t* data, size_t length)

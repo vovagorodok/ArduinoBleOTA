@@ -7,11 +7,13 @@
 namespace
 {
 static BleOtaSecurityCallbacks dummySecurityCallbacks{};
+static BleOtaUploadCallbacks dummyUploadCallbacks{};
 }
 
 ArduinoBleOTAClass::ArduinoBleOTAClass() :
     txCharacteristic(),
-    securityCallbacks(&dummySecurityCallbacks)
+    securityCallbacks(&dummySecurityCallbacks),
+    uploadCallbacks(&dummyUploadCallbacks)
 {}
 
 bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage,
@@ -107,6 +109,11 @@ void ArduinoBleOTAClass::disableUpload()
 void ArduinoBleOTAClass::setSecurityCallbacks(BleOtaSecurityCallbacks& cb)
 {
     securityCallbacks = &cb;
+}
+
+void ArduinoBleOTAClass::setUploadCallbacks(BleOtaUploadCallbacks& cb)
+{
+    uploadCallbacks = &cb;
 }
 
 void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)

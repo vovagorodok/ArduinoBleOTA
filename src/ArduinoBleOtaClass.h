@@ -2,6 +2,7 @@
 #include "BleOtaStorage.h"
 #include "BleOtaVersion.h"
 #include "BleOtaSecurityCallbacks.h"
+#include "BleOtaUploadCallbacks.h"
 #include <ArduinoBLE.h>
 
 class BleOtaUploader;
@@ -29,6 +30,7 @@ public:
     void enableUpload();
     void disableUpload();
     void setSecurityCallbacks(BleOtaSecurityCallbacks&);
+    void setUploadCallbacks(BleOtaUploadCallbacks&);
 
 private:
     friend BleOtaUploader;
@@ -37,6 +39,7 @@ private:
     void send(const uint8_t* data, size_t length);
 
     BleOtaSecurityCallbacks* securityCallbacks;
+    BleOtaUploadCallbacks* uploadCallbacks;
 };
 
 extern ArduinoBleOTAClass ArduinoBleOTA;
