@@ -2,7 +2,7 @@
 #ifdef ESP32
 #include "BleOtaStorage.h"
 #include "BleOtaVersion.h"
-#include "BleOtaSecurity.h"
+#include "BleOtaSecurityCallbacks.h"
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLECharacteristic.h>
