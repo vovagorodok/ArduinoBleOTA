@@ -1,25 +1,21 @@
 # Arduino BLE OTA
 Arduino Bluetooth LE Over The Air.
 Simple library for upload firmware over Bluetooth.
-Has built in checksum integrity protection and
-software/hardware type/version indication.
+Has built in checksum/integrity protection and
+software/hardware name/version indication.
 
-By default `ArduinoBLE` is used. If `NimBLE-Arduino` is used, add to platformio.ini:
+By default `ArduinoBLE` is used.
+If `NimBLE-Arduino` is used in your project, add to platformio.ini:
 ```
 build_flags = 
 	-D USE_NIM_BLE_ARDUINO_LIB
 ```
+More about library in `doc` folder.
 
 ## Upload possibilities
 For upload using scripts see `tools` folder.\
 For upload using mobile/web/desktop application see:\
 https://github.com/vovagorodok/ble_ota_app
-
-## Documentation
-Advanced usage at `ADVANCED.md`.\
-More about uuids advertising at `ADVERTISING.md`.\
-More about protocol at `PROTOCOL.md`.\
-More about security at `SECURITY.md`.
 
 ## Opened discussions
 https://github.com/JAndrassy/ArduinoOTA/discussions/157 \

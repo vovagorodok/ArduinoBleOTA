@@ -1,9 +1,10 @@
 ## Overal
 Library advertises 4 characteristics in order to indicate software/hardware type/version.
-See `ADVERTISING.md`. User of library can decide what characteristics should contain.
-
+See `ADVERTISING.md`. User of library can decide what characteristics should contain.\
 Central can handle this data and check if software should be updated.\
-For example we have peripheral device with information:
+
+## Example
+We have peripheral device with information:
 ```
 hardware name: MyHardware
 hardware ver: 1.0.0
