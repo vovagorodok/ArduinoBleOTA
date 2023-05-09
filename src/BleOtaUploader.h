@@ -24,6 +24,7 @@ private:
     void handleSetPin(const uint8_t* data, size_t length);
     void handleRemovePin(const uint8_t* data, size_t length);
     void handleInstall();
+    void handleError(uint8_t errorCode);
     void send(uint8_t head);
     void send(const uint8_t* data, size_t length);
     void terminateUpload();

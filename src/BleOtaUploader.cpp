@@ -1,23 +1,9 @@
 #include "BleOtaUploader.h"
+#include "BleOtaHeadCodes.h"
 #include "ArduinoBleOTA.h"
 
 namespace
 {
-#define OK 0x00
-#define NOK 0x01
-#define INCORRECT_FORMAT 0x02
-#define INCORRECT_FIRMWARE_SIZE 0x03
-#define CHECKSUM_ERROR 0x04
-#define INTERNAL_STORAGE_ERROR 0x05
-#define UPLOAD_DISABLED 0x06
-
-#define BEGIN 0x10
-#define PACKAGE 0x11
-#define END 0x12
-
-#define SET_PIN 0x20
-#define REMOVE_PIN 0x21
-
 #pragma pack(push, 1)
 struct BeginResponse
 {
@@ -65,7 +51,7 @@ void BleOtaUploader::onData(const uint8_t* data, size_t length)
 
     if (length == 0)
     {
-        send(INCORRECT_FORMAT);
+        handleError(INCORRECT_FORMAT);
         return;
     }
 
@@ -87,7 +73,7 @@ void BleOtaUploader::onData(const uint8_t* data, size_t length)
         handleRemovePin(data + 1, length - 1);
         break;
     default:
-        send(INCORRECT_FORMAT);
+        handleError(INCORRECT_FORMAT);
         break;
     }
 }
@@ -105,7 +91,7 @@ void BleOtaUploader::handleBegin(const uint8_t* data, size_t length)
 
     if (length != sizeof(uint32_t))
     {
-        send(INCORRECT_FORMAT);
+        handleError(INCORRECT_FORMAT);
         return;
     }
     memcpy(&firmwareLength, data, length);
@@ -113,14 +99,14 @@ void BleOtaUploader::handleBegin(const uint8_t* data, size_t length)
     if (storage == nullptr or not storage->open(firmwareLength))
     {
         firmwareLength = 0;
-        send(INTERNAL_STORAGE_ERROR);
+        handleError(INTERNAL_STORAGE_ERROR);
         return;
     }
 
     if (storage->maxSize() and firmwareLength > storage->maxSize())
     {
         terminateUpload();
-        send(INCORRECT_FIRMWARE_SIZE);
+        handleError(INCORRECT_FIRMWARE_SIZE);
         return;
     }
 
@@ -136,6 +122,8 @@ void BleOtaUploader::handleBegin(const uint8_t* data, size_t length)
     #endif
     BeginResponse resp{OK, BLE_OTA_ATTRIBUTE_SIZE, bufferSize};
     send((const uint8_t*)(&resp), sizeof(BeginResponse));
+
+    ArduinoBleOTA.uploadCallbacks->onBegin(firmwareLength);
 }
 
 void BleOtaUploader::handlePackage(const uint8_t* data, size_t length)
@@ -153,7 +141,7 @@ void BleOtaUploader::handlePackage(const uint8_t* data, size_t length)
     if (currentLength > firmwareLength)
     {
         terminateUpload();
-        if (sendResponse) send(INCORRECT_FIRMWARE_SIZE);
+        if (sendResponse) handleError(INCORRECT_FIRMWARE_SIZE);
         return;
     }
 
@@ -172,18 +160,18 @@ void BleOtaUploader::handleEnd(const uint8_t* data, size_t length)
 {
     if (not uploading)
     {
-        send(NOK);
+        handleError(NOK);
         return;
     }
     if (currentLength != firmwareLength)
     {
         terminateUpload();
-        send(INCORRECT_FIRMWARE_SIZE);
+        handleError(INCORRECT_FIRMWARE_SIZE);
         return;
     }
     if (length != sizeof(uint32_t))
     {
-        send(INCORRECT_FORMAT);
+        handleError(INCORRECT_FORMAT);
         return;
     }
     uint32_t firmwareCrc;
@@ -192,7 +180,7 @@ void BleOtaUploader::handleEnd(const uint8_t* data, size_t length)
     if (crc.finalize() != firmwareCrc)
     {
         terminateUpload();
-        send(CHECKSUM_ERROR);
+        handleError(CHECKSUM_ERROR);
         return;
     }
 
@@ -202,40 +190,42 @@ void BleOtaUploader::handleEnd(const uint8_t* data, size_t length)
 
     installing = true;
     send(OK);
+
+    ArduinoBleOTA.uploadCallbacks->onEnd();
 }
 
 void BleOtaUploader::handleSetPin(const uint8_t* data, size_t length)
 {
     if (uploading)
     {
-        send(NOK);
+        handleError(NOK);
         return;
     }
     if (length != sizeof(uint32_t))
     {
-        send(INCORRECT_FORMAT);
+        handleError(INCORRECT_FORMAT);
         return;
     }
 
     uint32_t pin;
     memcpy(&pin, data, length);
-    send(ArduinoBleOTA.security->setPin(pin) ? OK : NOK);
+    send(ArduinoBleOTA.securityCallbacks->setPin(pin) ? OK : NOK);
 }
 
 void BleOtaUploader::handleRemovePin(const uint8_t* data, size_t length)
 {
     if (uploading)
     {
-        send(NOK);
+        handleError(NOK);
         return;
     }
     if (length)
     {
-        send(INCORRECT_FORMAT);
+        handleError(INCORRECT_FORMAT);
         return;
     }
 
-    send(ArduinoBleOTA.security->removePin() ? OK : NOK);
+    send(ArduinoBleOTA.securityCallbacks->removePin() ? OK : NOK);
 }
 
 void BleOtaUploader::handleInstall()
@@ -245,6 +235,12 @@ void BleOtaUploader::handleInstall()
     delay(250);
     storage->apply();
     while (true);
+}
+
+void BleOtaUploader::handleError(uint8_t errorCode)
+{
+    send(errorCode);
+    ArduinoBleOTA.uploadCallbacks->onError(errorCode);
 }
 
 void BleOtaUploader::send(uint8_t head)

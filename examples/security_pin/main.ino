@@ -9,7 +9,7 @@ void setup() {
   ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
 
 #ifdef USE_NIM_BLE_ARDUINO_LIB
-  ArduinoBleOTA.setSecurity(security);
+  ArduinoBleOTA.setSecurityCallbacks(security);
   security.begin();
 #endif
 }

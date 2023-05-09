@@ -21,7 +21,7 @@ void setup() {
   ArduinoBleOTA.begin(DEVICE_NAME, InternalStorage, HW_NAME, HW_VER, SW_NAME, SW_VER);
 
 #ifdef USE_NIM_BLE_ARDUINO_LIB
-  ArduinoBleOTA.setSecurity(security);
+  ArduinoBleOTA.setSecurityCallbacks(security);
   security.begin();
 #endif
 }

@@ -2,7 +2,8 @@
 #ifndef USE_ESP32_BLE_LIB
 #include "BleOtaStorage.h"
 #include "BleOtaVersion.h"
-#include "BleOtaSecurity.h"
+#include "BleOtaSecurityCallbacks.h"
+#include "BleOtaUploadCallbacks.h"
 #include <ArduinoBLE.h>
 
 class BleOtaUploader;
@@ -29,7 +30,8 @@ public:
 
     void enableUpload();
     void disableUpload();
-    void setSecurity(BleOtaSecurity& callbacks);
+    void setSecurityCallbacks(BleOtaSecurityCallbacks&);
+    void setUploadCallbacks(BleOtaUploadCallbacks&);
 
 private:
     friend BleOtaUploader;
@@ -37,7 +39,8 @@ private:
                const String &swName, BleOtaVersion swVersion);
     void send(const uint8_t* data, size_t length);
 
-    BleOtaSecurity* security;
+    BleOtaSecurityCallbacks* securityCallbacks;
+    BleOtaUploadCallbacks* uploadCallbacks;
 };
 
 extern ArduinoBleOTAClass ArduinoBleOTA;
