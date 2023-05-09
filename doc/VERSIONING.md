@@ -20,6 +20,6 @@ for hardware ver: 1.0.0
 ```
 As we see:
 - hardware names and versions are mathed
-- softwate version in central side is higher
+- software version in central side is higher
 
 We can update our peripheral device to software version `2.0.0`.
