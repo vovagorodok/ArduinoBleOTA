@@ -188,10 +188,10 @@ void BleOtaUploader::handleEnd(const uint8_t* data, size_t length)
     flushBuffer();
     #endif
 
-    installing = true;
     send(OK);
 
     ArduinoBleOTA.uploadCallbacks->onEnd();
+    installing = true;
 }
 
 void BleOtaUploader::handleSetPin(const uint8_t* data, size_t length)
