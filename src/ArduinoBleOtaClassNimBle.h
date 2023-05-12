@@ -14,15 +14,15 @@ public:
 
     bool begin(const std::string& deviceName,
                OTAStorage& storage,
-               const std::string& hwName = {},
+               const std::string& hwName = " ",
                BleOtaVersion hwVersion = {},
-               const std::string& swName = {},
+               const std::string& swName = " ",
                BleOtaVersion swVersion = {},
                bool enableUpload = true);
     bool begin(OTAStorage& storage,
-               const std::string& hwName = {},
+               const std::string& hwName = " ",
                BleOtaVersion hwVersion = {},
-               const std::string& swName = {},
+               const std::string& swName = " ",
                BleOtaVersion swVersion = {},
                bool enableUpload = true);
     void pull();

@@ -14,15 +14,15 @@ public:
 
     bool begin(const String& deviceName,
                OTAStorage& storage,
-               const String& hwName = {},
+               const String& hwName = " ",
                BleOtaVersion hwVersion = {},
-               const String& swName = {},
+               const String& swName = " ",
                BleOtaVersion swVersion = {},
                bool enableUpload = true);
     bool begin(OTAStorage& storage,
-               const String& hwName = {},
+               const String& hwName = " ",
                BleOtaVersion hwVersion = {},
-               const String& swName = {},
+               const String& swName = " ",
                BleOtaVersion swVersion = {},
                bool enableUpload = true);
     void pull();
