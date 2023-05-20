@@ -31,6 +31,7 @@ bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storag
     advertising->setScanResponse(true);
     advertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
     advertising->setMaxPreferred(0x12);
+    advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
     return advertising->start();
 }
 
@@ -68,8 +69,8 @@ NimBLEService *ArduinoBleOTAClass::begin(NimBLEServer *server, OTAStorage &stora
 
     begin(*service, hwName, hwVersion, swName, swVersion);
 
-    auto* advertising = server->getAdvertising();
-    advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
+    //auto* advertising = server->getAdvertising();
+    //advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
     service->start();
     return service;
 }
