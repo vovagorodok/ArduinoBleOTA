@@ -71,7 +71,7 @@ NimBLEService *ArduinoBleOTAClass::begin(NimBLEServer *server, OTAStorage &stora
 
     //auto* advertising = server->getAdvertising();
     //advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
-    service->start();
+    //service->start();
     return service;
 }
 
