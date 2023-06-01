@@ -48,7 +48,7 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
 
     //auto* advertising = server->getAdvertising();
     //advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
-    service->start();
+    //service->start();
     return true;
 }
 
@@ -75,9 +75,9 @@ BLEService * ArduinoBleOTAClass::begin(BLEServer *server, OTAStorage &storage,
 
     begin(*service, hwName, hwVersion, swName, swVersion);
 
-    auto *advertising = server->getAdvertising();
-    advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
-    service->start();
+    //auto *advertising = server->getAdvertising();
+    //advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
+    //service->start();
     return service;
 }
 
