@@ -13,25 +13,25 @@ class ArduinoBleOTAClass: public BLECharacteristicCallbacks
 public:
     ArduinoBleOTAClass();
 
-    bool begin(const std::string& deviceName,
-               OTAStorage& storage,
-               const std::string& hwName = " ",
-               BleOtaVersion hwVersion = {},
-               const std::string& swName = " ",
-               BleOtaVersion swVersion = {},
-               bool enableUpload = true);               
-    bool begin(OTAStorage& storage,
-               const std::string& hwName = " ",
-               BleOtaVersion hwVersion = {},
-               const std::string& swName = " ",
-               BleOtaVersion swVersion = {},
-               bool enableUpload = true);
-    NimBLEService* begin(NimBLEServer * server,OTAStorage& storage,
+    bool begin(const std::string &deviceName,
+               OTAStorage &storage,
                const std::string &hwName = " ",
                BleOtaVersion hwVersion = {},
                const std::string &swName = " ",
                BleOtaVersion swVersion = {},
-               bool enableUpload = true);
+               bool enableUpload = true, bool advertise = true);
+    bool begin(OTAStorage &storage,
+               const std::string &hwName = " ",
+               BleOtaVersion hwVersion = {},
+               const std::string &swName = " ",
+               BleOtaVersion swVersion = {},
+               bool enableUpload = true, bool advertise = true);
+    NimBLEService *begin(NimBLEServer *server, OTAStorage &storage,
+                         const std::string &hwName = " ",
+                         BleOtaVersion hwVersion = {},
+                         const std::string &swName = " ",
+                         BleOtaVersion swVersion = {},
+                         bool enableUpload = true, bool advertise = true);
     void pull();
 
     void enableUpload();

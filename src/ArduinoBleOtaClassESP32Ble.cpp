@@ -20,42 +20,40 @@ ArduinoBleOTAClass::ArduinoBleOTAClass() :
 bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage,
                                const std::string& hwName, BleOtaVersion hwVersion,
                                const std::string& swName, BleOtaVersion swVersion,
-                               bool enableUpload)
+                               bool enableUpload, bool advertise),
 {
     BLEDevice::init(deviceName);
     auto* server = BLEDevice::createServer();
 
-    begin(storage, hwName, hwVersion, swName, swVersion, enableUpload);
-    //    return ;
+    begin(server, storage, hwName, hwVersion, swName, swVersion, enableUpload, advertise);
 
-    auto* advertising = server->getAdvertising();
-    advertising->setScanResponse(true);
-    advertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
-    advertising->setMaxPreferred(0x12);
-    advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
-    advertising->start();
+    if(advertise){
+        auto* advertising = server->getAdvertising();
+        advertising->setScanResponse(true);
+        advertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
+        advertising->setMaxPreferred(0x12);
+        advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
+        advertising->start();
+    }
     return true;
 }
 
-bool ArduinoBleOTAClass::begin(OTAStorage& storage,
-                               const std::string& hwName, BleOtaVersion hwVersion,
-                               const std::string& swName, BleOtaVersion swVersion,
-                               bool enableUpload)
+bool ArduinoBleOTAClass::begin(OTAStorage &storage,
+                               const std::string &hwName, BleOtaVersion hwVersion,
+                               const std::string &swName, BleOtaVersion swVersion,
+                               bool enableUpload, bool advertise)
 {
     BLEServer * server =  BLEDevice::createServer();
 
     BLEService * service=begin(server, storage, hwName, hwVersion, swName, swVersion);
 
-    //auto* advertising = server->getAdvertising();
-    //advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
-    //service->start();
     return true;
 }
 
-BLEService * ArduinoBleOTAClass::begin(BLEServer *server, OTAStorage &storage,
-                               const std::string &hwName, BleOtaVersion hwVersion,
-                               const std::string &swName, BleOtaVersion swVersion,
-                               bool enableUpload)
+BLEService *ArduinoBleOTAClass::begin(BLEServer *server, OTAStorage &storage,
+                                      const std::string &hwName, BleOtaVersion hwVersion,
+                                      const std::string &swName, BleOtaVersion swVersion,
+                                      bool enableUpload, bool advertise)
 {
     BLEDevice::setMTU(BLE_OTA_MTU_SIZE);
 
@@ -74,10 +72,14 @@ BLEService * ArduinoBleOTAClass::begin(BLEServer *server, OTAStorage &storage,
     this->txCharacteristic = txCharacteristic;
 
     begin(*service, hwName, hwVersion, swName, swVersion);
-
-    //auto *advertising = server->getAdvertising();
-    //advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
-    //service->start();
+    if(advertise){
+        auto *advertising = server->getAdvertising();
+        advertising->setScanResponse(true);
+        advertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
+        advertising->setMaxPreferred(0x12);
+        advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
+        service->start();
+    }
     return service;
 }
 

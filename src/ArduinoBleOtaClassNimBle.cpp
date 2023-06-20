@@ -19,35 +19,29 @@ ArduinoBleOTAClass::ArduinoBleOTAClass() :
 bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage,
                                const std::string& hwName, BleOtaVersion hwVersion,
                                const std::string& swName, BleOtaVersion swVersion,
-                               bool enableUpload)
+                               bool enableUpload, bool advertise)
 {
     BLEDevice::init(deviceName);
     auto* server = BLEDevice::createServer();
 
-    if(!begin(storage, hwName, hwVersion, swName, swVersion, enableUpload))
+    if (!begin(server, storage, hwName, hwVersion, swName, swVersion, enableUpload,advertise))
         return false;
-
-    auto* advertising = server->getAdvertising();
-    advertising->setScanResponse(true);
-    advertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
-    advertising->setMaxPreferred(0x12);
-    advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
-    return advertising->start();
+    return true;
 }
 
 bool ArduinoBleOTAClass::begin(OTAStorage& storage,
                                const std::string& hwName, BleOtaVersion hwVersion,
                                const std::string& swName, BleOtaVersion swVersion,
-                               bool enableUpload)
+                               bool enableUpload, bool advertise)
 {
     auto* server = BLEDevice::createServer();
-    return begin(server, storage, hwName, hwVersion, swName,swVersion);
+    return begin(server, storage, hwName, hwVersion, swName,swVersion,enableUpload,advertise );
 }
 
 NimBLEService *ArduinoBleOTAClass::begin(NimBLEServer *server, OTAStorage &storage,
                                const std::string &hwName, BleOtaVersion hwVersion,
                                const std::string &swName, BleOtaVersion swVersion,
-                               bool enableUpload)
+                               bool enableUpload, bool advertise)
 {
     BLEDevice::setMTU(BLE_OTA_MTU_SIZE);
 
@@ -68,10 +62,14 @@ NimBLEService *ArduinoBleOTAClass::begin(NimBLEServer *server, OTAStorage &stora
     this->txCharacteristic = txCharacteristic;
 
     begin(*service, hwName, hwVersion, swName, swVersion);
-
-    //auto* advertising = server->getAdvertising();
-    //advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
-    //service->start();
+    if(advertise){
+        auto *advertising = server->getAdvertising();
+        advertising->setScanResponse(true);
+        advertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
+        advertising->setMaxPreferred(0x12);
+        advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
+        service->start();
+    }
     return service;
 }
 
