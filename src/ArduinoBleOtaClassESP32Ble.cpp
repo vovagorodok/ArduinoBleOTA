@@ -20,7 +20,7 @@ ArduinoBleOTAClass::ArduinoBleOTAClass() :
 bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage,
                                const std::string& hwName, BleOtaVersion hwVersion,
                                const std::string& swName, BleOtaVersion swVersion,
-                               bool enableUpload, bool advertise),
+                               bool enableUpload, bool advertise)
 {
     BLEDevice::init(deviceName);
     auto* server = BLEDevice::createServer();
