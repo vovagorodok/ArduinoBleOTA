@@ -24,7 +24,6 @@ BleOtaUploader::BleOtaUploader() :
     enabled(false),
     uploading(false),
     installing(false),
-    currentLength(),
     firmwareLength()
 {}
 
@@ -110,9 +109,8 @@ void BleOtaUploader::handleBegin(const uint8_t* data, size_t length)
         return;
     }
 
-    currentLength = 0;
     uploading = true;
-    crc.reset();
+    crc.restart();
 
     #ifndef BLE_OTA_NO_BUFFER
     buffer.clear();
@@ -131,14 +129,13 @@ void BleOtaUploader::handlePackage(const uint8_t* data, size_t length)
     if (not uploading)
         return;
 
-    currentLength += length;
     #ifndef BLE_OTA_NO_BUFFER
     const bool sendResponse = not withBuffer or buffer.size() + length > BLE_OTA_BUFFER_SIZE;
     #else
     const bool sendResponse = true;
     #endif
 
-    if (currentLength > firmwareLength)
+    if (crc.count() > firmwareLength)
     {
         terminateUpload();
         if (sendResponse) handleError(INCORRECT_FIRMWARE_SIZE);
@@ -163,7 +160,7 @@ void BleOtaUploader::handleEnd(const uint8_t* data, size_t length)
         handleError(NOK);
         return;
     }
-    if (currentLength != firmwareLength)
+    if (crc.count() != firmwareLength)
     {
         terminateUpload();
         handleError(INCORRECT_FIRMWARE_SIZE);
@@ -177,7 +174,7 @@ void BleOtaUploader::handleEnd(const uint8_t* data, size_t length)
     uint32_t firmwareCrc;
     memcpy(&firmwareCrc, data, length);
 
-    if (crc.finalize() != firmwareCrc)
+    if (crc.calc() != firmwareCrc)
     {
         terminateUpload();
         handleError(CHECKSUM_ERROR);
@@ -258,7 +255,7 @@ void BleOtaUploader::terminateUpload()
     storage->clear();
     storage->close();
     uploading = false;
-    currentLength = firmwareLength = 0;
+    firmwareLength = 0;
 
     #ifndef BLE_OTA_NO_BUFFER
     withBuffer = false;
@@ -267,6 +264,7 @@ void BleOtaUploader::terminateUpload()
 
 void BleOtaUploader::fillData(const uint8_t* data, size_t length)
 {
+    crc.add(data, length);
     for (size_t i = 0; i < length; i++)
     {
         #ifndef BLE_OTA_NO_BUFFER
@@ -274,7 +272,6 @@ void BleOtaUploader::fillData(const uint8_t* data, size_t length)
         #else
         storage->write(data[i]);
         #endif
-        crc.update(data[i]);
     }
 }
 
