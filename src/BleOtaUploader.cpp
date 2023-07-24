@@ -135,6 +135,7 @@ void BleOtaUploader::handlePackage(const uint8_t* data, size_t length)
     const bool sendResponse = true;
     #endif
 
+    crc.add(data, length);
     if (crc.count() > firmwareLength)
     {
         terminateUpload();
@@ -264,7 +265,6 @@ void BleOtaUploader::terminateUpload()
 
 void BleOtaUploader::fillData(const uint8_t* data, size_t length)
 {
-    crc.add(data, length);
     for (size_t i = 0; i < length; i++)
     {
         #ifndef BLE_OTA_NO_BUFFER
