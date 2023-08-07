@@ -209,8 +209,7 @@ def connect_and_upload(dev, path):
     print("Success!")
 
 
-if __name__ == '__main__':
-    path = sys.argv[1]
+def scan_and_upload(path):
     devices = list()
 
     print("Devices:")
@@ -236,3 +235,7 @@ if __name__ == '__main__':
             exit()
 
     connect_and_upload(devices[device_num], path)
+
+
+if __name__ == '__main__':
+    scan_and_upload(sys.argv[1])

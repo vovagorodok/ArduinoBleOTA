@@ -195,7 +195,7 @@ async def connect_and_upload(dev, path):
     print("Success!")
 
 
-async def main(path):
+async def scan_and_upload(path):
     devices = list()
 
     print("Devices:")
@@ -223,10 +223,14 @@ async def main(path):
     await connect_and_upload(devices[device_num], path)
 
 
-if __name__ == "__main__":
+def try_scan_and_upload(path):
     try:
-        asyncio.run(main(sys.argv[1]))
+        asyncio.run(scan_and_upload(path))
     except KeyboardInterrupt:
         print("User interrupt.")
     except Exception as e:
         print(e)
+
+
+if __name__ == "__main__":
+    try_scan_and_upload(sys.argv[1])
