@@ -203,8 +203,7 @@ async def connect_and_upload(dev, path):
     print("Success!")
 
 
-async def main():
-    path = sys.argv[1]
+async def main(path):
     devices = list()
 
     print("Devices:")
@@ -234,6 +233,6 @@ async def main():
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        asyncio.run(main(sys.argv[1]))
     except asyncio.CancelledError:
         pass
