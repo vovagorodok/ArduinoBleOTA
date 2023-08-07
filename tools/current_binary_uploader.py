@@ -26,18 +26,15 @@ def find_firmware_bin_path():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     relative_vscode_launch_path = os.path.join('.vscode', 'launch.json')
 
-    project_root_dir = find_abs_dir_that_contains(
-        script_dir, relative_vscode_launch_path)
+    project_root_dir = find_abs_dir_that_contains(script_dir, relative_vscode_launch_path)
     if not project_root_dir:
         print("Please VS Code with PlatformIO plugin")
         exit()
 
-    vscode_launch_path = os.path.join(
-        project_root_dir, relative_vscode_launch_path)
+    vscode_launch_path = os.path.join(project_root_dir, relative_vscode_launch_path)
     vscode_launch_json = load_json_ignoring_comments(vscode_launch_path)
     current_env = vscode_launch_json['configurations'][0]['projectEnvName']
-    firmware_bin_path = os.path.join(
-        project_root_dir, '.pio', 'build', current_env, 'firmware.bin')
+    firmware_bin_path = os.path.join(project_root_dir, '.pio', 'build', current_env, 'firmware.bin')
     return firmware_bin_path
 
 
