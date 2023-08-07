@@ -234,7 +234,7 @@ async def main(path):
 if __name__ == "__main__":
     try:
         asyncio.run(main(sys.argv[1]))
-    except asyncio.CancelledError:
+    except KeyboardInterrupt:
         print("User interrupt.")
     except BleakError as e:
         print(e)
