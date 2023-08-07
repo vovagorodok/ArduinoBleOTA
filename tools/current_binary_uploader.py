@@ -28,7 +28,7 @@ def find_firmware_bin_path():
 
     project_root_dir = find_abs_dir_that_contains(script_dir, relative_vscode_launch_path)
     if not project_root_dir:
-        print("Please VS Code with PlatformIO plugin")
+        print("Use VS Code with PlatformIO plugin")
         exit()
 
     vscode_launch_path = os.path.join(project_root_dir, relative_vscode_launch_path)
