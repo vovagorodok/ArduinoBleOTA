@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from bleak import BleakClient, BleakScanner, BleakError
+from bleak import BleakClient, BleakScanner
 from time import sleep
 import asyncio
 import sys
@@ -111,14 +111,10 @@ async def connect(dev):
     sw_name_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_NAME)
     sw_ver_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
 
-    try:
-        print(", ".join([f"HW: {str(await client.read_gatt_char(hw_name_char), 'utf-8')}",
-                         f"VER: {list(await client.read_gatt_char(hw_ver_char))}",
-                         f"SW: {str(await client.read_gatt_char(sw_name_char), 'utf-8')}",
-                         f"VER: {list(await client.read_gatt_char(sw_ver_char))}"]))
-    except Exception as e:
-        print(e)
-        return
+    print(", ".join([f"HW: {str(await client.read_gatt_char(hw_name_char), 'utf-8')}",
+                        f"VER: {list(await client.read_gatt_char(hw_ver_char))}",
+                        f"SW: {str(await client.read_gatt_char(sw_name_char), 'utf-8')}",
+                        f"VER: {list(await client.read_gatt_char(sw_ver_char))}"]))
 
     return client, rx_char, tx_char
 
@@ -170,11 +166,7 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
 async def try_upload(client, rx_char, tx_char, path):
     time = datetime.datetime.now()
 
-    try:
-        if not await upload(client, rx_char, tx_char, path):
-            return False
-    except Exception as e:
-        print(e)
+    if not await upload(client, rx_char, tx_char, path):
         return False
 
     upload_time = datetime.datetime.now() - time
@@ -236,5 +228,5 @@ if __name__ == "__main__":
         asyncio.run(main(sys.argv[1]))
     except KeyboardInterrupt:
         print("User interrupt.")
-    except BleakError as e:
+    except Exception as e:
         print(e)
