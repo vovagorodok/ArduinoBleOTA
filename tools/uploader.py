@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from bleak import BleakClient, BleakScanner
+from bleak import BleakClient, BleakScanner, BleakError
 from time import sleep
 import asyncio
 import sys
@@ -212,7 +212,7 @@ async def main(path):
         devices.append(device)
 
     if not len(devices):
-        print("Device not found")
+        print("Device not found.")
         exit()
 
     user_input = input("Chose device [0]: ")
@@ -220,12 +220,12 @@ async def main(path):
     try:
         device_num = int(user_input)
         if device_num >= len(devices) or device_num < 0:
-            print("Incorrect device number")
+            print("Incorrect device number.")
             exit()
     except ValueError:
         device_num = 0
         if len(user_input):
-            print("Incorrect input")
+            print("Incorrect input.")
             exit()
 
     await connect_and_upload(devices[device_num], path)
@@ -235,4 +235,6 @@ if __name__ == "__main__":
     try:
         asyncio.run(main(sys.argv[1]))
     except asyncio.CancelledError:
-        pass
+        print("User interrupt.")
+    except BleakError as e:
+        print(e)
