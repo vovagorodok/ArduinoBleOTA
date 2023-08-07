@@ -112,9 +112,9 @@ async def connect(dev):
     sw_ver_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
 
     print(", ".join([f"HW: {str(await client.read_gatt_char(hw_name_char), 'utf-8')}",
-                        f"VER: {list(await client.read_gatt_char(hw_ver_char))}",
-                        f"SW: {str(await client.read_gatt_char(sw_name_char), 'utf-8')}",
-                        f"VER: {list(await client.read_gatt_char(sw_ver_char))}"]))
+                     f"VER: {list(await client.read_gatt_char(hw_ver_char))}",
+                     f"SW: {str(await client.read_gatt_char(sw_name_char), 'utf-8')}",
+                     f"VER: {list(await client.read_gatt_char(sw_ver_char))}"]))
 
     return client, rx_char, tx_char
 
