@@ -3,7 +3,11 @@
 #include "BleOtaVersion.h"
 #include "BleOtaSecurityCallbacks.h"
 #include "BleOtaUploadCallbacks.h"
+#ifdef STM32WBxx
+#include <STM32duinoBLE.h>
+#else
 #include <ArduinoBLE.h>
+#endif
 
 class BleOtaUploader;
 
