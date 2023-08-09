@@ -27,7 +27,7 @@
     "dependencies":
     {
       "jandrassy/ArduinoOTA":"^1.0.10",
-      "robtillaart/CRC":"^1.0.0",
+      "robtillaart/CRC":"^1.0.1",
       "rlogiacco/CircularBuffer":"^1.3.3",
       "arduino-libraries/ArduinoBLE":"^1.3.5"
     },
