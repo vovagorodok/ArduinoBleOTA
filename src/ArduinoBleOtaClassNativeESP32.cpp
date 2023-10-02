@@ -1,14 +1,14 @@
 #include "BleOtaDefines.h"
-#ifdef USE_NATIVE_ESP32_LIB 
-#include "ArduinoBleOtaClassESP32Ble.h"
+#ifdef USE_NATIVE_ESP32_LIB
+#include "ArduinoBleOtaClassNativeESP32.h"
 #include "BleOtaUploader.h"
 #include "BleOtaUuids.h"
 #include "BleOtaSizes.h"
 
 namespace
 {
-    static BleOtaSecurityCallbacks dummySecurityCallbacks{};
-    static BleOtaUploadCallbacks dummyUploadCallbacks{};
+static BleOtaSecurityCallbacks dummySecurityCallbacks{};
+static BleOtaUploadCallbacks dummyUploadCallbacks{};
 }
 
 ArduinoBleOTAClass::ArduinoBleOTAClass() :
@@ -20,67 +20,52 @@ ArduinoBleOTAClass::ArduinoBleOTAClass() :
 bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage,
                                const std::string& hwName, BleOtaVersion hwVersion,
                                const std::string& swName, BleOtaVersion swVersion,
-                               bool enableUpload, bool advertise)
+                               bool enableUpload)
 {
     BLEDevice::init(deviceName);
     auto* server = BLEDevice::createServer();
 
-    begin(server, storage, hwName, hwVersion, swName, swVersion, enableUpload, advertise);
+    if(!begin(storage, hwName, hwVersion, swName, swVersion, enableUpload))
+        return false;
 
-    if(advertise){
-        auto* advertising = server->getAdvertising();
-        advertising->setScanResponse(true);
-        advertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
-        advertising->setMaxPreferred(0x12);
-        advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
-        advertising->start();
-    }
+    auto* advertising = server->getAdvertising();
+    advertising->setScanResponse(true);
+    advertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
+    advertising->setMaxPreferred(0x12);
+    advertising->start();
     return true;
 }
 
-bool ArduinoBleOTAClass::begin(OTAStorage &storage,
-                               const std::string &hwName, BleOtaVersion hwVersion,
-                               const std::string &swName, BleOtaVersion swVersion,
-                               bool enableUpload, bool advertise)
+bool ArduinoBleOTAClass::begin(OTAStorage& storage,
+                               const std::string& hwName, BleOtaVersion hwVersion,
+                               const std::string& swName, BleOtaVersion swVersion,
+                               bool enableUpload)
 {
-    BLEServer * server =  BLEDevice::createServer();
-
-    BLEService * service=begin(server, storage, hwName, hwVersion, swName, swVersion);
-
-    return true;
-}
-
-BLEService *ArduinoBleOTAClass::begin(BLEServer *server, OTAStorage &storage,
-                                      const std::string &hwName, BleOtaVersion hwVersion,
-                                      const std::string &swName, BleOtaVersion swVersion,
-                                      bool enableUpload, bool advertise)
-{
+    auto* server = BLEDevice::createServer();
     BLEDevice::setMTU(BLE_OTA_MTU_SIZE);
 
     bleOtaUploader.begin(storage);
     bleOtaUploader.setEnabling(enableUpload);
-    BLEService * service = server->createService(BLE_OTA_SERVICE_UUID);
+    auto* service = server->createService(BLE_OTA_SERVICE_UUID);
 
-    auto *rxCharacteristic = service->createCharacteristic(
+    auto* rxCharacteristic = service->createCharacteristic(
         BLE_OTA_CHARACTERISTIC_UUID_RX,
-        NIMBLE_PROPERTY::PROPERTY_WRITE_NR);
+        BLECharacteristic::PROPERTY_WRITE_NR
+    );
     rxCharacteristic->setCallbacks(this);
 
-    auto *txCharacteristic = service->createCharacteristic(
+    auto* txCharacteristic = service->createCharacteristic(
         BLE_OTA_CHARACTERISTIC_UUID_TX,
-        NIMBLE_PROPERTY::PROPERTY_READ | NIMBLE_PROPERTY::PROPERTY_NOTIFY);
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY
+    );
     this->txCharacteristic = txCharacteristic;
 
     begin(*service, hwName, hwVersion, swName, swVersion);
-    if(advertise){
-        auto *advertising = server->getAdvertising();
-        advertising->setScanResponse(true);
-        advertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
-        advertising->setMaxPreferred(0x12);
-        advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
-        service->start();
-    }
-    return service;
+
+    auto* advertising = server->getAdvertising();
+    advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
+    service->start();
+    return true;
 }
 
 void ArduinoBleOTAClass::begin(BLEService& service,
@@ -89,22 +74,22 @@ void ArduinoBleOTAClass::begin(BLEService& service,
 {
     auto* hwNameCharacteristic = service.createCharacteristic(
         BLE_OTA_CHARACTERISTIC_UUID_HW_NAME,
-        NIMBLE_PROPERTY::PROPERTY_READ
+        BLECharacteristic::PROPERTY_READ
     );
     hwNameCharacteristic->setValue(hwName);
     auto* swNameCharacteristic = service.createCharacteristic(
         BLE_OTA_CHARACTERISTIC_UUID_SW_NAME,
-        NIMBLE_PROPERTY::PROPERTY_READ
+        BLECharacteristic::PROPERTY_READ
     );
     swNameCharacteristic->setValue(swName);
     auto* hwVerCharacteristic = service.createCharacteristic(
         BLE_OTA_CHARACTERISTIC_UUID_HW_VER,
-        NIMBLE_PROPERTY::PROPERTY_READ
+        BLECharacteristic::PROPERTY_READ
     );
     hwVerCharacteristic->setValue((uint8_t*)(&hwVersion), sizeof(BleOtaVersion));
     auto* swVerCharacteristic = service.createCharacteristic(
         BLE_OTA_CHARACTERISTIC_UUID_SW_VER,
-        NIMBLE_PROPERTY::PROPERTY_READ
+        BLECharacteristic::PROPERTY_READ
     );
     swVerCharacteristic->setValue((uint8_t*)(&swVersion), sizeof(BleOtaVersion));
 }
@@ -124,12 +109,12 @@ void ArduinoBleOTAClass::disableUpload()
     bleOtaUploader.setEnabling(false);
 }
 
-void ArduinoBleOTAClass::setSecurityCallbacks(BleOtaSecurityCallbacks &cb)
+void ArduinoBleOTAClass::setSecurityCallbacks(BleOtaSecurityCallbacks& cb)
 {
     securityCallbacks = &cb;
 }
 
-void ArduinoBleOTAClass::setUploadCallbacks(BleOtaUploadCallbacks &cb)
+void ArduinoBleOTAClass::setUploadCallbacks(BleOtaUploadCallbacks& cb)
 {
     uploadCallbacks = &cb;
 }
@@ -140,7 +125,7 @@ void ArduinoBleOTAClass::onWrite(BLECharacteristic* characteristic)
     auto data = value.data();
     auto length = value.length();
 
-    bleOtaUploader.onData((uint8_t *) data, length);
+    bleOtaUploader.onData((uint8_t*)data, length);
 }
 
 void ArduinoBleOTAClass::send(const uint8_t* data, size_t length)
