@@ -1,5 +1,4 @@
 #pragma once
-#ifdef USE_NIM_BLE_ARDUINO_LIB
 #include "BleOtaStorage.h"
 #include "BleOtaVersion.h"
 #include "BleOtaSecurityCallbacks.h"
@@ -13,25 +12,19 @@ class ArduinoBleOTAClass: public BLECharacteristicCallbacks
 public:
     ArduinoBleOTAClass();
 
-    bool begin(const std::string &deviceName,
-               OTAStorage &storage,
-               const std::string &hwName = " ",
+    bool begin(const std::string& deviceName,
+               OTAStorage& storage,
+               const std::string& hwName = " ",
                BleOtaVersion hwVersion = {},
-               const std::string &swName = " ",
+               const std::string& swName = " ",
                BleOtaVersion swVersion = {},
-               bool enableUpload = true, bool advertise = true);
-    bool begin(OTAStorage &storage,
-               const std::string &hwName = " ",
+               bool enableUpload = true);
+    bool begin(OTAStorage& storage,
+               const std::string& hwName = " ",
                BleOtaVersion hwVersion = {},
-               const std::string &swName = " ",
+               const std::string& swName = " ",
                BleOtaVersion swVersion = {},
-               bool enableUpload = true, bool advertise = true);
-    NimBLEService *begin(NimBLEServer *server, OTAStorage &storage,
-                         const std::string &hwName = " ",
-                         BleOtaVersion hwVersion = {},
-                         const std::string &swName = " ",
-                         BleOtaVersion swVersion = {},
-                         bool enableUpload = true, bool advertise = true);
+               bool enableUpload = true);
     void pull();
 
     void enableUpload();
@@ -41,7 +34,7 @@ public:
 
 private:
     friend BleOtaUploader;
-    void begin(NimBLEService& service,
+    void begin(BLEService& service,
                const std::string& hwName, BleOtaVersion hwVersion,
                const std::string& swName, BleOtaVersion swVersion);
     void onWrite(BLECharacteristic* characteristic) override;
@@ -53,4 +46,3 @@ private:
 };
 
 extern ArduinoBleOTAClass ArduinoBleOTA;
-#endif

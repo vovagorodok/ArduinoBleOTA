@@ -1,4 +1,5 @@
-#if !defined(USE_NIM_BLE_ARDUINO_LIB) && !defined(USE_ESP32_BLE_LIB)
+#include "BleOtaDefines.h"
+#ifdef USE_ARDUINO_BLE_LIB
 #include "ArduinoBleOtaClass.h"
 #include "BleOtaUploader.h"
 #include "BleOtaUuids.h"

@@ -1,3 +1,4 @@
+#include "BleOtaDefines.h"
 #ifdef USE_NATIVE_ESP32_LIB 
 #include "ArduinoBleOtaClassESP32Ble.h"
 #include "BleOtaUploader.h"
