@@ -1,5 +1,4 @@
-#ifdef ESP32 
-    #ifndef USE_NIM_BLE_ARDUINO_LIB
+#ifdef USE_NATIVE_ESP32_LIB 
 #include "ArduinoBleOtaClassESP32Ble.h"
 #include "BleOtaUploader.h"
 #include "BleOtaUuids.h"
@@ -150,5 +149,4 @@ void ArduinoBleOTAClass::send(const uint8_t* data, size_t length)
 }
 
 ArduinoBleOTAClass ArduinoBleOTA{};
-#endif
 #endif

@@ -8,7 +8,7 @@
 void setup() {
   initBle(NAME);
 
-#ifndef USE_NIM_BLE_ARDUINO_LIB
+#ifdef USE_ARDUINO_BLE_LIB
   static BLEService service(MY_SECOND_SERVICE_UUID);
   BLE.addService(service);
 #else
@@ -22,7 +22,7 @@ void setup() {
 }
 
 void loop() {
-#ifndef USE_NIM_BLE_ARDUINO_LIB
+#ifdef USE_ARDUINO_BLE_LIB
   BLE.poll();
 #endif
   ArduinoBleOTA.pull();
