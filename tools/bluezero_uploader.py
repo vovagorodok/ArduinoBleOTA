@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-from bleak import BleakClient, BleakScanner
+from bluezero import adapter
+from bluezero import central
 from time import sleep
-import asyncio
 import sys
 import zlib
 import os
 import datetime
-
 
 BLE_OTA_SERVICE_UUID = "15c155ca-36c5-11ed-adc0-9741d6a72f04"
 BLE_OTA_CHARACTERISTIC_UUID_RX = "15c1564c-36c5-11ed-adc1-a3d6cf5cc2a4"
@@ -59,22 +58,26 @@ def bytes_to_int(value):
 
 
 def int_to_u8_bytes(value):
-    return int.to_bytes(value, U8_BYTES_NUM, 'little', signed=False)
+    return list(int.to_bytes(value, U8_BYTES_NUM, 'little', signed=False))
 
 
 def int_to_u32_bytes(value):
-    return int.to_bytes(value, U32_BYTES_NUM, 'little', signed=False)
+    return list(int.to_bytes(value, U32_BYTES_NUM, 'little', signed=False))
 
 
-async def scan_ota_devices(timeout=5.0):
-    devices_dict = await BleakScanner.discover(timeout=timeout, return_adv=True)
+def scan_ota_devices(adapter_address=None, timeout=5.0):
+    for dongle in adapter.Adapter.available():
+        if adapter_address and adapter_address.upper() != dongle.address():
+            continue
 
-    for dev, adv in devices_dict.values():
-        if BLE_OTA_SERVICE_UUID.lower() in adv.service_uuids:
-            yield dev
+        dongle.nearby_discovery(timeout=timeout)
+
+        for dev in central.Central.available(dongle.address):
+            if BLE_OTA_SERVICE_UUID.lower() in dev.uuids:
+                yield dev
 
 
-async def handleResponse(resp):
+def handleResponse(resp):
     resp = bytes_to_int(resp)
     if resp == OK:
         return True
@@ -83,43 +86,53 @@ async def handleResponse(resp):
     return False
 
 
-async def handleBeginResponse(resp):
-    head = resp[HEAD_POS]
+def handleBeginResponse(resp):
+    respList = list(bytearray(resp))
+    head = respList[HEAD_POS]
     if head != OK:
         print(respToStr[head])
         return
 
-    if len(resp) != BEGIN_RESP_BYTES_NUM:
+    if len(respList) != BEGIN_RESP_BYTES_NUM:
         print("Incorrect begin responce")
         return
-    return bytes_to_int(resp[ATTR_SIZE_POS:BUFFER_SIZE_POS]), bytes_to_int(resp[BUFFER_SIZE_POS:])
+    return bytes_to_int(respList[ATTR_SIZE_POS:BUFFER_SIZE_POS]), bytes_to_int(respList[BUFFER_SIZE_POS:])
 
 
-async def connect(dev):
-    client = BleakClient(dev)
+def connect(dev):
+    device = central.Central(adapter_addr=dev.adapter, device_addr=dev.address)
+    rx_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_RX)
+    tx_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_TX)
+    hw_name_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_HW_NAME)
+    hw_ver_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_HW_VER)
+    sw_name_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_SW_NAME)
+    sw_ver_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
 
-    print(f"Connecting to {dev.name}")
-    if not await client.connect():
+    print(f"Connecting to {dev.alias}")
+    device.connect()
+    if not device.connected:
         print("Didn't connect to device!")
         return
 
-    service = client.services.get_service(BLE_OTA_SERVICE_UUID)
-    rx_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_RX)
-    tx_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_TX)
-    hw_name_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_NAME)
-    hw_ver_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_VER)
-    sw_name_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_NAME)
-    sw_ver_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
+    try:
+        print(", ".join([f"HW: {str(bytearray(hw_name_char.value), 'utf-8')}",
+                         f"VER: {list(bytearray(hw_ver_char.value))}",
+                         f"SW: {str(bytearray(sw_name_char.value), 'utf-8')}",
+                         f"VER: {list(bytearray(sw_ver_char.value))}"]))
+    except Exception as e:
+        print(e)
+        return
 
-    print(", ".join([f"HW: {str(await client.read_gatt_char(hw_name_char), 'utf-8')}",
-                     f"VER: {list(await client.read_gatt_char(hw_ver_char))}",
-                     f"SW: {str(await client.read_gatt_char(sw_name_char), 'utf-8')}",
-                     f"VER: {list(await client.read_gatt_char(sw_ver_char))}"]))
-
-    return client, rx_char, tx_char
+    return device, rx_char, tx_char
 
 
-async def upload(client: BleakClient, rx_char, tx_char, path):
+def upload(rx_char, tx_char, path):
     crc = 0
     uploaded_len = 0
     firmware_len = file_size(path)
@@ -129,9 +142,8 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
         print(f"File not exist: {path}")
         return False
 
-    begin_req = int_to_u8_bytes(BEGIN) + int_to_u32_bytes(firmware_len)
-    await client.write_gatt_char(rx_char, begin_req)
-    begin_resp = await handleBeginResponse(await client.read_gatt_char(tx_char))
+    rx_char.value = int_to_u8_bytes(BEGIN) + int_to_u32_bytes(firmware_len)
+    begin_resp = handleBeginResponse(tx_char.value)
     if not begin_resp:
         return False
     attr_size, buffer_size = begin_resp
@@ -143,10 +155,9 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
             if not data:
                 break
 
-            package = int_to_u8_bytes(PACKAGE) + data
-            await client.write_gatt_char(rx_char, package)
+            rx_char.value = int_to_u8_bytes(PACKAGE) + list(data)
             if current_buffer_len + len(data) > buffer_size:
-                if not await handleResponse(await client.read_gatt_char(tx_char)):
+                if not handleResponse(tx_char.value):
                     return False
                 current_buffer_len = 0
             current_buffer_len += len(data)
@@ -155,18 +166,21 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
             crc = zlib.crc32(data, crc)
             print(f"Uploaded: {uploaded_len}/{firmware_len}")
 
-    end_req = int_to_u8_bytes(END) + int_to_u32_bytes(crc)
-    await client.write_gatt_char(rx_char, end_req)
-    if not await handleResponse(await client.read_gatt_char(tx_char)):
+    rx_char.value = int_to_u8_bytes(END) + int_to_u32_bytes(crc)
+    if not handleResponse(tx_char.value):
         return False
 
     return True
 
 
-async def try_upload(client, rx_char, tx_char, path):
+def try_upload(rx_char, tx_char, path):
     time = datetime.datetime.now()
 
-    if not await upload(client, rx_char, tx_char, path):
+    try:
+        if not upload(rx_char, tx_char, path):
+            return False
+    except Exception as e:
+        print(e)
         return False
 
     upload_time = datetime.datetime.now() - time
@@ -174,37 +188,37 @@ async def try_upload(client, rx_char, tx_char, path):
     return True
 
 
-async def connect_and_upload(dev, path):
-    res = await connect(dev)
+def connect_and_upload(dev, path):
+    res = connect(dev)
     if not res:
         return
-    client, rx_char, tx_char = res
+    device, rx_char, tx_char = res
 
-    if not await try_upload(client, rx_char, tx_char, path):
-        await client.disconnect()
+    if not try_upload(rx_char, tx_char, path):
+        device.disconnect()
         return
-    await client.disconnect()
+    device.disconnect()
     sleep(1)
 
-    res = await connect(dev)
+    res = connect(dev)
     if not res:
         return
-    client, rx_char, tx_char = res
+    device, rx_char, tx_char = res
 
-    await client.disconnect()
+    device.disconnect()
     print("Success!")
 
 
-async def scan_and_upload(path):
+def scan_and_upload(path):
     devices = list()
 
     print("Devices:")
-    async for device in scan_ota_devices():
-        print(f"{len(devices)}. [{device.address}] {device.name}")
+    for device in scan_ota_devices():
+        print(f"{len(devices)}. [{device.address}] {device.alias}")
         devices.append(device)
 
     if not len(devices):
-        print("Device not found.")
+        print("Device not found")
         exit()
 
     user_input = input("Chose device [0]: ")
@@ -212,25 +226,16 @@ async def scan_and_upload(path):
     try:
         device_num = int(user_input)
         if device_num >= len(devices) or device_num < 0:
-            print("Incorrect device number.")
+            print("Incorrect device number")
             exit()
     except ValueError:
         device_num = 0
         if len(user_input):
-            print("Incorrect input.")
+            print("Incorrect input")
             exit()
 
-    await connect_and_upload(devices[device_num], path)
+    connect_and_upload(devices[device_num], path)
 
 
-def try_scan_and_upload(path):
-    try:
-        asyncio.run(scan_and_upload(path))
-    except KeyboardInterrupt:
-        print("User interrupt.")
-    except Exception as e:
-        print(e)
-
-
-if __name__ == "__main__":
-    try_scan_and_upload(sys.argv[1])
+if __name__ == '__main__':
+    scan_and_upload(sys.argv[1])

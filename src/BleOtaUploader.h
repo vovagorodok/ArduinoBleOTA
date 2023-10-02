@@ -42,7 +42,6 @@ private:
     bool enabled;
     bool uploading;
     bool installing;
-    uint32_t currentLength;
     uint32_t firmwareLength;
 };
 
