@@ -3,10 +3,7 @@
 #include "BleOtaVersion.h"
 #include "BleOtaSecurityCallbacks.h"
 #include "BleOtaUploadCallbacks.h"
-// #include <NimBLEDevice.h>
 #include <BLEDevice.h>
-#include <BLEServer.h>
-#include <BLECharacteristic.h>
 
 class BleOtaUploader;
 
