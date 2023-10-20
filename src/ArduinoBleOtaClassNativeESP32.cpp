@@ -1,5 +1,5 @@
 #include "BleOtaDefines.h"
-#ifdef USE_NATIVE_ESP32_LIB
+#ifdef USE_NATIVE_ESP32_BLE_LIB
 #include "ArduinoBleOtaClassNativeESP32.h"
 #include "BleOtaUploader.h"
 #include "BleOtaUuids.h"
