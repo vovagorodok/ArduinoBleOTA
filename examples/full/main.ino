@@ -3,8 +3,10 @@
 
 #define DEVICE_NAME "ArduinoBleOTA"
 
-#ifdef ESP32
+#if defined(ARDUINO_ARCH_ESP32)
   #define HW_NAME "Example ESP32"
+#elif defined(ARDUINO_ARCH_ATMELSAM)
+  #define HW_NAME "Example ATMELSAM"
 #else
   #define HW_NAME "Example HW"
 #endif
