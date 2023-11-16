@@ -35,7 +35,7 @@ build_firmware() {
     change_example "$OLD_SW_NAME" "$NEW_SW_NAME"
 
     pio run -e $BUILD_ENV
-    mv $BIN_PATH $OUT_DIR/${BUILD_PLATFORM}_${NEW_SW_NAME_AND_VER}_firmware.bin
+    mv $BIN_PATH $OUT_DIR/firmware_${BUILD_PLATFORM}_${NEW_SW_NAME_AND_VER}.bin
 
     change_example "$NEW_SW_VER" "$OLD_SW_VER"
     change_example "$NEW_HW_VER" "$OLD_HW_VER"
