@@ -68,18 +68,18 @@ def int_to_u32_bytes(value):
     return int.to_bytes(value, U32_BYTES_NUM, 'little', signed=False)
 
 
-async def acquire_mtu(client: BleakClient):
-    from bleak.backends.bluezdbus.client import BleakClientBlueZDBus
-    if type(client._backend) is BleakClientBlueZDBus:
-        await client._backend._acquire_mtu()
-
-
 async def scan_ota_devices(timeout=5.0):
     devices_dict = await BleakScanner.discover(timeout=timeout, return_adv=True)
 
     for dev, adv in devices_dict.values():
         if BLE_OTA_SERVICE_UUID.lower() in adv.service_uuids:
             yield dev
+
+
+async def acquire_mtu(client: BleakClient):
+    from bleak.backends.bluezdbus.client import BleakClientBlueZDBus
+    if type(client._backend) is BleakClientBlueZDBus:
+        await client._backend._acquire_mtu()
 
 
 async def handleResponse(resp):
