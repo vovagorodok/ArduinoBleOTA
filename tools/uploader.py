@@ -140,7 +140,7 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
     with open(path, 'rb') as f:
         while True:
             data = f.read(attr_size - HEAD_BYTES_NUM)
-            if not data:
+            if not len(data):
                 break
 
             package = int_to_u8_bytes(PACKAGE) + data
