@@ -37,6 +37,8 @@ respToStr = {
     UPLOAD_DISABLED: "Upload disabled"
 }
 
+MTU_WRITE_OVERHEAD_BYTES_NUM = 3
+
 U8_BYTES_NUM = 1
 U32_BYTES_NUM = 4
 HEAD_BYTES_NUM = U8_BYTES_NUM
@@ -64,6 +66,12 @@ def int_to_u8_bytes(value):
 
 def int_to_u32_bytes(value):
     return int.to_bytes(value, U32_BYTES_NUM, 'little', signed=False)
+
+
+async def acquire_mtu(client: BleakClient):
+    from bleak.backends.bluezdbus.client import BleakClientBlueZDBus
+    if type(client._backend) is BleakClientBlueZDBus:
+        await client._backend._acquire_mtu()
 
 
 async def scan_ota_devices(timeout=5.0):
@@ -103,6 +111,8 @@ async def connect(dev):
         print("Didn't connect to device!")
         return
 
+    await acquire_mtu(client)
+
     service = client.services.get_service(BLE_OTA_SERVICE_UUID)
     rx_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_RX)
     tx_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_TX)
@@ -135,6 +145,8 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
     if not begin_resp:
         return False
     attr_size, buffer_size = begin_resp
+    attr_size = min(attr_size, client.mtu_size - MTU_WRITE_OVERHEAD_BYTES_NUM)
+
     print(f"Begin upload: attr size: {attr_size}, buffer size: {buffer_size}")
 
     with open(path, 'rb') as f:
