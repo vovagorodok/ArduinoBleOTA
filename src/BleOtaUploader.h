@@ -4,7 +4,7 @@
 #include <CRC32.h>
 
 #ifndef BLE_OTA_NO_BUFFER
-#include <CircularBuffer.h>
+#include <CircularBuffer.hpp>
 #endif
 
 class BleOtaUploader
