@@ -5,7 +5,7 @@
 #include <Preferences.h>
 
 #define BLE_OTA_SECURITY_DICT "ota_security"
-#define BLE_OTA_PIN_KEY "ota_pin"
+#define BLE_OTA_PIN_CODE_KEY "ota_pin"
 
 class BleOtaSecurityOnConnect : public BleOtaSecurityCallbacks,
                                 public BLEServerCallbacks
@@ -16,13 +16,13 @@ public:
         if (not prefs.begin(BLE_OTA_SECURITY_DICT))
             return;
 
-        if (not prefs.isKey(BLE_OTA_PIN_KEY))
+        if (not prefs.isKey(BLE_OTA_PIN_CODE_KEY))
         {
             prefs.end();
             return;
         }
 
-        BLEDevice::setSecurityPasskey(prefs.getUInt(BLE_OTA_PIN_KEY));
+        BLEDevice::setSecurityPasskey(prefs.getUInt(BLE_OTA_PIN_CODE_KEY));
         BLEDevice::setSecurityAuth(true, true, true);
         BLEDevice::setSecurityIOCap(BLE_HS_IO_DISPLAY_ONLY);
         auto* server = BLEDevice::createServer();
@@ -30,24 +30,24 @@ public:
         prefs.end();
     }
 
-    bool setPin(uint32_t pin) override
+    bool setPinCode(uint32_t pinCode) override
     {
         if (not prefs.begin(BLE_OTA_SECURITY_DICT))
             return false;
 
-        const bool result = prefs.putUInt(BLE_OTA_PIN_KEY, pin);
+        const bool result = prefs.putUInt(BLE_OTA_PIN_CODE_KEY, pinCode);
 
         prefs.end();
         return result;
     }
 
-    bool removePin() override
+    bool removePinCode() override
     {
         if (not prefs.begin(BLE_OTA_SECURITY_DICT))
             return false;
 
-        const bool result = not prefs.isKey(BLE_OTA_PIN_KEY) or
-                            prefs.remove(BLE_OTA_PIN_KEY);
+        const bool result = not prefs.isKey(BLE_OTA_PIN_CODE_KEY) or
+                            prefs.remove(BLE_OTA_PIN_CODE_KEY);
 
         prefs.end();
         return result;

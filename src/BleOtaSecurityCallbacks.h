@@ -4,12 +4,12 @@
 class BleOtaSecurityCallbacks
 {
 public:
-    virtual bool setPin(uint32_t pin)
+    virtual bool setPinCode(uint32_t pinCode)
     {
         return false;
     }
 
-    virtual bool removePin()
+    virtual bool removePinCode()
     {
         return false;
     }

@@ -12,5 +12,5 @@
 #define PACKAGE 0x11
 #define END 0x12
 
-#define SET_PIN 0x20
-#define REMOVE_PIN 0x21
+#define SET_PIN_CODE 0x20
+#define REMOVE_PIN_CODE 0x21

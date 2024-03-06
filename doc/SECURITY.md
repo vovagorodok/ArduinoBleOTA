@@ -9,14 +9,14 @@ Reimplement `BleOtaSecurityCallbacks` for that and add by `setSecurityCallbacks(
 
 From protocol side used additional head codes:
 ```
-SET_PIN 0x20
-REMOVE_PIN 0x21
+SET_PIN_CODE 0x20
+REMOVE_PIN_CODE 0x21
 ```
 
 For example:
 ```
--> SET_PIN <uint32 pin>
+-> SET_PIN_CODE <uint32 pin code>
 <- OK
--> REMOVE_PIN
+-> REMOVE_PIN_CODE
 <- OK
 ```
