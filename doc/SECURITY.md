@@ -1,10 +1,10 @@
 ## Overal
-There are possibilities to disable uploads or change pin.
+There are possibilities to disable uploads or change pin code.
 
 ## Disable uploads
 Uploads can be disabled at the bagining in `begin()` method or later using `disableUpload()` method.
 
-## Change Pin
+## Change Pin Code
 Reimplement `BleOtaSecurityCallbacks` for that and add by `setSecurityCallbacks()` method.
 
 From protocol side used additional head codes:
