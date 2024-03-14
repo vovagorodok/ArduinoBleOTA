@@ -102,7 +102,7 @@ async def get_mtu(client: BleakClient):
         return client.mtu_size
 
 
-async def handleResponse(resp):
+async def handle_response(resp):
     resp = bytes_to_int(resp)
     if resp == OK:
         return True
@@ -111,7 +111,7 @@ async def handleResponse(resp):
     return False
 
 
-async def handleBeginResponse(resp):
+async def handle_begin_response(resp):
     head = resp[HEAD_POS]
     if head != OK:
         print(respToStr[head])
@@ -167,7 +167,7 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
 
     begin_req = int_to_u8_bytes(BEGIN) + int_to_u32_bytes(firmware_len)
     await client.write_gatt_char(rx_char, begin_req)
-    begin_resp = await handleBeginResponse(await queue.get())
+    begin_resp = await handle_begin_response(await queue.get())
     if not begin_resp:
         return False
     attr_size, buffer_size = begin_resp
@@ -187,7 +187,7 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
             package = int_to_u8_bytes(PACKAGE) + data
             await client.write_gatt_char(rx_char, package)
             if current_buffer_len + len(data) > buffer_size:
-                if not await handleResponse(await queue.get()):
+                if not await handle_response(await queue.get()):
                     return False
                 current_buffer_len = 0
             current_buffer_len += len(data)
@@ -198,7 +198,7 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
 
     end_req = int_to_u8_bytes(END) + int_to_u32_bytes(crc)
     await client.write_gatt_char(rx_char, end_req)
-    if not await handleResponse(await queue.get()):
+    if not await handle_response(await queue.get()):
         return False
 
     return True

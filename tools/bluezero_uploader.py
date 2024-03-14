@@ -77,7 +77,7 @@ def scan_ota_devices(adapter_address=None, timeout=5.0):
                 yield dev
 
 
-def handleResponse(resp):
+def handle_response(resp):
     resp = bytes_to_int(resp)
     if resp == OK:
         return True
@@ -86,7 +86,7 @@ def handleResponse(resp):
     return False
 
 
-def handleBeginResponse(resp):
+def handle_begin_response(resp):
     respList = list(bytearray(resp))
     head = respList[HEAD_POS]
     if head != OK:
@@ -143,7 +143,7 @@ def upload(rx_char, tx_char, path):
         return False
 
     rx_char.value = int_to_u8_bytes(BEGIN) + int_to_u32_bytes(firmware_len)
-    begin_resp = handleBeginResponse(tx_char.value)
+    begin_resp = handle_begin_response(tx_char.value)
     if not begin_resp:
         return False
     attr_size, buffer_size = begin_resp
@@ -157,7 +157,7 @@ def upload(rx_char, tx_char, path):
 
             rx_char.value = int_to_u8_bytes(PACKAGE) + list(data)
             if current_buffer_len + len(data) > buffer_size:
-                if not handleResponse(tx_char.value):
+                if not handle_response(tx_char.value):
                     return False
                 current_buffer_len = 0
             current_buffer_len += len(data)
@@ -167,7 +167,7 @@ def upload(rx_char, tx_char, path):
             print(f"Uploaded: {uploaded_len}/{firmware_len}")
 
     rx_char.value = int_to_u8_bytes(END) + int_to_u32_bytes(crc)
-    if not handleResponse(tx_char.value):
+    if not handle_response(tx_char.value):
         return False
 
     return True
