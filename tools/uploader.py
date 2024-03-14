@@ -159,9 +159,15 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
         print(f"File not exist: {path}")
         return False
 
+    # issue: https://github.com/hbldh/bleak/issues/1501
+    queue = asyncio.Queue(1)
+    async def callback(char, array):
+        await queue.put(array)
+    await client.start_notify(tx_char, callback)
+
     begin_req = int_to_u8_bytes(BEGIN) + int_to_u32_bytes(firmware_len)
     await client.write_gatt_char(rx_char, begin_req)
-    begin_resp = await handleBeginResponse(await client.read_gatt_char(tx_char))
+    begin_resp = await handleBeginResponse(await queue.get())
     if not begin_resp:
         return False
     attr_size, buffer_size = begin_resp
@@ -169,11 +175,6 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
     mtu = await get_mtu(client)
     if (mtu):
         attr_size = min(attr_size, mtu - MTU_WRITE_OVERHEAD_BYTES_NUM)
-
-    queue = asyncio.Queue(1)
-    async def callback(char, array):
-        await queue.put(array)
-    await client.start_notify(tx_char, callback)
 
     print(f"Begin upload: attr size: {attr_size}, buffer size: {buffer_size}")
 
@@ -197,7 +198,7 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
 
     end_req = int_to_u8_bytes(END) + int_to_u32_bytes(crc)
     await client.write_gatt_char(rx_char, end_req)
-    if not await handleResponse(await client.read_gatt_char(tx_char)):
+    if not await handleResponse(await queue.get()):
         return False
 
     return True
