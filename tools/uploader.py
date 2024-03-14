@@ -6,6 +6,7 @@ import sys
 import zlib
 import os
 import datetime
+import platform
 
 
 BLE_OTA_SERVICE_UUID = "15c155ca-36c5-11ed-adc0-9741d6a72f04"
@@ -76,10 +77,29 @@ async def scan_ota_devices(timeout=5.0):
             yield dev
 
 
+def is_fedora_39():
+    if not 'Linux' in platform.system():
+        return False
+    release = platform.freedesktop_os_release()
+    return 'Fedora' in release['NAME'] and '39' in release['VERSION']
+
+
 async def acquire_mtu(client: BleakClient):
     from bleak.backends.bluezdbus.client import BleakClientBlueZDBus
-    if type(client._backend) is BleakClientBlueZDBus:
-        await client._backend._acquire_mtu()
+    if type(client._backend) is not BleakClientBlueZDBus:
+        return
+    
+    # issue: https://github.com/hbldh/bleak/issues/1471
+    if is_fedora_39():
+        return
+
+    # in Linux acquire mtu should be called in order to have more than 23
+    await client._backend._acquire_mtu()
+
+
+async def get_mtu(client: BleakClient):
+    if not is_fedora_39():
+        return client.mtu_size
 
 
 async def handleResponse(resp):
@@ -145,7 +165,10 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
     if not begin_resp:
         return False
     attr_size, buffer_size = begin_resp
-    attr_size = min(attr_size, client.mtu_size - MTU_WRITE_OVERHEAD_BYTES_NUM)
+    
+    mtu = await get_mtu(client)
+    if (mtu):
+        attr_size = min(attr_size, mtu - MTU_WRITE_OVERHEAD_BYTES_NUM)
 
     queue = asyncio.Queue(1)
     async def callback(char, array):
