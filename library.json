@@ -26,10 +26,10 @@
     "homepage": "https://github.com/vovagorodok/ArduinoBleOTA",
     "dependencies":
     {
-      "jandrassy/ArduinoOTA":"^1.0.10",
-      "robtillaart/CRC":"^1.0.0",
-      "rlogiacco/CircularBuffer":"^1.3.3",
-      "arduino-libraries/ArduinoBLE":"^1.3.5"
+      "jandrassy/ArduinoOTA":"^1.1.0",
+      "robtillaart/CRC":"^1.0.2",
+      "rlogiacco/CircularBuffer":"^1.4.0",
+      "arduino-libraries/ArduinoBLE":"^1.3.6"
     },
     "headers": ["ArduinoBleOTA.h", "BleOtaMultiservice.h"],
     "frameworks": "arduino",

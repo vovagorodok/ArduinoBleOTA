@@ -4,7 +4,7 @@
 #include <CRC32.h>
 
 #ifndef BLE_OTA_NO_BUFFER
-#include <CircularBuffer.h>
+#include <CircularBuffer.hpp>
 #endif
 
 class BleOtaUploader
@@ -21,8 +21,8 @@ private:
     void handleBegin(const uint8_t* data, size_t length);
     void handlePackage(const uint8_t* data, size_t length);
     void handleEnd(const uint8_t* data, size_t length);
-    void handleSetPin(const uint8_t* data, size_t length);
-    void handleRemovePin(const uint8_t* data, size_t length);
+    void handleSetPinCode(const uint8_t* data, size_t length);
+    void handleRemovePinCode(const uint8_t* data, size_t length);
     void handleInstall();
     void handleError(uint8_t errorCode);
     void send(uint8_t head);

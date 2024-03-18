@@ -65,11 +65,11 @@ void BleOtaUploader::onData(const uint8_t* data, size_t length)
     case END:
         handleEnd(data + 1, length - 1);
         break;
-    case SET_PIN:
-        handleSetPin(data + 1, length - 1);
+    case SET_PIN_CODE:
+        handleSetPinCode(data + 1, length - 1);
         break;
-    case REMOVE_PIN:
-        handleRemovePin(data + 1, length - 1);
+    case REMOVE_PIN_CODE:
+        handleRemovePinCode(data + 1, length - 1);
         break;
     default:
         handleError(INCORRECT_FORMAT);
@@ -192,7 +192,7 @@ void BleOtaUploader::handleEnd(const uint8_t* data, size_t length)
     installing = true;
 }
 
-void BleOtaUploader::handleSetPin(const uint8_t* data, size_t length)
+void BleOtaUploader::handleSetPinCode(const uint8_t* data, size_t length)
 {
     if (uploading)
     {
@@ -205,12 +205,12 @@ void BleOtaUploader::handleSetPin(const uint8_t* data, size_t length)
         return;
     }
 
-    uint32_t pin;
-    memcpy(&pin, data, length);
-    send(ArduinoBleOTA.securityCallbacks->setPin(pin) ? OK : NOK);
+    uint32_t pinCode;
+    memcpy(&pinCode, data, length);
+    send(ArduinoBleOTA.securityCallbacks->setPinCode(pinCode) ? OK : NOK);
 }
 
-void BleOtaUploader::handleRemovePin(const uint8_t* data, size_t length)
+void BleOtaUploader::handleRemovePinCode(const uint8_t* data, size_t length)
 {
     if (uploading)
     {
@@ -223,7 +223,7 @@ void BleOtaUploader::handleRemovePin(const uint8_t* data, size_t length)
         return;
     }
 
-    send(ArduinoBleOTA.securityCallbacks->removePin() ? OK : NOK);
+    send(ArduinoBleOTA.securityCallbacks->removePinCode() ? OK : NOK);
 }
 
 void BleOtaUploader::handleInstall()

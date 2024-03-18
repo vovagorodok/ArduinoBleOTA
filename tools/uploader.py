@@ -6,6 +6,7 @@ import sys
 import zlib
 import os
 import datetime
+import platform
 
 
 BLE_OTA_SERVICE_UUID = "15c155ca-36c5-11ed-adc0-9741d6a72f04"
@@ -36,6 +37,8 @@ respToStr = {
     INTERNAL_STORAGE_ERROR: "Internal storage error",
     UPLOAD_DISABLED: "Upload disabled"
 }
+
+MTU_WRITE_OVERHEAD_BYTES_NUM = 3
 
 U8_BYTES_NUM = 1
 U32_BYTES_NUM = 4
@@ -74,7 +77,32 @@ async def scan_ota_devices(timeout=5.0):
             yield dev
 
 
-async def handleResponse(resp):
+def is_fedora_39():
+    if not 'Linux' in platform.system():
+        return False
+    release = platform.freedesktop_os_release()
+    return 'Fedora' in release['NAME'] and '39' in release['VERSION']
+
+
+async def acquire_mtu(client: BleakClient):
+    from bleak.backends.bluezdbus.client import BleakClientBlueZDBus
+    if type(client._backend) is not BleakClientBlueZDBus:
+        return
+    
+    # issue: https://github.com/hbldh/bleak/issues/1471
+    if is_fedora_39():
+        return
+
+    # in Linux acquire mtu should be called in order to have more than 23
+    await client._backend._acquire_mtu()
+
+
+async def get_mtu(client: BleakClient):
+    if not is_fedora_39():
+        return client.mtu_size
+
+
+async def handle_response(resp):
     resp = bytes_to_int(resp)
     if resp == OK:
         return True
@@ -83,7 +111,7 @@ async def handleResponse(resp):
     return False
 
 
-async def handleBeginResponse(resp):
+async def handle_begin_response(resp):
     head = resp[HEAD_POS]
     if head != OK:
         print(respToStr[head])
@@ -102,6 +130,8 @@ async def connect(dev):
     if not await client.connect():
         print("Didn't connect to device!")
         return
+
+    await acquire_mtu(client)
 
     service = client.services.get_service(BLE_OTA_SERVICE_UUID)
     rx_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_RX)
@@ -129,24 +159,35 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
         print(f"File not exist: {path}")
         return False
 
+    # issue: https://github.com/hbldh/bleak/issues/1501
+    queue = asyncio.Queue(1)
+    async def callback(char, array):
+        await queue.put(array)
+    await client.start_notify(tx_char, callback)
+
     begin_req = int_to_u8_bytes(BEGIN) + int_to_u32_bytes(firmware_len)
     await client.write_gatt_char(rx_char, begin_req)
-    begin_resp = await handleBeginResponse(await client.read_gatt_char(tx_char))
+    begin_resp = await handle_begin_response(await queue.get())
     if not begin_resp:
         return False
     attr_size, buffer_size = begin_resp
+    
+    mtu = await get_mtu(client)
+    if (mtu):
+        attr_size = min(attr_size, mtu - MTU_WRITE_OVERHEAD_BYTES_NUM)
+
     print(f"Begin upload: attr size: {attr_size}, buffer size: {buffer_size}")
 
     with open(path, 'rb') as f:
         while True:
             data = f.read(attr_size - HEAD_BYTES_NUM)
-            if not data:
+            if not len(data):
                 break
 
             package = int_to_u8_bytes(PACKAGE) + data
             await client.write_gatt_char(rx_char, package)
             if current_buffer_len + len(data) > buffer_size:
-                if not await handleResponse(await client.read_gatt_char(tx_char)):
+                if not await handle_response(await queue.get()):
                     return False
                 current_buffer_len = 0
             current_buffer_len += len(data)
@@ -157,7 +198,7 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
 
     end_req = int_to_u8_bytes(END) + int_to_u32_bytes(crc)
     await client.write_gatt_char(rx_char, end_req)
-    if not await handleResponse(await client.read_gatt_char(tx_char)):
+    if not await handle_response(await queue.get()):
         return False
 
     return True
