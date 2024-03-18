@@ -77,11 +77,11 @@ async def scan_ota_devices(timeout=5.0):
             yield dev
 
 
-def is_fedora_39():
+def is_fedora():
     if not 'Linux' in platform.system():
         return False
     release = platform.freedesktop_os_release()
-    return 'Fedora' in release['NAME'] and '39' in release['VERSION']
+    return 'Fedora' in release['NAME']
 
 
 async def acquire_mtu(client: BleakClient):
@@ -90,7 +90,7 @@ async def acquire_mtu(client: BleakClient):
         return
     
     # issue: https://github.com/hbldh/bleak/issues/1471
-    if is_fedora_39():
+    if is_fedora():
         return
 
     # in Linux acquire mtu should be called in order to have more than 23
@@ -98,7 +98,7 @@ async def acquire_mtu(client: BleakClient):
 
 
 async def get_mtu(client: BleakClient):
-    if not is_fedora_39():
+    if not is_fedora():
         return client.mtu_size
 
 
