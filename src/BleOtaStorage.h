@@ -5,7 +5,7 @@
 #if FLASHEND >= 0xFFFF
 #include "InternalStorageAVR.h"
 #endif
-#elif defined(STM32F1xx) || defined(STM32WBxx)
+#elif defined(STM32F1xx)
 #include <InternalStorageSTM32.h>
 #elif defined(ARDUINO_ARCH_RP2040)
 #include <InternalStorageRP2.h>
