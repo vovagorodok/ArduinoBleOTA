@@ -4,7 +4,7 @@ SCRIPT_DIR=$( cd $( dirname $0 ) && pwd )
 OUT_DIR=$SCRIPT_DIR/out
 PROJECT_DIR=$SCRIPT_DIR/../..
 PIO_BUILD_DIR=$PROJECT_DIR/.pio/build
-EXAMPLE_PATH=$PROJECT_DIR/examples/full/main.ino
+EXAMPLE_PATH=$PROJECT_DIR/examples/full/full.ino
 
 source ~/.platformio/penv/bin/activate
 
