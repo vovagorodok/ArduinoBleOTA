@@ -77,28 +77,34 @@ async def scan_ota_devices(timeout=5.0):
             yield dev
 
 
+def is_linux():
+    return not 'Linux' in platform.system()
+
+
 def is_fedora():
-    if not 'Linux' in platform.system():
-        return False
     release = platform.freedesktop_os_release()
     return 'Fedora' in release['NAME']
 
 
 async def acquire_mtu(client: BleakClient):
-    from bleak.backends.bluezdbus.client import BleakClientBlueZDBus
-    if type(client._backend) is not BleakClientBlueZDBus:
+    if not is_linux():
         return
-    
+
     # issue: https://github.com/hbldh/bleak/issues/1471
     if is_fedora():
         return
 
+    from bleak.backends.bluezdbus.client import BleakClientBlueZDBus
+    if type(client._backend) is not BleakClientBlueZDBus:
+        return
+    
     # in Linux acquire mtu should be called in order to have more than 23
     await client._backend._acquire_mtu()
 
 
 async def get_mtu(client: BleakClient):
-    if not is_fedora():
+    is_fedora_linux = is_linux() and is_fedora()
+    if not is_fedora_linux:
         return client.mtu_size
 
 
