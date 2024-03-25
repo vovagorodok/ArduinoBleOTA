@@ -78,7 +78,7 @@ async def scan_ota_devices(timeout=5.0):
 
 
 def is_linux():
-    return not 'Linux' in platform.system()
+    return 'Linux' in platform.system()
 
 
 def is_fedora():
