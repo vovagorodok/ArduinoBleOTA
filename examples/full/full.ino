@@ -5,7 +5,7 @@
 
 #ifdef ARDUINO_ARCH_ESP32
   #define HW_NAME "Example ESP32"
-#elif ARDUINO_ARCH_ATMELSAM
+#elif ARDUINO_SAMD_NANO_33_IOT
   #define HW_NAME "Example ATMELSAM"
 #else
   #define HW_NAME "Example HW"
