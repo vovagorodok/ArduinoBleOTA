@@ -55,4 +55,4 @@ build_firmware_for_platform() {
 }
 
 build_firmware_for_platform "esp32" "esp32dev"
-build_firmware_for_platform "atmelsam" "nano_33_iot"
+build_firmware_for_platform "samd" "nano_33_iot"
