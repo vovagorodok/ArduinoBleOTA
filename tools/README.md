@@ -10,7 +10,7 @@ python3 tools/uploader.py .pio/build/esp32dev/firmware.bin
 ```
 
 ## Upload current bin file
-Works only with VS Code with PlatformIO plugin.\
+Works only with VS Code with PlatformIO plugin.  
 Using python script:
 ```
 python3 tools/current_binary_uploader.py

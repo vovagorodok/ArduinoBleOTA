@@ -1,5 +1,5 @@
 ## Overal
-Binary protocol where each transfer block contains `uint8` head at the begining.\
+Binary protocol where each transfer block contains `uint8` head at the begining.  
 Head codes:
 ```
 OK 0x00
@@ -16,8 +16,8 @@ END 0x12
 ```
 
 ## Basic scenario
-Designations for examples:\
-`->` - recived from central\
+Designations for examples:  
+`->` - recived from central  
 `<-` - send to central
 ```
 -> BEGIN <uint32 firmware size>
@@ -33,11 +33,11 @@ Designations for examples:\
 -> END <uint32 crc32 checksum>
 <- OK
 ```
-`<uint32 attribute size>` maximal trensfer block.\
-`<uint32 buffer size>` internal buffer stored in RAM in order to handle packages without responses.\
-Maximal `<uint8[] data>` size is `<uint32 attribute size> - <head size>` bytes, where `<head size>` is 1 byte.\
+`<uint32 attribute size>` maximal trensfer block.  
+`<uint32 buffer size>` internal buffer stored in RAM in order to handle packages without responses.  
+Maximal `<uint8[] data>` size is `<uint32 attribute size> - <head size>` bytes, where `<head size>` is 1 byte.  
 Internal buffer is created in order to increase upload speed. Packages can be handled immediately, because are stored in RAM instead of flash.
-Central should wait response only when buffer is overloaded.\
+Central should wait response only when buffer is overloaded.  
 In order to know more about error codes ckeck scenarios below.
 
 ## Comunication lost scenario
