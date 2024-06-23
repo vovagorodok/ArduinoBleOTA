@@ -1,6 +1,7 @@
 {
     "hardware_name": "Example SAMD",
     "hardware_icon": "https://raw.githubusercontent.com/vovagorodok/ble_ota_app/main/web/icons/Icon-192.png",
+    "hardware_text": "https://raw.githubusercontent.com/vovagorodok/ArduinoBleOTA/main/README.md",
     "softwares": [
         {
 
