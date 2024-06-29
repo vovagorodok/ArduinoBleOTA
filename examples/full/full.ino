@@ -2,6 +2,7 @@
 #include <BleOtaSecurityOnConnect.h>
 
 #define DEVICE_NAME "ArduinoBleOTA"
+#define MF_NAME "Example MF"
 
 #ifdef ARDUINO_ARCH_ESP32
   #define HW_NAME "Example ESP32"
@@ -20,7 +21,7 @@ BleOtaSecurityOnConnect security;
 #endif
 
 void setup() {
-  ArduinoBleOTA.begin(DEVICE_NAME, InternalStorage, HW_NAME, HW_VER, SW_NAME, SW_VER);
+  ArduinoBleOTA.begin(DEVICE_NAME, InternalStorage, MF_NAME, HW_NAME, HW_VER, SW_NAME, SW_VER);
 
 #ifdef USE_NIM_BLE_ARDUINO_LIB
   ArduinoBleOTA.setSecurityCallbacks(security);

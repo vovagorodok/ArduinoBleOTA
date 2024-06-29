@@ -7,13 +7,14 @@ import zlib
 import os
 import datetime
 
-BLE_OTA_SERVICE_UUID = "15c155ca-36c5-11ed-adc0-9741d6a72f04"
-BLE_OTA_CHARACTERISTIC_UUID_RX = "15c1564c-36c5-11ed-adc1-a3d6cf5cc2a4"
-BLE_OTA_CHARACTERISTIC_UUID_TX = "15c156e2-36c5-11ed-adc2-7396d4fd413a"
-BLE_OTA_CHARACTERISTIC_UUID_HW_NAME = "15c1576e-36c5-11ed-adc3-8799895de51e"
-BLE_OTA_CHARACTERISTIC_UUID_HW_VER = "15c157fa-36c5-11ed-adc4-579c60267b47"
-BLE_OTA_CHARACTERISTIC_UUID_SW_NAME = "15c15886-36c5-11ed-adc5-1bc0d0a6069d"
-BLE_OTA_CHARACTERISTIC_UUID_SW_VER = "15c1591c-36c5-11ed-adc6-dbe9603dbf19"
+BLE_OTA_SERVICE_UUID = "dac890c2-35a1-11ef-aba0-9b95565f4ffb"
+BLE_OTA_CHARACTERISTIC_UUID_RX = "dac89194-35a1-11ef-aba1-b37714ad9a54"
+BLE_OTA_CHARACTERISTIC_UUID_TX = "dac89266-35a1-11ef-aba2-0f0127bce478"
+BLE_OTA_CHARACTERISTIC_UUID_MF_NAME = "dac89338-35a1-11ef-aba3-8746a2fdea8c"
+BLE_OTA_CHARACTERISTIC_UUID_HW_NAME = "dac89414-35a1-11ef-aba4-7fa301ad5c49"
+BLE_OTA_CHARACTERISTIC_UUID_HW_VER = "dac894e6-35a1-11ef-aba5-0fcd13588409"
+BLE_OTA_CHARACTERISTIC_UUID_SW_NAME = "dac895b8-35a1-11ef-aba6-63ebb073a878"
+BLE_OTA_CHARACTERISTIC_UUID_SW_VER = "dac89694-35a1-11ef-aba7-bf64db99d724"
 
 OK = 0x00
 NOK = 0x01
@@ -105,6 +106,8 @@ def connect(dev):
         BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_RX)
     tx_char = device.add_characteristic(
         BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_TX)
+    mf_name_char = device.add_characteristic(
+        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_MF_NAME)
     hw_name_char = device.add_characteristic(
         BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_HW_NAME)
     hw_ver_char = device.add_characteristic(
@@ -121,7 +124,8 @@ def connect(dev):
         return
 
     try:
-        print(", ".join([f"HW: {str(bytearray(hw_name_char.value), 'utf-8')}",
+        print(", ".join([f"MF: {str(bytearray(mf_name_char.value), 'utf-8')}",
+                         f"HW: {str(bytearray(hw_name_char.value), 'utf-8')}",
                          f"VER: {list(bytearray(hw_ver_char.value))}",
                          f"SW: {str(bytearray(sw_name_char.value), 'utf-8')}",
                          f"VER: {list(bytearray(sw_ver_char.value))}"]))

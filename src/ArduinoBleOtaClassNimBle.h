@@ -14,12 +14,14 @@ public:
 
     bool begin(const std::string& deviceName,
                OTAStorage& storage,
+               const std::string& mfName = " ",
                const std::string& hwName = " ",
                BleOtaVersion hwVersion = {},
                const std::string& swName = " ",
                BleOtaVersion swVersion = {},
                bool enableUpload = true);
     bool begin(OTAStorage& storage,
+               const std::string& mfName = " ",
                const std::string& hwName = " ",
                BleOtaVersion hwVersion = {},
                const std::string& swName = " ",
@@ -35,6 +37,7 @@ public:
 private:
     friend BleOtaUploader;
     void begin(BLEService& service,
+               const std::string& mfName,
                const std::string& hwName, BleOtaVersion hwVersion,
                const std::string& swName, BleOtaVersion swVersion);
     void onWrite(BLECharacteristic* characteristic) override;

@@ -10,6 +10,7 @@ namespace
 BLEService service(BLE_OTA_SERVICE_UUID);
 BLECharacteristic rxCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_RX, BLEWriteWithoutResponse, BLE_OTA_MAX_ATTR_SIZE);
 BLECharacteristic txCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_TX, BLERead | BLENotify, BLE_OTA_MAX_ATTR_SIZE);
+BLEStringCharacteristic mfNameCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_MF_NAME, BLERead, BLE_OTA_MAX_ATTR_SIZE);
 BLEStringCharacteristic hwNameCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_NAME, BLERead, BLE_OTA_MAX_ATTR_SIZE);
 BLEStringCharacteristic swNameCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_NAME, BLERead, BLE_OTA_MAX_ATTR_SIZE);
 BLECharacteristic hwVerCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_VER, BLERead, sizeof(BleOtaVersion), true);
@@ -30,6 +31,7 @@ ArduinoBleOTAClass::ArduinoBleOTAClass() :
 {}
 
 bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage,
+                               const String& mfName,
                                const String& hwName, BleOtaVersion hwVersion,
                                const String& swName, BleOtaVersion swVersion,
                                bool enableUpload)
@@ -40,13 +42,14 @@ bool ArduinoBleOTAClass::begin(const String& deviceName, OTAStorage& storage,
     BLE.setLocalName(deviceName.c_str());
     BLE.setDeviceName(deviceName.c_str());
 
-    if(!begin(storage, hwName, hwVersion, swName, swVersion, enableUpload))
+    if(!begin(storage, mfName, hwName, hwVersion, swName, swVersion, enableUpload))
         return false;
 
     return BLE.advertise();
 }
 
 bool ArduinoBleOTAClass::begin(OTAStorage& storage,
+                               const String& mfName,
                                const String& hwName, BleOtaVersion hwVersion,
                                const String& swName, BleOtaVersion swVersion,
                                bool enableUpload)
@@ -57,16 +60,19 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
     service.addCharacteristic(txCharacteristic);
     rxCharacteristic.setEventHandler(BLEWritten, onWrite);
 
-    begin(hwName, hwVersion, swName, swVersion);
+    begin(mfName, hwName, hwVersion, swName, swVersion);
 
     BLE.addService(service);
 
     return BLE.setAdvertisedService(service);
 }
 
-void ArduinoBleOTAClass::begin(const String& hwName, BleOtaVersion hwVersion,
+void ArduinoBleOTAClass::begin(const String& mfName,
+                               const String& hwName, BleOtaVersion hwVersion,
                                const String& swName, BleOtaVersion swVersion)
 {
+    service.addCharacteristic(mfNameCharacteristic);
+    mfNameCharacteristic.setValue(mfName);
     service.addCharacteristic(hwNameCharacteristic);
     hwNameCharacteristic.setValue(hwName);
     service.addCharacteristic(swNameCharacteristic);

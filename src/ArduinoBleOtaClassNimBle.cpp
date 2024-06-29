@@ -18,6 +18,7 @@ ArduinoBleOTAClass::ArduinoBleOTAClass() :
 {}
 
 bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storage,
+                               const std::string& mfName,
                                const std::string& hwName, BleOtaVersion hwVersion,
                                const std::string& swName, BleOtaVersion swVersion,
                                bool enableUpload)
@@ -25,7 +26,7 @@ bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storag
     BLEDevice::init(deviceName);
     auto* server = BLEDevice::createServer();
 
-    if(!begin(storage, hwName, hwVersion, swName, swVersion, enableUpload))
+    if(!begin(storage, mfName, hwName, hwVersion, swName, swVersion, enableUpload))
         return false;
 
     auto* advertising = server->getAdvertising();
@@ -36,6 +37,7 @@ bool ArduinoBleOTAClass::begin(const std::string& deviceName, OTAStorage& storag
 }
 
 bool ArduinoBleOTAClass::begin(OTAStorage& storage,
+                               const std::string& mfName,
                                const std::string& hwName, BleOtaVersion hwVersion,
                                const std::string& swName, BleOtaVersion swVersion,
                                bool enableUpload)
@@ -59,7 +61,7 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
     );
     this->txCharacteristic = txCharacteristic;
 
-    begin(*service, hwName, hwVersion, swName, swVersion);
+    begin(*service, mfName, hwName, hwVersion, swName, swVersion);
 
     auto* advertising = server->getAdvertising();
     advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
@@ -67,9 +69,15 @@ bool ArduinoBleOTAClass::begin(OTAStorage& storage,
 }
 
 void ArduinoBleOTAClass::begin(BLEService& service,
+                               const std::string& mfName,
                                const std::string& hwName, BleOtaVersion hwVersion,
                                const std::string& swName, BleOtaVersion swVersion)
 {
+    auto* mfNameCharacteristic = service.createCharacteristic(
+        BLE_OTA_CHARACTERISTIC_UUID_MF_NAME,
+        NIMBLE_PROPERTY::READ
+    );
+    mfNameCharacteristic->setValue(mfName);
     auto* hwNameCharacteristic = service.createCharacteristic(
         BLE_OTA_CHARACTERISTIC_UUID_HW_NAME,
         NIMBLE_PROPERTY::READ
