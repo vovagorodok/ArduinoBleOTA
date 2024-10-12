@@ -2,6 +2,7 @@
     "hardware_name": "Example SAMD",
     "hardware_icon": "https://raw.githubusercontent.com/vovagorodok/ble_ota_app/main/web/icons/Icon-192.png",
     "hardware_text": "https://raw.githubusercontent.com/vovagorodok/ArduinoBleOTA/main/README.md",
+    "hardware_page": "https://github.com/vovagorodok/ArduinoBleOTA?tab=readme-ov-file#arduino-ble-ota",
     "softwares": [
         {
 
@@ -38,6 +39,7 @@
             "software_name": "Other SW",
             "software_version": [1, 6, 6],
             "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/1.1.0/firmware_samd_other_v1.6.6.bin",
+            "software_page": "https://github.com/vovagorodok/ArduinoBleOTA?tab=readme-ov-file#arduino-ble-ota",
             "min_hardware_version": [1, 0, 0],
             "max_hardware_version": [1, 0, 3]
         },
@@ -45,7 +47,8 @@
             "software_name": "Experimental SW",
             "software_version": [1, 1, 2],
             "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/1.1.0/firmware_samd_experimental_v1.1.2.bin",
-            "software_text": "https://raw.githubusercontent.com/vovagorodok/ArduinoBleOTA/main/tools/release_builder/example_software_text.md"
+            "software_text": "https://raw.githubusercontent.com/vovagorodok/ArduinoBleOTA/main/tools/release_builder/example_software_text.md",
+            "software_page": "https://github.com/vovagorodok/ArduinoBleOTA?tab=readme-ov-file#arduino-ble-ota"
         }
     ]
 }
