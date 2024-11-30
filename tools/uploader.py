@@ -10,8 +10,8 @@ import platform
 
 
 BLE_OTA_SERVICE_UUID = "dac890c2-35a1-11ef-aba0-9b95565f4ffb"
-BLE_OTA_CHARACTERISTIC_UUID_RX = "dac89194-35a1-11ef-aba1-b37714ad9a54"
-BLE_OTA_CHARACTERISTIC_UUID_TX = "dac89266-35a1-11ef-aba2-0f0127bce478"
+BLE_OTA_CHARACTERISTIC_UUID_TX = "dac89194-35a1-11ef-aba1-b37714ad9a54"
+BLE_OTA_CHARACTERISTIC_UUID_RX = "dac89266-35a1-11ef-aba2-0f0127bce478"
 BLE_OTA_CHARACTERISTIC_UUID_MF_NAME = "dac89338-35a1-11ef-aba3-8746a2fdea8c"
 BLE_OTA_CHARACTERISTIC_UUID_HW_NAME = "dac89414-35a1-11ef-aba4-7fa301ad5c49"
 BLE_OTA_CHARACTERISTIC_UUID_HW_VER = "dac894e6-35a1-11ef-aba5-0fcd13588409"
@@ -141,8 +141,8 @@ async def connect(dev):
     await acquire_mtu(client)
 
     service = client.services.get_service(BLE_OTA_SERVICE_UUID)
-    rx_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_RX)
     tx_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_TX)
+    rx_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_RX)
     mf_name_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_MF_NAME)
     hw_name_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_NAME)
     hw_ver_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_VER)
@@ -155,10 +155,10 @@ async def connect(dev):
                      f"SW: {str(await client.read_gatt_char(sw_name_char), 'utf-8')}",
                      f"VER: {list(await client.read_gatt_char(sw_ver_char))}"]))
 
-    return client, rx_char, tx_char
+    return client, tx_char, rx_char
 
 
-async def upload(client: BleakClient, rx_char, tx_char, path):
+async def upload(client: BleakClient, tx_char, rx_char, path):
     crc = 0
     uploaded_len = 0
     firmware_len = file_size(path)
@@ -172,10 +172,10 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
     queue = asyncio.Queue(1)
     async def callback(char, array):
         await queue.put(array)
-    await client.start_notify(tx_char, callback)
+    await client.start_notify(rx_char, callback)
 
     begin_req = int_to_u8_bytes(BEGIN) + int_to_u32_bytes(firmware_len)
-    await client.write_gatt_char(rx_char, begin_req)
+    await client.write_gatt_char(tx_char, begin_req)
     begin_resp = await handle_begin_response(await queue.get())
     if not begin_resp:
         return False
@@ -194,7 +194,7 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
                 break
 
             package = int_to_u8_bytes(PACKAGE) + data
-            await client.write_gatt_char(rx_char, package)
+            await client.write_gatt_char(tx_char, package)
             if current_buffer_len + len(data) > buffer_size:
                 if not await handle_response(await queue.get()):
                     return False
@@ -206,17 +206,17 @@ async def upload(client: BleakClient, rx_char, tx_char, path):
             print(f"Uploaded: {uploaded_len}/{firmware_len}")
 
     end_req = int_to_u8_bytes(END) + int_to_u32_bytes(crc)
-    await client.write_gatt_char(rx_char, end_req)
+    await client.write_gatt_char(tx_char, end_req)
     if not await handle_response(await queue.get()):
         return False
 
     return True
 
 
-async def try_upload(client, rx_char, tx_char, path):
+async def try_upload(client, tx_char, rx_char, path):
     time = datetime.datetime.now()
 
-    if not await upload(client, rx_char, tx_char, path):
+    if not await upload(client, tx_char, rx_char, path):
         return False
 
     upload_time = datetime.datetime.now() - time
@@ -228,9 +228,9 @@ async def connect_and_upload(dev, path):
     res = await connect(dev)
     if not res:
         return
-    client, rx_char, tx_char = res
+    client, tx_char, rx_char = res
 
-    if not await try_upload(client, rx_char, tx_char, path):
+    if not await try_upload(client, tx_char, rx_char, path):
         await client.disconnect()
         return
     await client.disconnect()
@@ -239,7 +239,7 @@ async def connect_and_upload(dev, path):
     res = await connect(dev)
     if not res:
         return
-    client, rx_char, tx_char = res
+    client, tx_char, rx_char = res
 
     await client.disconnect()
     print("Success!")
