@@ -24,6 +24,8 @@ For Arduino IDE. At boards package installation folder create `platform.local.tx
 compiler.cpp.extra_flags=-D USE_NIM_BLE_ARDUINO_LIB
 ```
 
+For using the native ESP32 BLE library, use the `USE_NATIVE_ESP32_BLE_LIB` flag instad of `USE_NIM_BLE_ARDUINO_LIB`
+
 ## Opened discussions
 https://github.com/JAndrassy/ArduinoOTA/discussions/157  
 https://github.com/fbiego/ESP32_BLE_OTA_Arduino/issues/19
