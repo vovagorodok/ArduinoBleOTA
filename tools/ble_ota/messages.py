@@ -355,4 +355,5 @@ errToStr = {
     ErrorCode.INCORRECT_COMPRESSION_END: "Incorrect compression end",
     ErrorCode.CHECKSUM_NOT_SUPPORTED: "Checksum not supported",
     ErrorCode.INCORRECT_CHECKSUM: "Incorrect checksum",
+    ErrorCode.INCORRECT_SIGNATURE: "Incorrect signature",
 }
