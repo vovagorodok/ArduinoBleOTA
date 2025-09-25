@@ -2,68 +2,17 @@
 from bluezero import adapter
 from bluezero import central
 from time import sleep
+from ble_ota import uuids
+from ble_ota import consts
+from ble_ota.messages import InitReq, InitResp
+from ble_ota.messages import BeginReq, BeginResp
+from ble_ota.messages import PackageInd, PackageReq, PackageResp
+from ble_ota.messages import EndReq, EndResp
+from ble_ota.messages import ErrorCode, parse_message_of_type, errToStr
+from ble_ota.utils import get_file_size
 import sys
 import zlib
-import os
 import datetime
-
-BLE_OTA_SERVICE_UUID = "dac890c2-35a1-11ef-aba0-9b95565f4ffb"
-BLE_OTA_CHARACTERISTIC_UUID_RX = "dac89194-35a1-11ef-aba1-b37714ad9a54"
-BLE_OTA_CHARACTERISTIC_UUID_TX = "dac89266-35a1-11ef-aba2-0f0127bce478"
-BLE_OTA_CHARACTERISTIC_UUID_MF_NAME = "dac89338-35a1-11ef-aba3-8746a2fdea8c"
-BLE_OTA_CHARACTERISTIC_UUID_HW_NAME = "dac89414-35a1-11ef-aba4-7fa301ad5c49"
-BLE_OTA_CHARACTERISTIC_UUID_HW_VER = "dac894e6-35a1-11ef-aba5-0fcd13588409"
-BLE_OTA_CHARACTERISTIC_UUID_SW_NAME = "dac895b8-35a1-11ef-aba6-63ebb073a878"
-BLE_OTA_CHARACTERISTIC_UUID_SW_VER = "dac89694-35a1-11ef-aba7-bf64db99d724"
-
-OK = 0x00
-NOK = 0x01
-INCORRECT_FORMAT = 0x02
-INCORRECT_FIRMWARE_SIZE = 0x03
-CHECKSUM_ERROR = 0x04
-INTERNAL_STORAGE_ERROR = 0x05
-UPLOAD_DISABLED = 0x06
-
-BEGIN = 0x10
-PACKAGE = 0x11
-END = 0x12
-
-respToStr = {
-    NOK: "Not ok",
-    INCORRECT_FORMAT: "Incorrect format",
-    INCORRECT_FIRMWARE_SIZE: "Incorrect firmware size",
-    CHECKSUM_ERROR: "Checksum error",
-    INTERNAL_STORAGE_ERROR: "Internal storage error",
-    UPLOAD_DISABLED: "Upload disabled"
-}
-
-U8_BYTES_NUM = 1
-U32_BYTES_NUM = 4
-HEAD_BYTES_NUM = U8_BYTES_NUM
-ATTR_SIZE_BYTES_NUM = U32_BYTES_NUM
-BUFFER_SIZE_BYTES_NUM = U32_BYTES_NUM
-BEGIN_RESP_BYTES_NUM = HEAD_BYTES_NUM + ATTR_SIZE_BYTES_NUM + BUFFER_SIZE_BYTES_NUM
-HEAD_POS = 0
-ATTR_SIZE_POS = HEAD_POS + HEAD_BYTES_NUM
-BUFFER_SIZE_POS = ATTR_SIZE_POS + ATTR_SIZE_BYTES_NUM
-
-
-def file_size(path):
-    if os.path.isfile(path):
-        file_info = os.stat(path)
-        return file_info.st_size
-
-
-def bytes_to_int(value):
-    return int.from_bytes(value, 'little', signed=False)
-
-
-def int_to_u8_bytes(value):
-    return list(int.to_bytes(value, U8_BYTES_NUM, 'little', signed=False))
-
-
-def int_to_u32_bytes(value):
-    return list(int.to_bytes(value, U32_BYTES_NUM, 'little', signed=False))
 
 
 def scan_ota_devices(adapter_address=None, timeout=5.0):
@@ -74,48 +23,26 @@ def scan_ota_devices(adapter_address=None, timeout=5.0):
         dongle.nearby_discovery(timeout=timeout)
 
         for dev in central.Central.available(dongle.address):
-            if BLE_OTA_SERVICE_UUID.lower() in dev.uuids:
+            if uuids.BLE_OTA_SERVICE_UUID.lower() in dev.uuids:
                 yield dev
-
-
-def handle_response(resp):
-    resp = bytes_to_int(resp)
-    if resp == OK:
-        return True
-
-    print(respToStr[resp])
-    return False
-
-
-def handle_begin_response(resp):
-    respList = list(bytearray(resp))
-    head = respList[HEAD_POS]
-    if head != OK:
-        print(respToStr[head])
-        return
-
-    if len(respList) != BEGIN_RESP_BYTES_NUM:
-        print("Incorrect begin responce")
-        return
-    return bytes_to_int(respList[ATTR_SIZE_POS:BUFFER_SIZE_POS]), bytes_to_int(respList[BUFFER_SIZE_POS:])
 
 
 def connect(dev):
     device = central.Central(adapter_addr=dev.adapter, device_addr=dev.address)
-    rx_char = device.add_characteristic(
-        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_RX)
     tx_char = device.add_characteristic(
-        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_TX)
+        uuids.BLE_OTA_SERVICE_UUID, uuids.BLE_OTA_CHARACTERISTIC_UUID_TX)
+    rx_char = device.add_characteristic(
+        uuids.BLE_OTA_SERVICE_UUID, uuids.BLE_OTA_CHARACTERISTIC_UUID_RX)
     mf_name_char = device.add_characteristic(
-        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_MF_NAME)
+        uuids.BLE_OTA_SERVICE_UUID, uuids.BLE_OTA_CHARACTERISTIC_UUID_MF_NAME)
     hw_name_char = device.add_characteristic(
-        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_HW_NAME)
+        uuids.BLE_OTA_SERVICE_UUID, uuids.BLE_OTA_CHARACTERISTIC_UUID_HW_NAME)
     hw_ver_char = device.add_characteristic(
-        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_HW_VER)
+        uuids.BLE_OTA_SERVICE_UUID, uuids.BLE_OTA_CHARACTERISTIC_UUID_HW_VER)
     sw_name_char = device.add_characteristic(
-        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_SW_NAME)
+        uuids.BLE_OTA_SERVICE_UUID, uuids.BLE_OTA_CHARACTERISTIC_UUID_SW_NAME)
     sw_ver_char = device.add_characteristic(
-        BLE_OTA_SERVICE_UUID, BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
+        uuids.BLE_OTA_SERVICE_UUID, uuids.BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
 
     print(f"Connecting to {dev.alias}")
     device.connect()
@@ -124,64 +51,102 @@ def connect(dev):
         return
 
     try:
-        print(", ".join([f"MF: {str(bytearray(mf_name_char.value), 'utf-8')}",
-                         f"HW: {str(bytearray(hw_name_char.value), 'utf-8')}",
-                         f"VER: {list(bytearray(hw_ver_char.value))}",
-                         f"SW: {str(bytearray(sw_name_char.value), 'utf-8')}",
-                         f"VER: {list(bytearray(sw_ver_char.value))}"]))
+        mf = str(bytearray(mf_name_char.value), 'utf-8')
+        hw = str(bytearray(hw_name_char.value), 'utf-8')
+        sw = str(bytearray(sw_name_char.value), 'utf-8')
+        hw_ver = ".".join(map(str, bytearray(hw_ver_char.value)))
+        sw_ver = ".".join(map(str, bytearray(sw_ver_char.value)))
+        print(f"Device: name: (mf: {mf}, hw: {hw}, sw: {sw}), ver: (hw: {hw_ver}, sw: {sw_ver})")
     except Exception as e:
         print(e)
         return
 
-    return device, rx_char, tx_char
+    return device, tx_char, rx_char
 
 
-def upload(rx_char, tx_char, path):
+def send(tx_char, data: bytes):
+    tx_char.value = list(data)
+
+
+def receive(rx_char):
+    return bytes(rx_char.value)
+
+
+def upload(tx_char, rx_char, path):
     crc = 0
-    uploaded_len = 0
-    firmware_len = file_size(path)
-    current_buffer_len = 0
+    uploaded_size = 0
+    firmware_size = get_file_size(path)
+    current_buffer_size = 0
 
-    if not firmware_len:
+    if not firmware_size:
         print(f"File not exist: {path}")
         return False
 
-    rx_char.value = int_to_u8_bytes(BEGIN) + int_to_u32_bytes(firmware_len)
-    begin_resp = handle_begin_response(tx_char.value)
-    if not begin_resp:
+    init_req = InitReq()
+    send(tx_char, init_req.to_bytes())
+    init_resp = parse_message_of_type(receive(rx_char), InitResp)
+
+    if not init_resp.flags.upload:
+        print(errToStr[ErrorCode.UPLOAD_DISABLED])
         return False
-    attr_size, buffer_size = begin_resp
-    print(f"Begin upload: attr size: {attr_size}, buffer size: {buffer_size}")
+
+    if init_resp.flags.compression:
+        compressed_path = path + ".zlib"
+        with open(path, "rb") as fin, open(compressed_path, "wb") as fout:
+            fout.write(zlib.compress(fin.read()))
+        compressed_size = get_file_size(compressed_path)
+        file_size = compressed_size
+        path = compressed_path
+        print(f"Firmware compressed: {firmware_size} -> {compressed_size}")
+    else:
+        compressed_size = firmware_size
+        file_size = firmware_size
+
+    package_size = consts.MAX_U32
+    buffer_size = consts.MAX_U32
+
+    begin_req_flags = BeginReq.Flags(init_resp.flags.compression, init_resp.flags.checksum)
+    begin_req = BeginReq(firmware_size, package_size, buffer_size, compressed_size, begin_req_flags)
+    send(tx_char, begin_req.to_bytes())
+    begin_resp = parse_message_of_type(receive(rx_char), BeginResp)
+
+    package_size = begin_resp.package_size
+    buffer_size = begin_resp.buffer_size
+
+    print(f"Begin upload sizes: firmware: {firmware_size}, package: {package_size}, buffer: {buffer_size}, compressed: {compressed_size}")
 
     with open(path, 'rb') as f:
         while True:
-            data = f.read(attr_size - HEAD_BYTES_NUM)
+            data = f.read(package_size)
             if not len(data):
                 break
 
-            rx_char.value = int_to_u8_bytes(PACKAGE) + list(data)
-            if current_buffer_len + len(data) > buffer_size:
-                if not handle_response(tx_char.value):
-                    return False
-                current_buffer_len = 0
-            current_buffer_len += len(data)
-
-            uploaded_len += len(data)
+            if current_buffer_size + len(data) > buffer_size:
+                package_req = PackageReq(data)
+                send(tx_char, package_req.to_bytes())
+                parse_message_of_type(receive(rx_char), PackageResp)
+                current_buffer_size = 0
+            else:
+                package_ind = PackageInd(data)
+                send(tx_char, package_ind.to_bytes())
+    
+            current_buffer_size += len(data)
+            uploaded_size += len(data)
             crc = zlib.crc32(data, crc)
-            print(f"Uploaded: {uploaded_len}/{firmware_len}")
+            print(f"Uploaded: {uploaded_size}/{file_size}")
 
-    rx_char.value = int_to_u8_bytes(END) + int_to_u32_bytes(crc)
-    if not handle_response(tx_char.value):
-        return False
+    end_req = EndReq(crc)
+    send(tx_char, end_req.to_bytes())
+    parse_message_of_type(receive(rx_char), EndResp)
 
     return True
 
 
-def try_upload(rx_char, tx_char, path):
+def try_upload(tx_char, rx_char, path):
     time = datetime.datetime.now()
 
     try:
-        if not upload(rx_char, tx_char, path):
+        if not upload(tx_char, rx_char, path):
             return False
     except Exception as e:
         print(e)
@@ -196,9 +161,9 @@ def connect_and_upload(dev, path):
     res = connect(dev)
     if not res:
         return
-    device, rx_char, tx_char = res
+    device, tx_char, rx_char = res
 
-    if not try_upload(rx_char, tx_char, path):
+    if not try_upload(tx_char, rx_char, path):
         device.disconnect()
         return
     device.disconnect()
@@ -207,7 +172,7 @@ def connect_and_upload(dev, path):
     res = connect(dev)
     if not res:
         return
-    device, rx_char, tx_char = res
+    device, tx_char, rx_char = res
 
     device.disconnect()
     print("Success!")

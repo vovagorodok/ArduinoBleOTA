@@ -1,48 +1,57 @@
 #pragma once
 #include "BleOtaSizes.h"
+#include "BleOtaMessages.h"
 #include "BleOtaStorage.h"
-#include <CRC32.h>
-
-#ifndef BLE_OTA_NO_BUFFER
-#include <CircularBuffer.hpp>
-#endif
+#include "BleOtaBuffer.h"
+#include "BleOtaDecompressor.h"
+#include "BleOtaChecksum.h"
+#include "BleOtaSecurityCallbacks.h"
+#include "BleOtaUploadCallbacks.h"
 
 class BleOtaUploader
 {
 public:
     BleOtaUploader();
 
-    void begin(OTAStorage& storage);
+    void begin(OTAStorage& storage, bool enable);
     void pull();
-    void setEnabling(bool enabling);
-    void onData(const uint8_t* data, size_t length);
+    void setEnable(bool enable);
+    void onData(const uint8_t* data, size_t size);
+
+    void setSecurityCallbacks(BleOtaSecurityCallbacks&);
+    void setUploadCallbacks(BleOtaUploadCallbacks&);
 
 private:
-    void handleBegin(const uint8_t* data, size_t length);
-    void handlePackage(const uint8_t* data, size_t length);
-    void handleEnd(const uint8_t* data, size_t length);
-    void handleSetPinCode(const uint8_t* data, size_t length);
-    void handleRemovePinCode(const uint8_t* data, size_t length);
+    void handleInitReq(const BleOtaInitReq& req);
+    void handleBeginReq(const BleOtaBeginReq& req);
+    void handlePackageReq(const BleOtaPackageReq& req);
+    void handlePackageInd(const BleOtaPackageInd& ind);
+    void handleEndReq(const BleOtaEndReq& req);
+    void handleSetPinReq(const BleOtaSetPinReq& req);
+    void handleRemovePinReq(const BleOtaRemovePinReq& req);
     void handleInstall();
-    void handleError(uint8_t errorCode);
-    void send(uint8_t head);
-    void send(const uint8_t* data, size_t length);
-    void terminateUpload();
-    void fillData(const uint8_t* data, size_t length);
-#ifndef BLE_OTA_NO_BUFFER
-    void flushBuffer();
-#endif
+    void handleError(BleOtaStatus code);
+    void send(const uint8_t* data, size_t size);
+    template <typename T>
+    void sendMessage(const T& msg);
+    void terminateUpload(BleOtaStatus code);
+    BleOtaStatus push(const uint8_t* data, size_t size);
+    BleOtaStatus flushBuffer();
 
-    CRC32 crc;
-    OTAStorage* storage;
-#ifndef BLE_OTA_NO_BUFFER
-    CircularBuffer<uint8_t, BLE_OTA_BUFFER_SIZE> buffer;
-    bool withBuffer;
-#endif
-    bool enabled;
-    bool uploading;
-    bool installing;
-    uint32_t firmwareLength;
+    enum class State {
+        Disable,
+        Enable,
+        Upload,
+        Install,
+        Terminate
+    } _state;
+    BleOtaStatus _terminateCode;
+
+    BleOtaStorage _storage;
+    BleOtaBuffer _buffer;
+    BleOtaDecompressor _decompressor;
+    BleOtaChecksum _checksum;
+
+    BleOtaSecurityCallbacks* _securityCallbacks;
+    BleOtaUploadCallbacks* _uploadCallbacks;
 };
-
-extern BleOtaUploader bleOtaUploader;

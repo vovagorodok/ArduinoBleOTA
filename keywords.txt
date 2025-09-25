@@ -8,8 +8,7 @@ BleOtaSecurityOnConnect KEYWORD1
 # Methods and Functions (KEYWORD2)
 begin	KEYWORD2
 poll	KEYWORD2
-enableUpload    KEYWORD2
-disableUpload   KEYWORD2
+setEnableUpload    KEYWORD2
 setSecurityCallbacks    KEYWORD2
 setUploadCallbacks  KEYWORD2
 initBle KEYWORD2

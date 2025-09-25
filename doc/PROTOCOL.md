@@ -1,107 +1,197 @@
 ## Overal
-Binary protocol where each transfer block contains `uint8` head at the begining.  
-Head codes:
-```
-OK 0x00
-NOK 0x01
-INCORRECT_FORMAT 0x02
-INCORRECT_FIRMWARE_SIZE 0x03
-CHECKSUM_ERROR 0x04
-INTERNAL_STORAGE_ERROR 0x05
-UPLOAD_DISABLED 0x06
+Binary protocol where each transfer block contains `u8` head at the begining.  
 
-BEGIN 0x10
-PACKAGE 0x11
-END 0x12
-```
+## Messages
+### InitReq
+Central checks peripheral compatibilities
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x01` |
+
+### InitResp
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x02` |
+| Flags | `u8` | Described below |
+
+| Flag | Info |
+| ---- | ---- |
+| Compression | Compression supported |
+| Checksum | Checksum supported |
+| Upload | Upload enabled |
+| Pin | Pin change supported |
+| Signature | Signature required |
+
+### BeginReq
+Central begins uploading
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x03` |
+| Firmware size | `u32` | Binary file size |
+| Package size | `u32` | Max package size |
+| Buffer size | `u32` | Internal buffer size, `0` means disable |
+| Compressed size | `u32` | Binary file size after compression |
+| Flags | `u8` | Described below |
+
+| Flag | Info |
+| ---- | ---- |
+| Compression | Binary file compressed |
+| Checksum | Checksum calculation required |
+
+### BeginResp
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x04` |
+| Package size | `u32` | Negotiated max package size |
+| Buffer size | `u32` | Negotiated internal buffer size, `0` means disable |
+
+### PackageInd
+Central delivers binary data that will be stored in buffer, response not needed
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x05` |
+| Data | `u8[]` | Binary data |
+
+### PackageReq
+Central delivers binary data that will be stored with buffered data in flash, response required
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x06` |
+| Data | `u8[]` | Binary data |
+
+### PackageResp
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x07` |
+
+### EndReq
+Central ends uploading
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x08` |
+| Firmware checksum | `u32` | Calulated checksum, `0` when disabled |
+
+### EndResp
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x09` |
+
+### ErrorInd
+Peripheral indicates error
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x10` |
+| Code | `u8` | Described below |
+
+| Code | Info |
+| ---- | ---- |
+| Ok | `0x00` |
+| Nok | `0x01` |
+| Incorrect format | `0x02` |
+| Incorrect firmware size | `0x03` |
+| Internal storage error | `0x04` |
+| Upload disabled | `0x10` |
+| Upload running | `0x11` |
+| Upload stopped | `0x12` |
+| Install running | `0x13` |
+| Buffer disabled | `0x20` |
+| Buffer overflow | `0x21` |
+| Compression not supported | `0x30` |
+| Incorrect compression | `0x31` |
+| Incorrect compressed size | `0x32` |
+| Incorrect compression checksum | `0x33` |
+| Incorrect compression param | `0x34` |
+| Incorrect compression end | `0x35` |
+| Checksum not supported | `0x40` |
+| Incorrect checksum | `0x41` |
+| Incorrect signature | `0x50` |
 
 ## Basic scenario
 Designations for examples:  
-`->` - recived from central  
-`<-` - send to central
+`c)` - central send  
+`p)` - peripheral send
 ```
--> BEGIN <uint32 firmware size>
-<- OK <uint32 attribute size> <uint32 buffer size>
--> PACKAGE <uint8[] data>
--> PACKAGE <uint8[] data>
+c) InitReq
+p) InitResp
 ...
--> PACKAGE <uint8[] data>
-<- OK
+c) BeginReq
+p) BeginResp
+c) PackageInd
+..
+c) PackageReq
+p) PackageResp
 ...
--> PACKAGE <uint8[] data>
--> PACKAGE <uint8[] data>
--> END <uint32 crc32 checksum>
-<- OK
+c) PackageInd
+c) EndReq
+p) EndResp
 ```
-`<uint32 attribute size>` maximal trensfer block.  
-`<uint32 buffer size>` internal buffer stored in RAM in order to handle packages without responses.  
-Maximal `<uint8[] data>` size is `<uint32 attribute size> - <head size>` bytes, where `<head size>` is 1 byte.  
+
 Internal buffer is created in order to increase upload speed. Packages can be handled immediately, because are stored in RAM instead of flash.
-Central should wait response only when buffer is overloaded.  
+Central send `PackageReq` when buffer is overloaded.  
 In order to know more about error codes ckeck scenarios below.
 
 ## Comunication lost scenario
-In this case buffer usage turns of and uploading starts from begining when `BEGIN` recives again.
+In this case buffer usage turns of and uploading starts from begining when `BeginReq` recives again.
 
 ## Incorrect transfer block scenarios
-Zero length transfer block:
+Zero size transfer block:
 ```
--> <zero length transfer block>
-<- INCORRECT_FORMAT
+c) <Zero size transfer block>
+p) ErrorInd: Incorrect format
 ```
 Incorrect head code:
 ```
--> <incorrect head code>
-<- INCORRECT_FORMAT
+c) <Incorrect head code>
+p) ErrorInd: Incorrect format
 ```
 
 ## Begin failure scenarios
 Incorrect firmware size format:
 ```
--> BEGIN <not uint32 firmware size>
-<- INCORRECT_FORMAT
+c) BeginReq <Incorrect message size>
+p) ErrorInd: Incorrect format
 ```
 Firmware size to large:
 ```
--> BEGIN
-<- INCORRECT_FIRMWARE_SIZE
+c) BeginReq
+p) ErrorInd: Incorrect firmware size
 ```
 Internal storage error:
 ```
--> BEGIN
-<- INTERNAL_STORAGE_ERROR
+c) BeginReq
+p) ErrorInd: Internal storage error
 ```
-Uploads disabled:
+Upload disabled:
 ```
--> BEGIN
-<- UPLOAD_DISABLED
+c) BeginReq
+p) ErrorInd: Upload disabled
 ```
-Transfer start without BEGIN:
+Transfer start without BeginReq:
 ```
--> not BEGIN
-<- NOK
+c) PackageReq
+p) ErrorInd: Upload stopped
 ```
 
 ## Package failure scenarios
 Uploaded packets size is higher than firmware size:
 ```
--> PACKAGE
-<- INCORRECT_FIRMWARE_SIZE
+c) PackageReq
+p) ErrorInd: Incorrect firmware size
 ```
 
 ## End failure scenarios
 Uploaded packets size is lower than firmware size:
 ```
--> END
-<- INCORRECT_FIRMWARE_SIZE
+c) EndReq
+p) ErrorInd: Incorrect firmware size
 ```
 Incorrect checksum size format:
 ```
--> END <not uint32 crc32 checksum>
-<- INCORRECT_FORMAT
+c) EndReq <Incorrect message size>
+p) ErrorInd: Incorrect format
 ```
 Checksum doesn't match:
 ```
--> END
-<- CHECKSUM_ERROR
+c) EndReq
+p) ErrorInd: Incorrect checksum 
 ```

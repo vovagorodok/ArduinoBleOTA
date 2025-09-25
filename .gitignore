@@ -2,4 +2,5 @@
 .vscode
 .DS_Store
 *.pyc
+__pycache__
 tools/release_builder/out

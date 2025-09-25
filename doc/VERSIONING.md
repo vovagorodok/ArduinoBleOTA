@@ -1,11 +1,12 @@
 ## Overal
-Library advertises 4 characteristics in order to indicate software/hardware type/version.
+Library advertises 5 characteristics in order to indicate software/hardware type/version.
 See `ADVERTISING.md`. User of library can decide what characteristics should contain.  
 Central can handle this data and check if software should be updated.
 
 ## Example
 We have peripheral device with information:
 ```
+manufacture name: MyManufacture
 hardware name: MyHardware
 hardware ver: 1.0.0
 software name: MySoftware
@@ -13,6 +14,7 @@ software ver: 1.0.0
 ```
 Central found new software where:
 ```
+manufacture name: MyManufacture
 software name: MySoftware
 software ver: 2.0.0
 for hardware name: MyHardware

@@ -1,288 +1,419 @@
 #include "BleOtaUploader.h"
-#include "BleOtaHeadCodes.h"
+#include "BleOtaLogger.h"
 #include "ArduinoBleOTA.h"
 
 namespace
 {
-#pragma pack(push, 1)
-struct BeginResponse
-{
-    uint8_t head;
-    uint32_t attributeSize;
-    uint32_t bufferSize;
-};
-#pragma pack(pop)
+#define TAG "Upload"
+
+static BleOtaSecurityCallbacks dummySecurityCallbacks{};
+static BleOtaUploadCallbacks dummyUploadCallbacks{};
 }
 
-BleOtaUploader::BleOtaUploader() :
-    crc(),
-    storage(nullptr),
-#ifndef BLE_OTA_NO_BUFFER
-    buffer(),
-    withBuffer(true),
-#endif
-    enabled(false),
-    uploading(false),
-    installing(false),
-    firmwareLength()
+BleOtaUploader::BleOtaUploader():
+    _state(State::Disable),
+    _terminateCode(BleOtaStatus::Ok),
+    _storage(),
+    _buffer(),
+    _decompressor(_storage),
+    _checksum(),
+    _securityCallbacks(&dummySecurityCallbacks),
+    _uploadCallbacks(&dummyUploadCallbacks)
 {}
 
-void BleOtaUploader::begin(OTAStorage& storage)
+void BleOtaUploader::begin(OTAStorage& storage, bool enable)
 {
-    this->storage = &storage;
+    _storage.begin(storage);
+    _state = enable ? State::Enable : State::Disable;
 }
 
 void BleOtaUploader::pull()
 {
-    if (installing)
+    if (_state == State::Install)
         handleInstall();
 }
 
-void BleOtaUploader::setEnabling(bool enabling)
+void BleOtaUploader::setEnable(bool enable)
 {
-    enabled = enabling;
+    BLE_OTA_LOG(TAG, "Enable: %u", enable);
+
+    if (enable)
+    {
+        _state = State::Enable;
+        sendMessage(BleOtaUploadEnableInd{});
+    }
+    else
+    {
+        _state = State::Disable;
+        sendMessage(BleOtaUploadDisableInd{});
+    }
 }
 
-void BleOtaUploader::onData(const uint8_t* data, size_t length)
+void BleOtaUploader::onData(const uint8_t* data, size_t size)
 {
-    if (installing)
-        return;
-
-    if (length == 0)
+    if (_state == State::Install)
     {
-        handleError(INCORRECT_FORMAT);
+        handleError(BleOtaStatus::InstallRunning);
         return;
     }
 
-    switch (data[0])
+    if (not BleOtaMessage::isValidSize(size))
     {
-    case BEGIN:
-        handleBegin(data + 1, length - 1);
+        handleError(BleOtaStatus::IncorrectFormat);
+        return;
+    }
+
+    const auto msg = BleOtaMessage{data};
+    BLE_OTA_LOG(TAG, "Receive message: header: %x", msg.header);
+
+    switch (msg.header)
+    {
+    case BleOtaHeader::InitReq:
+        BleOtaInitReq::isValidSize(size) ?
+            handleInitReq(BleOtaInitReq{}) :
+            handleError(BleOtaStatus::IncorrectFormat);
         break;
-    case PACKAGE:
-        handlePackage(data + 1, length - 1);
+    case BleOtaHeader::BeginReq:
+        BleOtaBeginReq::isValidSize(size) ?
+            handleBeginReq(BleOtaBeginReq{data}) :
+            handleError(BleOtaStatus::IncorrectFormat);
         break;
-    case END:
-        handleEnd(data + 1, length - 1);
+    case BleOtaHeader::PackageReq:
+        handlePackageReq(BleOtaPackageReq{data, size});
         break;
-    case SET_PIN_CODE:
-        handleSetPinCode(data + 1, length - 1);
+    case BleOtaHeader::PackageInd:
+        handlePackageInd(BleOtaPackageInd{data, size});
         break;
-    case REMOVE_PIN_CODE:
-        handleRemovePinCode(data + 1, length - 1);
+    case BleOtaHeader::EndReq:
+        BleOtaEndReq::isValidSize(size) ?
+            handleEndReq(BleOtaEndReq{data}) :
+            handleError(BleOtaStatus::IncorrectFormat);
+        break;
+    case BleOtaHeader::SetPinReq:
+        BleOtaSetPinReq::isValidSize(size) ?
+            handleSetPinReq(BleOtaSetPinReq{data}) :
+            handleError(BleOtaStatus::IncorrectFormat);
+        break;
+    case BleOtaHeader::RemovePinReq:
+        BleOtaRemovePinReq::isValidSize(size) ?
+            handleRemovePinReq(BleOtaRemovePinReq{}) :
+            handleError(BleOtaStatus::IncorrectFormat);
         break;
     default:
-        handleError(INCORRECT_FORMAT);
+        handleError(BleOtaStatus::IncorrectFormat);
         break;
     }
 }
 
-void BleOtaUploader::handleBegin(const uint8_t* data, size_t length)
+void BleOtaUploader::setSecurityCallbacks(BleOtaSecurityCallbacks& cb)
 {
-    if (uploading)
-        terminateUpload();
-
-    if (not enabled)
-    {
-        send(UPLOAD_DISABLED);
-        return;
-    }
-
-    if (length != sizeof(uint32_t))
-    {
-        handleError(INCORRECT_FORMAT);
-        return;
-    }
-    memcpy(&firmwareLength, data, length);
-
-    if (storage == nullptr or not storage->open(firmwareLength))
-    {
-        firmwareLength = 0;
-        handleError(INTERNAL_STORAGE_ERROR);
-        return;
-    }
-
-    if (storage->maxSize() and firmwareLength > storage->maxSize())
-    {
-        terminateUpload();
-        handleError(INCORRECT_FIRMWARE_SIZE);
-        return;
-    }
-
-    uploading = true;
-    crc.restart();
-
-    #ifndef BLE_OTA_NO_BUFFER
-    buffer.clear();
-    uint32_t bufferSize = withBuffer ? BLE_OTA_BUFFER_SIZE : 0;
-    #else
-    uint32_t bufferSize = 0;
-    #endif
-    BeginResponse resp{OK, BLE_OTA_ATTRIBUTE_SIZE, bufferSize};
-    send((const uint8_t*)(&resp), sizeof(BeginResponse));
-
-    ArduinoBleOTA.uploadCallbacks->onBegin(firmwareLength);
+    _securityCallbacks = &cb;
 }
 
-void BleOtaUploader::handlePackage(const uint8_t* data, size_t length)
+void BleOtaUploader::setUploadCallbacks(BleOtaUploadCallbacks& cb)
 {
-    if (not uploading)
-        return;
-
-    #ifndef BLE_OTA_NO_BUFFER
-    const bool sendResponse = not withBuffer or buffer.size() + length > BLE_OTA_BUFFER_SIZE;
-    #else
-    const bool sendResponse = true;
-    #endif
-
-    crc.add(data, length);
-    if (crc.count() > firmwareLength)
-    {
-        terminateUpload();
-        if (sendResponse) handleError(INCORRECT_FIRMWARE_SIZE);
-        return;
-    }
-
-    #ifndef BLE_OTA_NO_BUFFER
-    if (sendResponse)
-    {
-        flushBuffer();
-    }
-    #endif
-
-    fillData(data, length);
-    if (sendResponse) send(OK);
+    _uploadCallbacks = &cb;
 }
 
-void BleOtaUploader::handleEnd(const uint8_t* data, size_t length)
+void BleOtaUploader::handleInitReq(const BleOtaInitReq& req)
 {
-    if (not uploading)
-    {
-        handleError(NOK);
-        return;
-    }
-    if (crc.count() != firmwareLength)
-    {
-        terminateUpload();
-        handleError(INCORRECT_FIRMWARE_SIZE);
-        return;
-    }
-    if (length != sizeof(uint32_t))
-    {
-        handleError(INCORRECT_FORMAT);
-        return;
-    }
-    uint32_t firmwareCrc;
-    memcpy(&firmwareCrc, data, length);
+    BLE_OTA_LOG(TAG, "Handle InitReq");
 
-    if (crc.calc() != firmwareCrc)
-    {
-        terminateUpload();
-        handleError(CHECKSUM_ERROR);
-        return;
-    }
+    const bool canCompress = _decompressor.isSupported();
+    const bool canChecksum = _checksum.isSupported();
+    const bool canUpload = _state != State::Disable;
+    const bool canPin = _securityCallbacks != &dummySecurityCallbacks;
+    const bool canSignature = false;
 
-    #ifndef BLE_OTA_NO_BUFFER
-    flushBuffer();
-    #endif
+    BLE_OTA_LOG(TAG, "Send InitResp: "
+        "flags: (compr: %u, checksum: %u, upload: %u, pin: %u, sig: %u)",
+        canCompress, canChecksum, canUpload, canPin, canSignature);
 
-    send(OK);
-
-    ArduinoBleOTA.uploadCallbacks->onEnd();
-    installing = true;
+    sendMessage(BleOtaInitResp{{
+        .compression = canCompress,
+        .checksum = canChecksum,
+        .upload = canUpload,
+        .pin = canPin,
+        .signature = canSignature
+    }});
 }
 
-void BleOtaUploader::handleSetPinCode(const uint8_t* data, size_t length)
+void BleOtaUploader::handleBeginReq(const BleOtaBeginReq& req)
 {
-    if (uploading)
+    BLE_OTA_LOG(TAG, "Handle BeginReq: "
+        "size: (fw: %lu, pkg: %lu, buff: %lu, compr: %lu), "
+        "flags: (compr: %u, checksum: %u)",
+        req.firmwareSize, req.packageSize, req.bufferSize, req.compressedSize,
+        req.flags.compression, req.flags.checksum);
+
+    if (_state == State::Upload)
     {
-        handleError(NOK);
-        return;
+        BLE_OTA_LOG(TAG, "Terminate");
+        terminateUpload(BleOtaStatus::Ok);
     }
-    if (length != sizeof(uint32_t))
+
+    if (_state == State::Disable)
     {
-        handleError(INCORRECT_FORMAT);
+        handleError(BleOtaStatus::UploadDisabled);
         return;
     }
 
-    uint32_t pinCode;
-    memcpy(&pinCode, data, length);
-    send(ArduinoBleOTA.securityCallbacks->setPinCode(pinCode) ? OK : NOK);
+    const bool withChecksum = req.flags.checksum;
+    if (withChecksum)
+    {
+        if (not _checksum.isSupported())
+        {
+            handleError(BleOtaStatus::ChecksumNotSupported);
+            return;
+        }
+        _checksum.begin();
+    }
+    _checksum.setEnable(withChecksum);
+    
+    const bool withCompression = req.flags.compression;
+    if (withCompression)
+    {
+        if (not _decompressor.isSupported())
+        {
+            handleError(BleOtaStatus::CompressionNotSupported);
+            return;
+        }
+        _decompressor.begin(req.compressedSize);
+    }
+    _decompressor.setEnable(withCompression);
+
+    const auto status = _storage.open(req.firmwareSize);
+    if (status != BleOtaStatus::Ok)
+    {
+        handleError(status);
+        return;
+    }
+
+    _state = State::Upload;
+
+    const uint32_t packageSize = min(req.packageSize, BLE_OTA_PACKAGE_SIZE);
+    const uint32_t bufferSize = _buffer.begin(req.bufferSize, req.packageSize);
+    BLE_OTA_LOG(TAG, "Send BeginResp: size: (pkg: %lu, buff: %lu)", packageSize, bufferSize);
+    sendMessage(BleOtaBeginResp{packageSize, bufferSize});
+
+    _uploadCallbacks->handleBegin();
 }
 
-void BleOtaUploader::handleRemovePinCode(const uint8_t* data, size_t length)
+void BleOtaUploader::handlePackageReq(const BleOtaPackageReq& req)
 {
-    if (uploading)
+    BLE_OTA_LOG(TAG, "Handle PackageReq");
+
+    if (_state != State::Upload)
     {
-        handleError(NOK);
-        return;
-    }
-    if (length)
-    {
-        handleError(INCORRECT_FORMAT);
+        handleError(_state == State::Terminate ? _terminateCode : BleOtaStatus::UploadStopped);
         return;
     }
 
-    send(ArduinoBleOTA.securityCallbacks->removePinCode() ? OK : NOK);
+#ifndef BLE_OTA_NO_BUFFER
+    BleOtaStatus status;
+    if (_buffer.isEnabled())
+    {
+        status = flushBuffer();
+        if (status == BleOtaStatus::Ok)
+            status = _buffer.push(req.data, req.size);
+    }
+    else
+    {
+        status = push(req.data, req.size);
+    }
+#else
+    const auto status = push(req.data, req.size);
+#endif
+
+    if (status != BleOtaStatus::Ok)
+    {
+        terminateUpload(status);
+        handleError(status);
+        return;
+    }
+
+    sendMessage(BleOtaPackageResp{});
+}
+
+void BleOtaUploader::handlePackageInd(const BleOtaPackageInd& ind)
+{
+    BLE_OTA_LOG(TAG, "Handle PackageInd");
+
+    if (_state != State::Upload)
+        return;
+
+#ifndef BLE_OTA_NO_BUFFER
+    if (not _buffer.isEnabled())
+    {
+        terminateUpload(BleOtaStatus::BufferDisabled);
+        return;
+    }
+
+    const auto status = _buffer.push(ind.data, ind.size);
+    if (status != BleOtaStatus::Ok)
+    {
+        terminateUpload(status);
+        return;
+    }
+#else
+    terminateUpload(BleOtaStatus::BufferDisabled);
+#endif
+}
+
+void BleOtaUploader::handleEndReq(const BleOtaEndReq& req)
+{
+    BLE_OTA_LOG(TAG, "Handle EndReq: firmware crc: %lu", req.firmwareCrc);
+
+    if (_state != State::Upload)
+    {
+        handleError(_state == State::Terminate ? _terminateCode : BleOtaStatus::UploadStopped);
+        return;
+    }
+
+#ifndef BLE_OTA_NO_BUFFER
+    if (_buffer.isEnabled())
+    {
+        const auto status = flushBuffer();
+        if (status != BleOtaStatus::Ok)
+        {
+            terminateUpload(status);
+            handleError(status);
+            return;
+        }
+        _buffer.end();
+    }
+#endif
+
+#ifndef BLE_OTA_NO_COMPRESSION
+    if (_decompressor.isEnabled())
+    {
+        _decompressor.end();
+    }
+#endif
+
+    if (not _storage.isFull())
+    {
+        terminateUpload(BleOtaStatus::IncorrectFirmwareSize);
+        handleError(BleOtaStatus::IncorrectFirmwareSize);
+        return;
+    }
+
+#ifndef BLE_OTA_NO_CHECKSUM
+    if (_checksum.isEnabled() and _checksum.calc() != req.firmwareCrc)
+    {
+        terminateUpload(BleOtaStatus::IncorrectChecksum);
+        handleError(BleOtaStatus::IncorrectChecksum);
+        return;
+    }
+#endif
+
+    _storage.close();
+    _state = State::Install;
+
+    sendMessage(BleOtaEndResp{});
+
+    _uploadCallbacks->handleEnd();
+}
+
+void BleOtaUploader::handleSetPinReq(const BleOtaSetPinReq& req)
+{
+    BLE_OTA_LOG(TAG, "Handle SetPinReq: pin: %lu", req.pin);
+
+    if (_state == State::Upload)
+    {
+        handleError(BleOtaStatus::UploadRunning);
+        return;
+    }
+
+    _securityCallbacks->setPinCode(req.pin) ?
+        sendMessage(BleOtaSetPinResp{}) :
+        sendMessage(BleOtaErrorInd{BleOtaStatus::Nok});
+}
+
+void BleOtaUploader::handleRemovePinReq(const BleOtaRemovePinReq& req)
+{
+    BLE_OTA_LOG(TAG, "Handle RemovePinReq");
+
+    if (_state == State::Upload)
+    {
+        handleError(BleOtaStatus::UploadRunning);
+        return;
+    }
+
+    _securityCallbacks->removePinCode() ?
+        sendMessage(BleOtaRemovePinResp{}) :
+        sendMessage(BleOtaErrorInd{BleOtaStatus::Nok});
 }
 
 void BleOtaUploader::handleInstall()
 {
     delay(250);
-    storage->close();
-    delay(250);
-    storage->apply();
+    _storage.apply();
     while (true);
 }
 
-void BleOtaUploader::handleError(uint8_t errorCode)
+void BleOtaUploader::handleError(BleOtaStatus code)
 {
-    send(errorCode);
-    ArduinoBleOTA.uploadCallbacks->onError(errorCode);
+    sendMessage(BleOtaErrorInd{code});
+    _uploadCallbacks->handleError(code);
 }
 
-void BleOtaUploader::send(uint8_t head)
+void BleOtaUploader::send(const uint8_t* data, size_t size)
 {
-    send(&head, 1);
+    ArduinoBleOTA.send(data, size);
 }
 
-void BleOtaUploader::send(const uint8_t* data, size_t length)
+template <typename T>
+void BleOtaUploader::sendMessage(const T& msg)
 {
-    ArduinoBleOTA.send(data, length);
+    BLE_OTA_LOG(TAG, "Send message: header: %x", msg.header);
+    send(reinterpret_cast<const uint8_t*>(&msg), sizeof(T));
 }
 
-void BleOtaUploader::terminateUpload()
+void BleOtaUploader::terminateUpload(BleOtaStatus code)
 {
-    storage->clear();
-    storage->close();
-    uploading = false;
-    firmwareLength = 0;
-
-    #ifndef BLE_OTA_NO_BUFFER
-    withBuffer = false;
-    #endif
-}
-
-void BleOtaUploader::fillData(const uint8_t* data, size_t length)
-{
-    for (size_t i = 0; i < length; i++)
-    {
-        #ifndef BLE_OTA_NO_BUFFER
-        withBuffer ? buffer.push(data[i]) : storage->write(data[i]);
-        #else
-        storage->write(data[i]);
-        #endif
-    }
-}
-
+    _storage.clear();
+    _storage.close();
+    _state = State::Terminate;
+    _terminateCode = code;
 #ifndef BLE_OTA_NO_BUFFER
-void BleOtaUploader::flushBuffer()
-{
-    while (not buffer.isEmpty())
+    if (_buffer.isEnabled())
     {
-        storage->write(buffer.shift());
+        _buffer.setEnable(false);
+        _buffer.end();
     }
+#endif
+#ifndef BLE_OTA_NO_COMPRESSION
+    if (_decompressor.isEnabled())
+    {
+        _decompressor.end();
+    }
+#endif
 }
+
+BleOtaStatus BleOtaUploader::push(const uint8_t* data, size_t size)
+{
+#ifndef BLE_OTA_NO_CHECKSUM
+    if (_checksum.isEnabled())
+        _checksum.push(data, size);
 #endif
 
-BleOtaUploader bleOtaUploader{};
+#ifndef BLE_OTA_NO_COMPRESSION
+    return _decompressor.isEnabled() ?
+        _decompressor.push(data, size) :
+        _storage.push(data, size);
+#else
+    return _storage.push(data, size);
+#endif
+}
+
+BleOtaStatus BleOtaUploader::flushBuffer()
+{
+#ifndef BLE_OTA_NO_BUFFER
+    const auto status = push(_buffer.data(), _buffer.size());
+    _buffer.clear();
+    return status;
+#else
+    return BleOtaStatus::BufferDisabled;
+#endif
+}

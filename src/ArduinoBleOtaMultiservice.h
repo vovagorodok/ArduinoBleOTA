@@ -2,7 +2,7 @@
 #include <ArduinoBleOTA.h>
 #include "BleOtaUuids.h"
 
-#ifdef USE_ARDUINO_BLE_LIB
+#ifdef BLE_OTA_BLE_LIB_ARDUINO_BLE
 inline bool initBle(const char* deviceName)
 {
     if (!BLE.begin())
@@ -36,20 +36,21 @@ inline bool advertiseBle(const char* deviceName,
     return advertiseBle(deviceName, BLE_OTA_SERVICE_UUID, secondaryUUID);
 }
 #else
-inline void initBle(const std::string& deviceName)
+inline BLEServer* initBle(const std::string& deviceName)
 {
     BLEDevice::init(deviceName);
+    return BLEDevice::createServer();
 }
 
-inline bool advertiseBle(const std::string& deviceName,
+inline bool advertiseBle(BLEServer* server,
+                         const std::string& deviceName,
                          const std::string& primaryUUID,
                          const std::string& secondaryUUID)
 {
-    auto* server = BLEDevice::createServer();
-    auto* advertising = server->getAdvertising();
+    auto advertising = server->getAdvertising();
 
     BLEAdvertisementData primaryAdvertisementData{};
-    #ifdef USE_NIM_BLE_ARDUINO_LIB
+    #ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO
     primaryAdvertisementData.setFlags(BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP);
     #else
     primaryAdvertisementData.setFlags(ESP_BLE_ADV_FLAG_GEN_DISC | ESP_BLE_ADV_FLAG_BREDR_NOT_SPT);
@@ -62,11 +63,19 @@ inline bool advertiseBle(const std::string& deviceName,
     secondaryAdvertisementData.setCompleteServices(BLEUUID(secondaryUUID));    
     advertising->setScanResponseData(secondaryAdvertisementData);
 
-    #ifdef USE_NIM_BLE_ARDUINO_LIB
+    #ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO
     return advertising->start();
     #else
     return true;
     #endif
+}
+
+inline bool advertiseBle(const std::string& deviceName,
+                         const std::string& primaryUUID,
+                         const std::string& secondaryUUID)
+{
+    auto server = BLEDevice::createServer();
+    return advertiseBle(server, deviceName, primaryUUID, secondaryUUID);
 }
 
 inline bool advertiseBle(const std::string& deviceName,

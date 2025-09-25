@@ -1,21 +1,21 @@
 #include <ArduinoBleOTA.h>
 #include <BleOtaSecurityOnConnect.h>
 
-#ifdef USE_NIM_BLE_ARDUINO_LIB
+#ifdef BLE_OTA_LIB_NIM_BLE_ARDUINO
 BleOtaSecurityOnConnect security;
 #endif
 
 void setup() {
   ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
 
-#ifdef USE_NIM_BLE_ARDUINO_LIB
+#ifdef BLE_OTA_LIB_NIM_BLE_ARDUINO
   ArduinoBleOTA.setSecurityCallbacks(security);
   security.begin();
 #endif
 }
 
 void loop() {
-#ifdef USE_ARDUINO_BLE_LIB
+#ifdef BLE_OTA_LIB_ARDUINO_BLE
   BLE.poll();
 #endif
   ArduinoBleOTA.pull();

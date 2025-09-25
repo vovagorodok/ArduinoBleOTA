@@ -1,90 +1,26 @@
 #!/usr/bin/env python3
 from bleak import BleakClient, BleakScanner
 from time import sleep
+from ble_ota import uuids
+from ble_ota import consts
+from ble_ota.messages import InitReq, InitResp
+from ble_ota.messages import BeginReq, BeginResp
+from ble_ota.messages import PackageInd, PackageReq, PackageResp
+from ble_ota.messages import EndReq, EndResp
+from ble_ota.messages import ErrorCode, parse_message_of_type, errToStr
+from ble_ota.utils import get_file_size, is_linux, is_fedora
 import asyncio
 import sys
 import zlib
-import os
 import datetime
-import platform
-
-
-BLE_OTA_SERVICE_UUID = "dac890c2-35a1-11ef-aba0-9b95565f4ffb"
-BLE_OTA_CHARACTERISTIC_UUID_TX = "dac89194-35a1-11ef-aba1-b37714ad9a54"
-BLE_OTA_CHARACTERISTIC_UUID_RX = "dac89266-35a1-11ef-aba2-0f0127bce478"
-BLE_OTA_CHARACTERISTIC_UUID_MF_NAME = "dac89338-35a1-11ef-aba3-8746a2fdea8c"
-BLE_OTA_CHARACTERISTIC_UUID_HW_NAME = "dac89414-35a1-11ef-aba4-7fa301ad5c49"
-BLE_OTA_CHARACTERISTIC_UUID_HW_VER = "dac894e6-35a1-11ef-aba5-0fcd13588409"
-BLE_OTA_CHARACTERISTIC_UUID_SW_NAME = "dac895b8-35a1-11ef-aba6-63ebb073a878"
-BLE_OTA_CHARACTERISTIC_UUID_SW_VER = "dac89694-35a1-11ef-aba7-bf64db99d724"
-
-OK = 0x00
-NOK = 0x01
-INCORRECT_FORMAT = 0x02
-INCORRECT_FIRMWARE_SIZE = 0x03
-CHECKSUM_ERROR = 0x04
-INTERNAL_STORAGE_ERROR = 0x05
-UPLOAD_DISABLED = 0x06
-
-BEGIN = 0x10
-PACKAGE = 0x11
-END = 0x12
-
-respToStr = {
-    NOK: "Not ok",
-    INCORRECT_FORMAT: "Incorrect format",
-    INCORRECT_FIRMWARE_SIZE: "Incorrect firmware size",
-    CHECKSUM_ERROR: "Checksum error",
-    INTERNAL_STORAGE_ERROR: "Internal storage error",
-    UPLOAD_DISABLED: "Upload disabled"
-}
-
-MTU_WRITE_OVERHEAD_BYTES_NUM = 3
-
-U8_BYTES_NUM = 1
-U32_BYTES_NUM = 4
-HEAD_BYTES_NUM = U8_BYTES_NUM
-ATTR_SIZE_BYTES_NUM = U32_BYTES_NUM
-BUFFER_SIZE_BYTES_NUM = U32_BYTES_NUM
-BEGIN_RESP_BYTES_NUM = HEAD_BYTES_NUM + ATTR_SIZE_BYTES_NUM + BUFFER_SIZE_BYTES_NUM
-HEAD_POS = 0
-ATTR_SIZE_POS = HEAD_POS + HEAD_BYTES_NUM
-BUFFER_SIZE_POS = ATTR_SIZE_POS + ATTR_SIZE_BYTES_NUM
-
-
-def file_size(path):
-    if os.path.isfile(path):
-        file_info = os.stat(path)
-        return file_info.st_size
-
-
-def bytes_to_int(value):
-    return int.from_bytes(value, 'little', signed=False)
-
-
-def int_to_u8_bytes(value):
-    return int.to_bytes(value, U8_BYTES_NUM, 'little', signed=False)
-
-
-def int_to_u32_bytes(value):
-    return int.to_bytes(value, U32_BYTES_NUM, 'little', signed=False)
 
 
 async def scan_ota_devices(timeout=5.0):
     devices_dict = await BleakScanner.discover(timeout=timeout, return_adv=True)
 
     for dev, adv in devices_dict.values():
-        if BLE_OTA_SERVICE_UUID.lower() in adv.service_uuids:
+        if uuids.BLE_OTA_SERVICE_UUID.lower() in adv.service_uuids:
             yield dev
-
-
-def is_linux():
-    return 'Linux' in platform.system()
-
-
-def is_fedora():
-    release = platform.freedesktop_os_release()
-    return 'Fedora' in release['NAME']
 
 
 async def acquire_mtu(client: BleakClient):
@@ -109,27 +45,6 @@ async def get_mtu(client: BleakClient):
         return client.mtu_size
 
 
-async def handle_response(resp):
-    resp = bytes_to_int(resp)
-    if resp == OK:
-        return True
-
-    print(respToStr[resp])
-    return False
-
-
-async def handle_begin_response(resp):
-    head = resp[HEAD_POS]
-    if head != OK:
-        print(respToStr[head])
-        return
-
-    if len(resp) != BEGIN_RESP_BYTES_NUM:
-        print("Incorrect begin responce")
-        return
-    return bytes_to_int(resp[ATTR_SIZE_POS:BUFFER_SIZE_POS]), bytes_to_int(resp[BUFFER_SIZE_POS:])
-
-
 async def connect(dev):
     client = BleakClient(dev)
 
@@ -140,31 +55,32 @@ async def connect(dev):
 
     await acquire_mtu(client)
 
-    service = client.services.get_service(BLE_OTA_SERVICE_UUID)
-    tx_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_TX)
-    rx_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_RX)
-    mf_name_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_MF_NAME)
-    hw_name_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_NAME)
-    hw_ver_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_VER)
-    sw_name_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_NAME)
-    sw_ver_char = service.get_characteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
+    service = client.services.get_service(uuids.BLE_OTA_SERVICE_UUID)
+    tx_char = service.get_characteristic(uuids.BLE_OTA_CHARACTERISTIC_UUID_TX)
+    rx_char = service.get_characteristic(uuids.BLE_OTA_CHARACTERISTIC_UUID_RX)
+    mf_name_char = service.get_characteristic(uuids.BLE_OTA_CHARACTERISTIC_UUID_MF_NAME)
+    hw_name_char = service.get_characteristic(uuids.BLE_OTA_CHARACTERISTIC_UUID_HW_NAME)
+    hw_ver_char = service.get_characteristic(uuids.BLE_OTA_CHARACTERISTIC_UUID_HW_VER)
+    sw_name_char = service.get_characteristic(uuids.BLE_OTA_CHARACTERISTIC_UUID_SW_NAME)
+    sw_ver_char = service.get_characteristic(uuids.BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
 
-    print(", ".join([f"MF: {str(await client.read_gatt_char(mf_name_char), 'utf-8')}",
-                     f"HW: {str(await client.read_gatt_char(hw_name_char), 'utf-8')}",
-                     f"VER: {list(await client.read_gatt_char(hw_ver_char))}",
-                     f"SW: {str(await client.read_gatt_char(sw_name_char), 'utf-8')}",
-                     f"VER: {list(await client.read_gatt_char(sw_ver_char))}"]))
+    mf = str(await client.read_gatt_char(mf_name_char), 'utf-8')
+    hw = str(await client.read_gatt_char(hw_name_char), 'utf-8')
+    sw = str(await client.read_gatt_char(sw_name_char), 'utf-8')
+    hw_ver = ".".join(map(str, await client.read_gatt_char(hw_ver_char)))
+    sw_ver = ".".join(map(str, await client.read_gatt_char(sw_ver_char)))
+    print(f"Device: name: (mf: {mf}, hw: {hw}, sw: {sw}), ver: (hw: {hw_ver}, sw: {sw_ver})")
 
     return client, tx_char, rx_char
 
 
 async def upload(client: BleakClient, tx_char, rx_char, path):
     crc = 0
-    uploaded_len = 0
-    firmware_len = file_size(path)
-    current_buffer_len = 0
+    uploaded_size = 0
+    firmware_size = get_file_size(path)
+    current_buffer_size = 0
 
-    if not firmware_len:
+    if not firmware_size:
         print(f"File not exist: {path}")
         return False
 
@@ -174,41 +90,64 @@ async def upload(client: BleakClient, tx_char, rx_char, path):
         await queue.put(array)
     await client.start_notify(rx_char, callback)
 
-    begin_req = int_to_u8_bytes(BEGIN) + int_to_u32_bytes(firmware_len)
-    await client.write_gatt_char(tx_char, begin_req)
-    begin_resp = await handle_begin_response(await queue.get())
-    if not begin_resp:
-        return False
-    attr_size, buffer_size = begin_resp
-    
-    mtu = await get_mtu(client)
-    if (mtu):
-        attr_size = min(attr_size, mtu - MTU_WRITE_OVERHEAD_BYTES_NUM)
+    init_req = InitReq()
+    await client.write_gatt_char(tx_char, init_req.to_bytes())
+    init_resp = parse_message_of_type(await queue.get(), InitResp)
 
-    print(f"Begin upload: attr size: {attr_size}, buffer size: {buffer_size}")
+    if not init_resp.flags.upload:
+        print(errToStr[ErrorCode.UPLOAD_DISABLED])
+        return False
+
+    if init_resp.flags.compression:
+        compressed_path = path + ".zlib"
+        with open(path, "rb") as fin, open(compressed_path, "wb") as fout:
+            fout.write(zlib.compress(fin.read()))
+        compressed_size = get_file_size(compressed_path)
+        file_size = compressed_size
+        path = compressed_path
+        print(f"Firmware compressed: {firmware_size} -> {compressed_size}")
+    else:
+        compressed_size = firmware_size
+        file_size = firmware_size
+
+
+    mtu = await get_mtu(client)
+    package_size = (mtu - consts.MESSAGE_OVERHEAD) if mtu else consts.MAX_U32
+    buffer_size = consts.MAX_U32
+
+    begin_req_flags = BeginReq.Flags(init_resp.flags.compression, init_resp.flags.checksum)
+    begin_req = BeginReq(firmware_size, package_size, buffer_size, compressed_size, begin_req_flags)
+    await client.write_gatt_char(tx_char, begin_req.to_bytes())
+    begin_resp = parse_message_of_type(await queue.get(), BeginResp)
+
+    package_size = begin_resp.package_size
+    buffer_size = begin_resp.buffer_size
+
+    print(f"Begin upload sizes: firmware: {firmware_size}, package: {package_size}, buffer: {buffer_size}, compressed: {compressed_size}")
 
     with open(path, 'rb') as f:
         while True:
-            data = f.read(attr_size - HEAD_BYTES_NUM)
+            data = f.read(package_size)
             if not len(data):
                 break
 
-            package = int_to_u8_bytes(PACKAGE) + data
-            await client.write_gatt_char(tx_char, package)
-            if current_buffer_len + len(data) > buffer_size:
-                if not await handle_response(await queue.get()):
-                    return False
-                current_buffer_len = 0
-            current_buffer_len += len(data)
+            if current_buffer_size + len(data) > buffer_size:
+                package_req = PackageReq(data)
+                await client.write_gatt_char(tx_char, package_req.to_bytes())
+                parse_message_of_type(await queue.get(), PackageResp)
+                current_buffer_size = 0
+            else:
+                package_ind = PackageInd(data)
+                await client.write_gatt_char(tx_char, package_ind.to_bytes())
 
-            uploaded_len += len(data)
+            current_buffer_size += len(data)
+            uploaded_size += len(data)
             crc = zlib.crc32(data, crc)
-            print(f"Uploaded: {uploaded_len}/{firmware_len}")
+            print(f"Uploaded: {uploaded_size}/{file_size}")
 
-    end_req = int_to_u8_bytes(END) + int_to_u32_bytes(crc)
-    await client.write_gatt_char(tx_char, end_req)
-    if not await handle_response(await queue.get()):
-        return False
+    end_req = EndReq(crc)
+    await client.write_gatt_char(tx_char, end_req.to_bytes())
+    parse_message_of_type(await queue.get(), EndResp)
 
     return True
 
