@@ -4,7 +4,7 @@
 class BleOtaUploadCallbacks
 {
 public:
-    virtual void handleBegin() {}
-    virtual void handleEnd() {}
-    virtual void handleError(BleOtaStatus errorCode) {}
+    virtual void handleUploadBegin() {}
+    virtual void handleUploadEnd() {}
+    virtual void handleUploadError(BleOtaStatus errorCode) {}
 };

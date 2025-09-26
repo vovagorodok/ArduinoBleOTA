@@ -196,7 +196,7 @@ void BleOtaUploader::handleBeginReq(const BleOtaBeginReq& req)
     BLE_OTA_LOG(TAG, "Send BeginResp: size: (pkg: %lu, buff: %lu)", packageSize, bufferSize);
     sendMessage(BleOtaBeginResp{packageSize, bufferSize});
 
-    _uploadCallbacks->handleBegin();
+    _uploadCallbacks->handleUploadBegin();
 }
 
 void BleOtaUploader::handlePackageReq(const BleOtaPackageReq& req)
@@ -312,7 +312,7 @@ void BleOtaUploader::handleEndReq(const BleOtaEndReq& req)
 
     sendMessage(BleOtaEndResp{});
 
-    _uploadCallbacks->handleEnd();
+    _uploadCallbacks->handleUploadEnd();
 }
 
 void BleOtaUploader::handleSetPinReq(const BleOtaSetPinReq& req)
@@ -355,7 +355,7 @@ void BleOtaUploader::handleInstall()
 void BleOtaUploader::handleError(BleOtaStatus code)
 {
     sendMessage(BleOtaErrorInd{code});
-    _uploadCallbacks->handleError(code);
+    _uploadCallbacks->handleUploadError(code);
 }
 
 void BleOtaUploader::send(const uint8_t* data, size_t size)
