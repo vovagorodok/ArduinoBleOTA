@@ -21,6 +21,7 @@ for hardware name: MyHardware
 for hardware ver: 1.0.0
 ```
 As we see:
+- manufacture names are mathed
 - hardware names and versions are mathed
 - software version in central side is higher
 
