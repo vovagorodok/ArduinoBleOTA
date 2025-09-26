@@ -15,10 +15,10 @@ software ver: 1.0.0
 Central found new software where:
 ```
 manufacture name: MyManufacture
+hardware name: MyHardware
+hardware ver: 1.0.0
 software name: MySoftware
 software ver: 2.0.0
-for hardware name: MyHardware
-for hardware ver: 1.0.0
 ```
 As we see:
 - manufacture names are mathed
