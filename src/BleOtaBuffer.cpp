@@ -27,13 +27,13 @@ size_t BleOtaBuffer::begin(size_t bufferSize, size_t packageSize)
         return 0;
     }
 
-    if (bufferSize < packageSize)
+    _capacity = min(bufferSize, BLE_OTA_BUFFER_SIZE);
+
+    if (_capacity < packageSize)
     {
         _enable = false;
         return 0;
     }
-
-    _capacity = min(bufferSize, BLE_OTA_BUFFER_SIZE);
 #endif
 
 #ifdef BLE_OTA_DYNAMIC_BUFFER
