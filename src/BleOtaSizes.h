@@ -2,7 +2,7 @@
 #include "BleOtaDefines.h"
 
 // BLE packet types:
-// https://microchipdeveloper.com/wireless:ble-link-layer-packet-types
+// https://developerhelp.microchip.com/wireless:ble-link-layer-packet-types
 // MTU overhead:
 // https://docs.silabs.com/bluetooth/4.0/general/system-and-performance/throughput-with-bluetooth-low-energy-technology#attribute-protocol-att-operation
 #define BLE_OTA_MTU_WRITE_OVERHEAD 3
