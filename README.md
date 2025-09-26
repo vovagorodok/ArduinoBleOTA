@@ -1,7 +1,7 @@
 # Arduino BLE OTA
 Arduino Bluetooth LE Over The Air.
 Simple library for upload firmware over Bluetooth.
-Has built in checksum/integrity protection and
+Support compression, checksum/integrity protection and
 software/hardware name/version indication.
 
 More about library in `doc` folder.
