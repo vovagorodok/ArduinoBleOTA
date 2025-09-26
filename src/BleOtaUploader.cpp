@@ -233,6 +233,8 @@ void BleOtaUploader::handlePackageReq(const BleOtaPackageReq& req)
     }
 
     sendMessage(BleOtaPackageResp{});
+
+    _uploadCallbacks->handleUploadProgress(_storage.calcProgress());
 }
 
 void BleOtaUploader::handlePackageInd(const BleOtaPackageInd& ind)

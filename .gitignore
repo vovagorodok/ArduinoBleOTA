@@ -1,6 +1,7 @@
 .pio
 .vscode
 .DS_Store
+*.ino.cpp
 *.pyc
 __pycache__
 tools/release_builder/out
