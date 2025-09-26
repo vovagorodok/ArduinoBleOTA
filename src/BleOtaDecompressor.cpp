@@ -125,7 +125,7 @@ BleOtaStatus BleOtaDecompressor::push(const uint8_t* data, size_t size)
             inBufferAvailable, inBufferPos,
             outBufferAvailable, outBufferPos,
             _size, _bufferSize, inBufferSize, outBufferSize);
-        BLE_OTA_LOG(TAG, "Status: %u", decompStatus);
+        BLE_OTA_LOG(TAG, "Status: %d", decompStatus);
 
         if (decompStatus == TINFL_STATUS_DONE or decompStatus == TINFL_STATUS_HAS_MORE_OUTPUT or not outBufferAvailable)
         {
