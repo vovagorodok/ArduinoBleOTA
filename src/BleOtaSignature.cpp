@@ -6,10 +6,10 @@ namespace
 #define TAG "Signature"
 }
 
-#ifdef BLE_OTA_NO_SIGNATURE
-BleOtaSignature::BleOtaSignature()
-#else
+#ifndef BLE_OTA_NO_SIGNATURE
 BleOtaSignature::BleOtaSignature():
+#else
+BleOtaSignature::BleOtaSignature()
 #endif
 #if defined(BLE_OTA_STATIC_SIGNATURE)
     _sha256ContextData(),
@@ -32,8 +32,7 @@ BleOtaSignature::BleOtaSignature():
 #endif
 {}
 
-void BleOtaSignature::begin()
-{
+void BleOtaSignature::begin() {
 #ifndef BLE_OTA_NO_SIGNATURE
     BLE_OTA_LOG(TAG, "Begin");
 
