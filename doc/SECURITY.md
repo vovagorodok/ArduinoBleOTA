@@ -64,4 +64,4 @@ Signature can be generated using SHA256 and private key
 ```
 openssl dgst -sign priv_key.pem -keyform PEM -sha256 -out signature.sig -binary firmware.bin
 ```
-Enable signature by copy public key to source code and by `setSignatureKey()` method.
+Enable signature checking by copy public key to source code and by `setSignatureKey()` method.
