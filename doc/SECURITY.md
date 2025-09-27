@@ -38,7 +38,7 @@ Central delivers signature data
 | Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x30` |
-| Data | `u8[]` | Binary data |
+| Data | `u8[]` | Signature data |
 
 ### SignatureResp
 | Field | Size | Info |
