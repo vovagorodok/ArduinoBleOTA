@@ -1,0 +1,29 @@
+#include <ArduinoBleOTA.h>
+
+const char* key = R"(-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtfSGjIB+lJ2YTZBjT0lz
+gdvSr/wrnGtFYDT0vPybB9gVEJS6Rq1IoxmvC700yrNhOySAmtPsV0UNJws544kA
+9RozcLxeK5LbwpG6iss72ozrScwPJBH/V7Z3rK7YsWSs0Jr3FuavvzgwmevrQQ/g
+sFJ2Xqp9x8bBm9g2QL076U1wHLY9Ee3gQ0jZwOrvS0dVVMDSts2KYW+nLWLzUvII
+DSxQW1RKkDVFwQM7pOwt+JT+W4Hfev5etZFsIu25fkyHfWNnVt1e5NlZ/iMT2+si
+kJRL8FN9Bb2LFbTsBkJMKyLtwukqsohT8IlLebfpv8+tqcfg0cDHbAUxrmnq6BtI
+swIDAQAB
+-----END PUBLIC KEY-----
+)";
+
+void setup() {
+#ifdef BLE_OTA_LOGS
+  Serial.begin(115200);
+  while (!Serial);
+#endif
+
+  ArduinoBleOTA.setSignatureKey(key, strlen(key));
+  ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
+}
+
+void loop() {
+#ifdef BLE_OTA_LIB_ARDUINO_BLE
+  BLE.poll();
+#endif
+  ArduinoBleOTA.pull();
+}

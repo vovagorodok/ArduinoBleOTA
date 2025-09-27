@@ -71,9 +71,14 @@ void BleOtaLib::setEnableUpload(bool enable)
     _uploader.setEnable(enable);
 }
 
-void BleOtaLib::setSecurityCallbacks(BleOtaSecurityCallbacks& cb)
+bool BleOtaLib::setSignatureKey(const char* key, size_t size)
 {
-    _uploader.setSecurityCallbacks(cb);
+    return _uploader.setSignatureKey(key, size);
+}
+
+void BleOtaLib::setPinCallbacks(BleOtaPinCallbacks& cb)
+{
+    _uploader.setPinCallbacks(cb);
 }
 
 void BleOtaLib::setUploadCallbacks(BleOtaUploadCallbacks& cb)

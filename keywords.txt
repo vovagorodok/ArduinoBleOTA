@@ -1,18 +1,19 @@
 # Datatypes (KEYWORD1)
-ArduinoBleOTA	KEYWORD1
-InternalStorage	KEYWORD1
-SDStorage	KEYWORD1
-SerialFlashStorage	KEYWORD1
-BleOtaSecurityOnConnect KEYWORD1
+ArduinoBleOTA        KEYWORD1
+InternalStorage      KEYWORD1
+SDStorage            KEYWORD1
+SerialFlashStorage   KEYWORD1
+BleOtaSecurityServer KEYWORD1
 
 # Methods and Functions (KEYWORD2)
-begin	KEYWORD2
-poll	KEYWORD2
+begin KEYWORD2
+poll  KEYWORD2
 setEnableUpload    KEYWORD2
-setSecurityCallbacks    KEYWORD2
-setUploadCallbacks  KEYWORD2
-initBle KEYWORD2
-advertiseBle    KEYWORD2
+setSignatureKey    KEYWORD2
+setPinCallbacks    KEYWORD2
+setUploadCallbacks KEYWORD2
+initBle      KEYWORD2
+advertiseBle KEYWORD2
 
 # Instances (KEYWORD2)
 

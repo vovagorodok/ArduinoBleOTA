@@ -22,7 +22,8 @@ public:
     void pull();
 
     void setEnableUpload(bool enable);
-    void setSecurityCallbacks(BleOtaSecurityCallbacks&);
+    bool setSignatureKey(const char* key, size_t size);
+    void setPinCallbacks(BleOtaPinCallbacks&);
     void setUploadCallbacks(BleOtaUploadCallbacks&);
 
 private:

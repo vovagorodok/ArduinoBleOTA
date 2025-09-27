@@ -1,5 +1,5 @@
 #pragma once
-#include "BleOtaSecurityCallbacks.h"
+#include "BleOtaPinCallbacks.h"
 #ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO
 #include <NimBLEDevice.h>
 #include <Preferences.h>
@@ -7,8 +7,8 @@
 #define BLE_OTA_SECURITY_DICT "ota_security"
 #define BLE_OTA_PIN_CODE_KEY "ota_pin"
 
-class BleOtaSecurityOnConnect: public BleOtaSecurityCallbacks,
-                               public BLEServerCallbacks
+class BleOtaSecurityServer: public BleOtaPinCallbacks,
+                            public BLEServerCallbacks
 {
 public:
     void begin()

@@ -16,10 +16,10 @@ BleOtaDecompressor::BleOtaDecompressor(BleOtaStorage& storage):
     _storage(storage)
 #endif
 #if defined(BLE_OTA_STATIC_COMPRESSION)
-    _decompressorData{},
-    _bufferData{},
-    _decompressor{&_decompressorData},
-    _buffer{_bufferData},
+    _decompressorData(),
+    _bufferData(),
+    _decompressor(&_decompressorData),
+    _buffer(_bufferData),
 #elif defined(BLE_OTA_DYNAMIC_COMPRESSION)
     _decompressor(nullptr),
     _buffer(nullptr),
@@ -28,7 +28,7 @@ BleOtaDecompressor::BleOtaDecompressor(BleOtaStorage& storage):
     _bufferSize(),
     _compressedSize(),
     _size(),
-    _enable(true)
+    _enable(false)
 #endif
 {}
 
@@ -37,13 +37,13 @@ void BleOtaDecompressor::begin(size_t compressedSize)
 #ifndef BLE_OTA_NO_COMPRESSION
     BLE_OTA_LOG(TAG, "Begin: compressed size: %u", compressedSize);
 
-    end();
     _bufferSize = 0;
     _compressedSize = compressedSize;
     _size = 0;
 #endif
 
 #ifdef BLE_OTA_DYNAMIC_COMPRESSION
+    clear();
     _decompressor = new tinfl_decompressor;
     _buffer = new uint8_t[TINFL_LZ_DICT_SIZE];
 #endif
@@ -162,16 +162,7 @@ void BleOtaDecompressor::end()
 #endif
 
 #ifdef BLE_OTA_DYNAMIC_COMPRESSION
-    if (_decompressor != nullptr)
-    {
-        delete[] _decompressor;
-        _decompressor = nullptr;
-    }
-    if (_buffer != nullptr)
-    {
-        delete[] _buffer;
-        _buffer = nullptr;
-    }
+    clear();
 #endif
 }
 
@@ -198,5 +189,21 @@ bool BleOtaDecompressor::isSupported() const
     return true;
 #else
     return false;
+#endif
+}
+
+void BleOtaDecompressor::clear()
+{
+#ifdef BLE_OTA_DYNAMIC_COMPRESSION
+    if (_decompressor != nullptr)
+    {
+        delete _decompressor;
+        _decompressor = nullptr;
+    }
+    if (_buffer != nullptr)
+    {
+        delete[] _buffer;
+        _buffer = nullptr;
+    }
 #endif
 }

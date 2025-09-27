@@ -18,7 +18,9 @@ enum BleOtaHeader: uint8_t
     SetPinReq = 0x20,
     SetPinResp = 0x21,
     RemovePinReq = 0x22,
-    RemovePinResp = 0x23
+    RemovePinResp = 0x23,
+    SignatureReq = 0x30,
+    SignatureResp = 0x31,
 };
 
 struct BleOtaMessage
@@ -280,5 +282,19 @@ struct BleOtaRemovePinResp: public BleOtaMessage
 {
     BleOtaRemovePinResp():
         BleOtaMessage{BleOtaHeader::RemovePinResp}
+    {}
+};
+
+struct BleOtaSignatureReq: public BleOtaPackage
+{
+    BleOtaSignatureReq(const uint8_t* data, size_t size):
+        BleOtaPackage{BleOtaHeader::SignatureReq, data, size}
+    {}
+};
+
+struct BleOtaSignatureResp: public BleOtaMessage
+{
+    BleOtaSignatureResp():
+        BleOtaMessage{BleOtaHeader::SignatureResp}
     {}
 };

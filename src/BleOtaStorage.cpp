@@ -8,7 +8,7 @@ namespace
 
 BleOtaStorage::BleOtaStorage():
     _storage(&InternalStorage),
-    _size(0)
+    _size()
 {}
 
 void BleOtaStorage::begin(OTAStorage& storage)

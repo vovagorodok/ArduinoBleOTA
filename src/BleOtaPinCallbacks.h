@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 
-class BleOtaSecurityCallbacks
+class BleOtaPinCallbacks
 {
 public:
     virtual bool setPinCode(uint32_t pinCode)

@@ -1,5 +1,5 @@
 #include <ArduinoBleOTA.h>
-#include <BleOtaSecurityOnConnect.h>
+#include <BleOtaSecurityServer.h>
 
 #define DEVICE_NAME "ArduinoBleOTA"
 
@@ -31,7 +31,7 @@ int _write(int fd, char *ptr, int len) {
 #endif
 
 #ifdef BLE_OTA_LIB_NIM_BLE_ARDUINO
-BleOtaSecurityOnConnect security;
+BleOtaSecurityServer security;
 #endif
 
 void setup() {
@@ -43,7 +43,7 @@ void setup() {
   ArduinoBleOTA.begin(DEVICE_NAME, InternalStorage, info);
 
 #ifdef BLE_OTA_LIB_NIM_BLE_ARDUINO
-  ArduinoBleOTA.setSecurityCallbacks(security);
+  ArduinoBleOTA.setPinCallbacks(security);
   security.begin();
 #endif
 }

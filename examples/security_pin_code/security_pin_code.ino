@@ -1,15 +1,15 @@
 #include <ArduinoBleOTA.h>
-#include <BleOtaSecurityOnConnect.h>
+#include <BleOtaSecurityServer.h>
 
 #ifdef BLE_OTA_LIB_NIM_BLE_ARDUINO
-BleOtaSecurityOnConnect security;
+BleOtaSecurityServer security;
 #endif
 
 void setup() {
   ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
 
 #ifdef BLE_OTA_LIB_NIM_BLE_ARDUINO
-  ArduinoBleOTA.setSecurityCallbacks(security);
+  ArduinoBleOTA.setPinCallbacks(security);
   security.begin();
 #endif
 }

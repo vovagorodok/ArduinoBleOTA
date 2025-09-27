@@ -33,8 +33,35 @@ There are possibilities to disable uploads or change pin code.
 | ---- | ---- | ---- |
 | Head | `u8` | `0x23` |
 
+### SignatureReq
+Central delivers signature data
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x30` |
+| Data | `u8[]` | Binary data |
+
+### SignatureResp
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x31` |
+
 ## Disable uploads
-Uploads can be disabled at the bagining in `begin()` method or later using `setEnableUpload(false)` method.
+Uploads can be disabled at the bagining in `begin()` method or later by `setEnableUpload(false)` method.
 
 ## Change pin code
-Reimplement `BleOtaSecurityCallbacks` for that and add by `setSecurityCallbacks()` method.
+Enable pin support by reimplement `BleOtaPinCallbacks` and by `setPinCallbacks()` method.
+
+## Signature
+Generate private key (keep this secret)
+```
+openssl genrsa -out priv_key.pem 2048
+```
+Generate public key
+```
+openssl rsa -in priv_key.pem -pubout > rsa_key.pub
+```
+Signature can be generated using SHA256 and private key
+```
+openssl dgst -sign priv_key.pem -keyform PEM -sha256 -out signature.sig -binary firmware.bin
+```
+Enable signature by copy public key to source code and by `setSignatureKey()` method.

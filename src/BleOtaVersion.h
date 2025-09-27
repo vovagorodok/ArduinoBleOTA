@@ -5,14 +5,14 @@
 struct BleOtaVersion
 {
     constexpr BleOtaVersion():
-        major{},
-        minor{},
-        patch{}
+        major(),
+        minor(),
+        patch()
     {}
     constexpr BleOtaVersion(uint8_t major, uint8_t minor, uint8_t patch):
-        major{major},
-        minor{minor},
-        patch{patch}
+        major(major),
+        minor(minor),
+        patch(patch)
     {}
 
 private:

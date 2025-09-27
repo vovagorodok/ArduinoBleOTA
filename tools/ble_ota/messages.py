@@ -22,6 +22,8 @@ class HeaderCode(IntEnum):
     SET_PIN_RESP = 0x21
     REMOVE_PIN_REQ = 0x22
     REMOVE_PIN_RESP = 0x23
+    SIGNATURE_REQ = 0x30
+    SIGNATURE_RESP = 0x31
 
 
 class ErrorCode(IntEnum):
@@ -44,7 +46,9 @@ class ErrorCode(IntEnum):
     INCORRECT_COMPRESSION_END = 0x35
     CHECKSUM_NOT_SUPPORTED = 0x40
     INCORRECT_CHECKSUM = 0x41
-    INCORRECT_SIGNATURE = 0x50
+    SIGNATURE_NOT_SUPPORTED = 0x50
+    INCORRECT_SIGNATURE = 0x51
+    INCORRECT_SIGNATURE_SIZE = 0x52
 
 
 @dataclass
@@ -295,6 +299,18 @@ class RemovePinResp(Message):
         super().__init__(HeaderCode.REMOVE_PIN_RESP)
 
 
+@dataclass
+class SignatureReq(Package):
+    def __init__(self, data: bytes):
+        super().__init__(HeaderCode.SIGNATURE_REQ, data)
+
+
+@dataclass
+class SignatureResp(Message):
+    def __init__(self):
+        super().__init__(HeaderCode.SIGNATURE_RESP)
+
+
 headToMsg = {
     HeaderCode.INIT_REQ: InitReq,
     HeaderCode.INIT_RESP: InitResp,
@@ -312,6 +328,8 @@ headToMsg = {
     HeaderCode.SET_PIN_RESP: SetPinResp,
     HeaderCode.REMOVE_PIN_REQ: RemovePinReq,
     HeaderCode.REMOVE_PIN_RESP: RemovePinResp,
+    HeaderCode.SIGNATURE_REQ: SignatureReq,
+    HeaderCode.SIGNATURE_RESP: SignatureResp,
 }
 
 
@@ -355,5 +373,7 @@ errToStr = {
     ErrorCode.INCORRECT_COMPRESSION_END: "Incorrect compression end",
     ErrorCode.CHECKSUM_NOT_SUPPORTED: "Checksum not supported",
     ErrorCode.INCORRECT_CHECKSUM: "Incorrect checksum",
+    ErrorCode.SIGNATURE_NOT_SUPPORTED: "Signature not supported",
     ErrorCode.INCORRECT_SIGNATURE: "Incorrect signature",
+    ErrorCode.INCORRECT_SIGNATURE_SIZE: "Incorrect signature size",
 }

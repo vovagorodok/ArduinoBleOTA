@@ -27,5 +27,7 @@ enum BleOtaStatus: uint8_t
     ChecksumNotSupported = 0x40,
     IncorrectChecksum = 0x41,
 
-    IncorrectSignature = 0x50,
+    SignatureNotSupported = 0x50,
+    IncorrectSignature = 0x51,
+    IncorrectSignatureSize = 0x52,
 };

@@ -47,6 +47,8 @@ public:
     bool isSupported() const;
 
 private:
+    void clear();
+
     BleOtaStorage& _storage;
 #if defined(BLE_OTA_STATIC_COMPRESSION)
     tinfl_decompressor _decompressorData;

@@ -6,13 +6,13 @@ BleOtaBuffer::BleOtaBuffer():
 BleOtaBuffer::BleOtaBuffer()
 #endif
 #if defined(BLE_OTA_STATIC_BUFFER)
-    _buffer{},
+    _buffer(),
 #elif defined(BLE_OTA_DYNAMIC_BUFFER)
     _buffer(nullptr),
 #endif
 #ifndef BLE_OTA_NO_BUFFER
-    _size(0),
-    _capacity(0),
+    _size(),
+    _capacity(),
     _enable(true)
 #endif
 {}

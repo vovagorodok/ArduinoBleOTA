@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from uploader import try_scan_and_upload
+from ble_ota.utils import create_private_key_path
+from ble_ota.paths import Paths
 import os
 import json
 
@@ -22,8 +24,7 @@ def load_json_ignoring_comments(path):
     return json.loads(without_comments)
 
 
-def find_firmware_bin_path():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+def find_firmware_bin_path(script_dir):
     relative_vscode_launch_path = os.path.join('.vscode', 'launch.json')
 
     project_root_dir = find_abs_dir_that_contains(script_dir, relative_vscode_launch_path)
@@ -39,4 +40,6 @@ def find_firmware_bin_path():
 
 
 if __name__ == "__main__":
-    try_scan_and_upload(find_firmware_bin_path())
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    paths = Paths(find_firmware_bin_path(script_dir), create_private_key_path(script_dir))
+    try_scan_and_upload(paths)

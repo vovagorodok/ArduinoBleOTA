@@ -5,7 +5,8 @@
 #include "BleOtaBuffer.h"
 #include "BleOtaDecompressor.h"
 #include "BleOtaChecksum.h"
-#include "BleOtaSecurityCallbacks.h"
+#include "BleOtaSignature.h"
+#include "BleOtaPinCallbacks.h"
 #include "BleOtaUploadCallbacks.h"
 
 class BleOtaUploader
@@ -18,7 +19,8 @@ public:
     void setEnable(bool enable);
     void onData(const uint8_t* data, size_t size);
 
-    void setSecurityCallbacks(BleOtaSecurityCallbacks&);
+    bool setSignatureKey(const char* key, size_t size);
+    void setPinCallbacks(BleOtaPinCallbacks&);
     void setUploadCallbacks(BleOtaUploadCallbacks&);
 
 private:
@@ -29,6 +31,7 @@ private:
     void handleEndReq(const BleOtaEndReq& req);
     void handleSetPinReq(const BleOtaSetPinReq& req);
     void handleRemovePinReq(const BleOtaRemovePinReq& req);
+    void handleSignatureReq(const BleOtaSignatureReq& req);
     void handleInstall();
     void handleError(BleOtaStatus code);
     void send(const uint8_t* data, size_t size);
@@ -51,7 +54,8 @@ private:
     BleOtaBuffer _buffer;
     BleOtaDecompressor _decompressor;
     BleOtaChecksum _checksum;
+    BleOtaSignature _signature;
 
-    BleOtaSecurityCallbacks* _securityCallbacks;
+    BleOtaPinCallbacks* _pinCallbacks;
     BleOtaUploadCallbacks* _uploadCallbacks;
 };

@@ -8,11 +8,14 @@ from ble_ota.messages import InitReq, InitResp
 from ble_ota.messages import BeginReq, BeginResp
 from ble_ota.messages import PackageInd, PackageReq, PackageResp
 from ble_ota.messages import EndReq, EndResp
+from ble_ota.messages import SignatureReq, SignatureResp
 from ble_ota.messages import ErrorCode, parse_message_of_type, errToStr
-from ble_ota.utils import get_file_size
+from ble_ota.utils import get_file_size, create_compressed_file, create_signature_file
+from ble_ota.paths import Paths
 import sys
 import zlib
 import datetime
+import os
 
 
 def scan_ota_devices(adapter_address=None, timeout=5.0):
@@ -72,14 +75,15 @@ def receive(rx_char):
     return bytes(rx_char.value)
 
 
-def upload(tx_char, rx_char, path):
+def upload(paths: Paths, tx_char, rx_char):
     crc = 0
     uploaded_size = 0
-    firmware_size = get_file_size(path)
     current_buffer_size = 0
+    firmware_path = paths.firmware
+    firmware_size = get_file_size(firmware_path)
 
     if not firmware_size:
-        print(f"File not exist: {path}")
+        print(f"File not exist: {firmware_path}")
         return False
 
     init_req = InitReq()
@@ -91,16 +95,28 @@ def upload(tx_char, rx_char, path):
         return False
 
     if init_resp.flags.compression:
-        compressed_path = path + ".zlib"
-        with open(path, "rb") as fin, open(compressed_path, "wb") as fout:
-            fout.write(zlib.compress(fin.read()))
+        compressed_path = firmware_path + ".zlib"
+        create_compressed_file(firmware_path, compressed_path)
         compressed_size = get_file_size(compressed_path)
-        file_size = compressed_size
-        path = compressed_path
+        upload_size = compressed_size
+        firmware_path = compressed_path
         print(f"Firmware compressed: {firmware_size} -> {compressed_size}")
     else:
         compressed_size = firmware_size
-        file_size = firmware_size
+        upload_size = firmware_size
+
+    if init_resp.flags.signature:
+        signature_path = firmware_path + ".sig"
+        private_key_path = paths.private_key
+        if not private_key_path or not os.path.isfile(private_key_path):
+            print(f"Private key required")
+            return False
+        create_signature_file(firmware_path, signature_path, private_key_path)
+        signature_size = get_file_size(signature_path)
+        print(f"Signature created: {signature_size}")
+    else:
+        signature_path = None
+        signature_size = 0
 
     package_size = consts.MAX_U32
     buffer_size = consts.MAX_U32
@@ -115,7 +131,7 @@ def upload(tx_char, rx_char, path):
 
     print(f"Begin upload sizes: firmware: {firmware_size}, package: {package_size}, buffer: {buffer_size}, compressed: {compressed_size}")
 
-    with open(path, 'rb') as f:
+    with open(firmware_path, 'rb') as f:
         while True:
             data = f.read(package_size)
             if not len(data):
@@ -132,8 +148,25 @@ def upload(tx_char, rx_char, path):
     
             current_buffer_size += len(data)
             uploaded_size += len(data)
-            crc = zlib.crc32(data, crc)
-            print(f"Uploaded: {uploaded_size}/{file_size}")
+            if init_resp.flags.checksum:
+                crc = zlib.crc32(data, crc)
+            print(f"Uploaded: {uploaded_size}/{upload_size}")
+
+    if signature_size:
+        print(f"Signature upload")
+        uploaded_size = 0
+        with open(signature_path, 'rb') as f:
+            while True:
+                data = f.read(package_size)
+                if not len(data):
+                    break
+
+                signature_req = SignatureReq(data)
+                send(tx_char, signature_req.to_bytes())
+                parse_message_of_type(receive(rx_char), SignatureResp)
+
+                uploaded_size += len(data)
+                print(f"Uploaded: {uploaded_size}/{signature_size}")
 
     end_req = EndReq(crc)
     send(tx_char, end_req.to_bytes())
@@ -142,11 +175,11 @@ def upload(tx_char, rx_char, path):
     return True
 
 
-def try_upload(tx_char, rx_char, path):
+def try_upload(paths: Paths, tx_char, rx_char):
     time = datetime.datetime.now()
 
     try:
-        if not upload(tx_char, rx_char, path):
+        if not upload(paths, tx_char, rx_char):
             return False
     except Exception as e:
         print(e)
@@ -157,13 +190,13 @@ def try_upload(tx_char, rx_char, path):
     return True
 
 
-def connect_and_upload(dev, path):
+def connect_and_upload(paths: Paths, dev):
     res = connect(dev)
     if not res:
         return
     device, tx_char, rx_char = res
 
-    if not try_upload(tx_char, rx_char, path):
+    if not try_upload(paths, tx_char, rx_char):
         device.disconnect()
         return
     device.disconnect()
@@ -178,7 +211,7 @@ def connect_and_upload(dev, path):
     print("Success!")
 
 
-def scan_and_upload(path):
+def scan_and_upload(paths: Paths):
     devices = list()
 
     print("Devices:")
@@ -203,8 +236,8 @@ def scan_and_upload(path):
             print("Incorrect input")
             exit()
 
-    connect_and_upload(devices[device_num], path)
+    connect_and_upload(paths, devices[device_num])
 
 
 if __name__ == '__main__':
-    scan_and_upload(sys.argv[1])
+    scan_and_upload(Paths.parse(sys.argv))
