@@ -3,45 +3,45 @@ There are possibilities to disable uploads or change pin code.
 
 ## Messages
 ### UploadEnableInd
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x11` |
 
 ### UploadDisableInd
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x12` |
 
 ### SetPinReq
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x20` |
 | Pin | `u32` | Pin should contain exact 6 digits |
 
 ### SetPinResp
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x21` |
 
 ### RemovePinReq
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x22` |
 
 ### RemovePinResp
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x23` |
 
 ### SignatureReq
 Central delivers signature data
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x30` |
 | Data | `u8[]` | Binary data |
 
 ### SignatureResp
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x31` |
 

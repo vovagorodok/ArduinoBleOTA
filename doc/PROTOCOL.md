@@ -4,12 +4,12 @@ Binary protocol where each transfer block contains `u8` head at the begining.
 ## Messages
 ### InitReq
 Central checks peripheral compatibilities
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x01` |
 
 ### InitResp
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x02` |
 | Flags | `u8` | Described below |
@@ -24,12 +24,12 @@ Central checks peripheral compatibilities
 
 ### BeginReq
 Central begins uploading
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x03` |
 | Firmware size | `u32` | Binary file size |
-| Package size | `u32` | Max package size |
-| Buffer size | `u32` | Internal buffer size, `0` means disable |
+| Package size | `u32` | Max package size, `0xFFFFFFFF` if any |
+| Buffer size | `u32` | Internal buffer, `0xFFFFFFFF` if any, `0` if disable |
 | Compressed size | `u32` | Binary file size after compression |
 | Flags | `u8` | Described below |
 
@@ -39,46 +39,46 @@ Central begins uploading
 | Checksum | Checksum calculation required |
 
 ### BeginResp
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x04` |
 | Package size | `u32` | Negotiated max package size |
-| Buffer size | `u32` | Negotiated internal buffer size, `0` means disable |
+| Buffer size | `u32` | Negotiated internal buffer, `0` if disable |
 
 ### PackageInd
 Central delivers binary data that will be stored in buffer, response not needed
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x05` |
 | Data | `u8[]` | Binary data |
 
 ### PackageReq
 Central delivers binary data that will be stored with buffered data in flash, response required
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x06` |
 | Data | `u8[]` | Binary data |
 
 ### PackageResp
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x07` |
 
 ### EndReq
 Central ends uploading
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x08` |
 | Firmware checksum | `u32` | Calulated checksum, `0` when disabled |
 
 ### EndResp
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x09` |
 
 ### ErrorInd
 Peripheral indicates error
-| Field | Size | Info|
+| Field | Size | Info |
 | ---- | ---- | ---- |
 | Head | `u8` | `0x10` |
 | Code | `u8` | Described below |
