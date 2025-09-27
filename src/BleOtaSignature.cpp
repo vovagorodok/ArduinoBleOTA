@@ -32,7 +32,8 @@ BleOtaSignature::BleOtaSignature()
 #endif
 {}
 
-void BleOtaSignature::begin() {
+void BleOtaSignature::begin()
+{
 #ifndef BLE_OTA_NO_SIGNATURE
     BLE_OTA_LOG(TAG, "Begin");
 
