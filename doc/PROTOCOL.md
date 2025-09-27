@@ -4,249 +4,84 @@ Binary protocol where each transfer block contains `u8` head at the begining.
 ## Messages
 ### InitReq
 Central checks peripheral compatibilities
-<table>
-  <tr>
-    <th style="width: 140px;">Field</th>
-    <th style="width: 20px;">Size</th>
-    <th style="width: 350px;">Info</th>
-  </tr>
-  <tr>
-    <td>Head</td>
-    <td><code>u8</code></td>
-    <td><code>0x01</code></td>
-  </tr>
-</table>
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x01` |
 
 ### InitResp
-<table>
-  <tr>
-    <th style="width: 140px;">Field</th>
-    <th style="width: 20px;">Size</th>
-    <th style="width: 350px;">Info</th>
-  </tr>
-  <tr>
-    <td>Head</td>
-    <td><code>u8</code></td>
-    <td><code>0x02</code></td>
-  </tr>
-  <tr>
-    <td>Flags</td>
-    <td><code>u8</code></td>
-    <td>Described below</td>
-  </tr>
-</table>
-<table>
-  <tr>
-    <th style="width: 140px;">Flag</th>
-    <th style="width: 250px;">Info</th>
-  </tr>
-  <tr>
-    <td>Compression</td>
-    <td>Compression supported</td>
-  </tr>
-  <tr>
-    <td>Checksum</td>
-    <td>Checksum supported</td>
-  </tr>
-  <tr>
-    <td>Upload</td>
-    <td>Upload enabled</td>
-  </tr>
-  <tr>
-    <td>Pin</td>
-    <td>Pin change supported</td>
-  </tr>
-  <tr>
-    <td>Signature</td>
-    <td>Signature required</td>
-  </tr>
-</table>
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x02` |
+| Flags | `u8` | Described below |
+
+| Flag | Info |
+| ---- | ---- |
+| Compression | Compression supported |
+| Checksum | Checksum supported |
+| Upload | Upload enabled |
+| Pin | Pin change supported |
+| Signature | Signature required |
 
 ### BeginReq
 Central begins uploading
-<table>
-  <tr>
-    <th style="width: 140px;">Field</th>
-    <th style="width: 20px;">Size</th>
-    <th style="width: 350px;">Info</th>
-  </tr>
-  <tr>
-    <td>Head</td>
-    <td><code>u8</code></td>
-    <td><code>0x03</code></td>
-  </tr>
-  <tr>
-    <td>Firmware size</td>
-    <td><code>u32</code></td>
-    <td>Binary file size</td>
-  </tr>
-  <tr>
-    <td>Package size</td>
-    <td><code>u32</code></td>
-    <td>Max package size, <code>0xFFFFFFFF</code> if any</td>
-  </tr>
-  <tr>
-    <td>Buffer size</td>
-    <td><code>u32</code></td>
-    <td>Internal buffer, <code>0xFFFFFFFF</code> if any, <code>0</code> if disable</td>
-  </tr>
-  <tr>
-    <td>Compressed size</td>
-    <td><code>u32</code></td>
-    <td>Binary file size after compression</td>
-  </tr>
-  <tr>
-    <td>Flags</td>
-    <td><code>u8</code></td>
-    <td>Described below</td>
-  </tr>
-</table>
-<table>
-  <tr>
-    <th style="width: 140px;">Flag</th>
-    <th style="width: 250px;">Info</th>
-  </tr>
-  <tr>
-    <td>Compression</td>
-    <td>Binary file compressed</td>
-  </tr>
-  <tr>
-    <td>Checksum</td>
-    <td>Checksum calculation required</td>
-  </tr>
-</table>
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x03` |
+| Firmware size | `u32` | Binary file size |
+| Package size | `u32` | Max package size |
+| Buffer size | `u32` | Internal buffer size, `0` means disable |
+| Compressed size | `u32` | Binary file size after compression |
+| Flags | `u8` | Described below |
+
+| Flag | Info |
+| ---- | ---- |
+| Compression | Binary file compressed |
+| Checksum | Checksum calculation required |
 
 ### BeginResp
-<table>
-  <tr>
-    <th style="width: 140px;">Field</th>
-    <th style="width: 20px;">Size</th>
-    <th style="width: 350px;">Info</th>
-  </tr>
-  <tr>
-    <td>Head</td>
-    <td><code>u8</code></td>
-    <td><code>0x04</code></td>
-  </tr>
-  <tr>
-    <td>Package size</td>
-    <td><code>u32</code></td>
-    <td>Negotiated max package size</td>
-  </tr>
-  <tr>
-    <td>Buffer size</td>
-    <td><code>u32</code></td>
-    <td>Negotiated internal buffer, <code>0</code> if disable</td>
-  </tr>
-</table>
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x04` |
+| Package size | `u32` | Negotiated max package size |
+| Buffer size | `u32` | Negotiated internal buffer size, `0` means disable |
 
 ### PackageInd
 Central delivers binary data that will be stored in buffer, response not needed
-<table>
-  <tr>
-    <th style="width: 140px;">Field</th>
-    <th style="width: 20px;">Size</th>
-    <th style="width: 350px;">Info</th>
-  </tr>
-  <tr>
-    <td>Head</td>
-    <td><code>u8</code></td>
-    <td><code>0x05</code></td>
-  </tr>
-  <tr>
-    <td>Data</td>
-    <td><code>u8[]</code></td>
-    <td>Binary data</td>
-  </tr>
-</table>
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x05` |
+| Data | `u8[]` | Binary data |
 
 ### PackageReq
 Central delivers binary data that will be stored with buffered data in flash, response required
-<table>
-  <tr>
-    <th style="width: 140px;">Field</th>
-    <th style="width: 20px;">Size</th>
-    <th style="width: 350px;">Info</th>
-  </tr>
-  <tr>
-    <td>Head</td>
-    <td><code>u8</code></td>
-    <td><code>0x06</code></td>
-  </tr>
-  <tr>
-    <td>Data</td>
-    <td><code>u8[]</code></td>
-    <td>Binary data</td>
-  </tr>
-</table>
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x06` |
+| Data | `u8[]` | Binary data |
 
 ### PackageResp
-<table>
-  <tr>
-    <th style="width: 140px;">Field</th>
-    <th style="width: 20px;">Size</th>
-    <th style="width: 350px;">Info</th>
-  </tr>
-  <tr>
-    <td>Head</td>
-    <td><code>u8</code></td>
-    <td><code>0x07</code></td>
-  </tr>
-</table>
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x07` |
 
 ### EndReq
 Central ends uploading
-<table>
-  <tr>
-    <th style="width: 140px;">Field</th>
-    <th style="width: 20px;">Size</th>
-    <th style="width: 350px;">Info</th>
-  </tr>
-  <tr>
-    <td>Head</td>
-    <td><code>u8</code></td>
-    <td><code>0x08</code></td>
-  </tr>
-  <tr>
-    <td>Firmware checksum</td>
-    <td><code>u32</code></td>
-    <td>Calulated checksum, <code>0</code> when disabled</td>
-  </tr>
-</table>
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x08` |
+| Firmware checksum | `u32` | Calulated checksum, `0` when disabled |
 
 ### EndResp
-<table>
-  <tr>
-    <th style="width: 140px;">Field</th>
-    <th style="width: 20px;">Size</th>
-    <th style="width: 350px;">Info</th>
-  </tr>
-  <tr>
-    <td>Head</td>
-    <td><code>u8</code></td>
-    <td><code>0x09</code></td>
-  </tr>
-</table>
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x09` |
 
 ### ErrorInd
 Peripheral indicates error
-<table>
-  <tr>
-    <th style="width: 140px;">Field</th>
-    <th style="width: 20px;">Size</th>
-    <th style="width: 350px;">Info</th>
-  </tr>
-  <tr>
-    <td>Head</td>
-    <td><code>u8</code></td>
-    <td><code>0x10</code></td>
-  </tr>
-  <tr>
-    <td>Code</td>
-    <td><code>u8</code></td>
-    <td>Described below</td>
-  </tr>
-</table>
+| Field | Size | Info|
+| ---- | ---- | ---- |
+| Head | `u8` | `0x10` |
+| Code | `u8` | Described below |
 
 | Code | Info |
 | ---- | ---- |
