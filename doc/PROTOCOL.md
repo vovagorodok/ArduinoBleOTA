@@ -29,7 +29,7 @@ Central begins uploading
 | Head | `u8` | `0x03` |
 | Firmware size | `u32` | Binary file size |
 | Package size | `u32` | Max package size, `0xFFFFFFFF` if any |
-| Buffer size | `u32` | Internal buffer, `0xFFFFFFFF` if any, `0` if disable |
+| Buffer size | `u32` | Internal buffer size, `0xFFFFFFFF` if any, `0` if disable |
 | Compressed size | `u32` | Binary file size after compression |
 | Flags | `u8` | Described below |
 
@@ -43,7 +43,7 @@ Central begins uploading
 | ---- | ---- | ---- |
 | Head | `u8` | `0x04` |
 | Package size | `u32` | Negotiated max package size |
-| Buffer size | `u32` | Negotiated internal buffer, `0` if disable |
+| Buffer size | `u32` | Negotiated internal buffer size, `0` if disable |
 
 ### PackageInd
 Central delivers binary data that will be stored in buffer, response not needed
