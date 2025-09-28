@@ -5,17 +5,17 @@ Binary protocol where each transfer block contains `u8` head at the begining.
 ### InitReq
 Central checks peripheral compatibilities
 | Field | Type | Info |
-| ---- | ---- | ---- |
+| :---- | :--- | :--- |
 | Head | `u8` | `0x01` |
 
 ### InitResp
 | Field | Type | Info |
-| ---- | ---- | ---- |
+| :---- | :--- | :--- |
 | Head | `u8` | `0x02` |
 | Flags | `u8` | Described below |
 
 | Flag | Info |
-| ---- | ---- |
+| :--- | :--- |
 | Compression | Compression supported |
 | Checksum | Checksum supported |
 | Upload | Upload enabled |
@@ -25,7 +25,7 @@ Central checks peripheral compatibilities
 ### BeginReq
 Central begins uploading
 | Field | Type | Info |
-| ---- | ---- | ---- |
+| :---- | :--- | :--- |
 | Head | `u8` | `0x03` |
 | Firmware size | `u32` | Binary file size |
 | Package size | `u32` | Max package size, `0xFFFFFFFF` if any |
@@ -34,13 +34,13 @@ Central begins uploading
 | Flags | `u8` | Described below |
 
 | Flag | Info |
-| ---- | ---- |
+| :--- | :--- |
 | Compression | Binary file compressed |
 | Checksum | Checksum calculation required |
 
 ### BeginResp
 | Field | Type | Info |
-| ---- | ---- | ---- |
+| :---- | :--- | :--- |
 | Head | `u8` | `0x04` |
 | Package size | `u32` | Negotiated max package size |
 | Buffer size | `u32` | Negotiated internal buffer size, `0` if disable |
@@ -48,43 +48,43 @@ Central begins uploading
 ### PackageInd
 Central delivers binary data that will be stored in buffer, response not needed
 | Field | Type | Info |
-| ---- | ---- | ---- |
+| :---- | :--- | :--- |
 | Head | `u8` | `0x05` |
 | Data | `u8[]` | Binary data |
 
 ### PackageReq
 Central delivers binary data that will be stored with buffered data in flash, response required
 | Field | Type | Info |
-| ---- | ---- | ---- |
+| :---- | :--- | :--- |
 | Head | `u8` | `0x06` |
 | Data | `u8[]` | Binary data |
 
 ### PackageResp
 | Field | Type | Info |
-| ---- | ---- | ---- |
+| :---- | :--- | :--- |
 | Head | `u8` | `0x07` |
 
 ### EndReq
 Central ends uploading
 | Field | Type | Info |
-| ---- | ---- | ---- |
+| :---- | :--- | :--- |
 | Head | `u8` | `0x08` |
 | Firmware checksum | `u32` | Calulated checksum, `0` when disabled |
 
 ### EndResp
 | Field | Type | Info |
-| ---- | ---- | ---- |
+| :---- | :--- | :--- |
 | Head | `u8` | `0x09` |
 
 ### ErrorInd
 Peripheral indicates error
 | Field | Type | Info |
-| ---- | ---- | ---- |
+| :---- | :--- | :--- |
 | Head | `u8` | `0x10` |
 | Code | `u8` | Described below |
 
 | Code | Info |
-| ---- | ---- |
+| :--- | :--- |
 | Ok | `0x00` |
 | Nok | `0x01` |
 | Incorrect format | `0x02` |
