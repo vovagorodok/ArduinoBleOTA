@@ -2,7 +2,7 @@
 ## Upload any bin file
 Using python script:
 ```
-python3 tools/uploader.py <path to bin file>
+python3 tools/uploader.py <bin file path>
 ```
 For example:
 ```
