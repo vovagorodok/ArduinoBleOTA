@@ -311,6 +311,32 @@ class SignatureResp(Message):
         super().__init__(HeaderCode.SIGNATURE_RESP)
 
 
+ERROR_TO_STR = {
+    ErrorCode.OK: "OK",
+    ErrorCode.NOK: "Not ok",
+    ErrorCode.INCORRECT_FORMAT: "Incorrect format",
+    ErrorCode.INCORRECT_FIRMWARE_SIZE: "Incorrect firmware size",
+    ErrorCode.INTERNAL_STORAGE_ERROR: "Internal storage error",
+    ErrorCode.UPLOAD_DISABLED: "Upload disabled",
+    ErrorCode.UPLOAD_RUNNING: "Upload running",
+    ErrorCode.UPLOAD_STOPPED: "Upload stopped",
+    ErrorCode.INSTALL_RUNNING: "Install running",
+    ErrorCode.BUFFER_DISABLED: "Buffer disabled",
+    ErrorCode.BUFFER_OVERFLOW: "Buffer overflow",
+    ErrorCode.COMPRESSION_NOT_SUPPORTED: "Compression not supported",
+    ErrorCode.INCORRECT_COMPRESSION: "Incorrect compression",
+    ErrorCode.INCORRECT_COMPRESSED_SIZE: "Incorrect compressed size",
+    ErrorCode.INCORRECT_COMPRESSION_CHECKSUM: "Incorrect compression checksum",
+    ErrorCode.INCORRECT_COMPRESSION_PARAM: "Incorrect compression param",
+    ErrorCode.INCORRECT_COMPRESSION_END: "Incorrect compression end",
+    ErrorCode.CHECKSUM_NOT_SUPPORTED: "Checksum not supported",
+    ErrorCode.INCORRECT_CHECKSUM: "Incorrect checksum",
+    ErrorCode.SIGNATURE_NOT_SUPPORTED: "Signature not supported",
+    ErrorCode.INCORRECT_SIGNATURE: "Incorrect signature",
+    ErrorCode.INCORRECT_SIGNATURE_SIZE: "Incorrect signature size",
+}
+
+
 HEADER_TO_MESSAGE = {
     HeaderCode.INIT_REQ: InitReq,
     HeaderCode.INIT_RESP: InitResp,
@@ -351,29 +377,3 @@ def parse_message_of_type(data: bytes, expected_cls: Type[T]) -> T:
         raise ValueError(f"Message type mismatch: expected {expected_cls.__name__}, got {type(msg).__name__}")
 
     return msg
-
-
-ERROR_TO_STR = {
-    ErrorCode.OK: "OK",
-    ErrorCode.NOK: "Not ok",
-    ErrorCode.INCORRECT_FORMAT: "Incorrect format",
-    ErrorCode.INCORRECT_FIRMWARE_SIZE: "Incorrect firmware size",
-    ErrorCode.INTERNAL_STORAGE_ERROR: "Internal storage error",
-    ErrorCode.UPLOAD_DISABLED: "Upload disabled",
-    ErrorCode.UPLOAD_RUNNING: "Upload running",
-    ErrorCode.UPLOAD_STOPPED: "Upload stopped",
-    ErrorCode.INSTALL_RUNNING: "Install running",
-    ErrorCode.BUFFER_DISABLED: "Buffer disabled",
-    ErrorCode.BUFFER_OVERFLOW: "Buffer overflow",
-    ErrorCode.COMPRESSION_NOT_SUPPORTED: "Compression not supported",
-    ErrorCode.INCORRECT_COMPRESSION: "Incorrect compression",
-    ErrorCode.INCORRECT_COMPRESSED_SIZE: "Incorrect compressed size",
-    ErrorCode.INCORRECT_COMPRESSION_CHECKSUM: "Incorrect compression checksum",
-    ErrorCode.INCORRECT_COMPRESSION_PARAM: "Incorrect compression param",
-    ErrorCode.INCORRECT_COMPRESSION_END: "Incorrect compression end",
-    ErrorCode.CHECKSUM_NOT_SUPPORTED: "Checksum not supported",
-    ErrorCode.INCORRECT_CHECKSUM: "Incorrect checksum",
-    ErrorCode.SIGNATURE_NOT_SUPPORTED: "Signature not supported",
-    ErrorCode.INCORRECT_SIGNATURE: "Incorrect signature",
-    ErrorCode.INCORRECT_SIGNATURE_SIZE: "Incorrect signature size",
-}
