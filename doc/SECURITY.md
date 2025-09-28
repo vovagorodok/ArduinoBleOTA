@@ -1,18 +1,24 @@
 ## Overal
-There are possibilities to disable uploads or change pin code.
+There are possibilities:
+- disable upload
+- change pin code
+- signature
 
 ## Messages
 ### UploadEnableInd
+Peripheral enable upload
 | Field | Type | Info |
 | :---- | :--- | :--- |
 | Head | `u8` | `0x11` |
 
 ### UploadDisableInd
+Peripheral disable upload
 | Field | Type | Info |
 | :---- | :--- | :--- |
 | Head | `u8` | `0x12` |
 
 ### SetPinReq
+Central set pin
 | Field | Type | Info |
 | :---- | :--- | :--- |
 | Head | `u8` | `0x20` |
@@ -24,6 +30,7 @@ There are possibilities to disable uploads or change pin code.
 | Head | `u8` | `0x21` |
 
 ### RemovePinReq
+Central remove pin
 | Field | Type | Info |
 | :---- | :--- | :--- |
 | Head | `u8` | `0x22` |
@@ -45,7 +52,7 @@ Central delivers signature data
 | :---- | :--- | :--- |
 | Head | `u8` | `0x31` |
 
-## Disable uploads
+## Disable upload
 Uploads can be disabled at the bagining in `begin()` method or later by `setEnableUpload(false)` method.
 
 ## Change pin code

@@ -1,5 +1,5 @@
 ## Overal
-Binary protocol where each transfer block contains `u8` head at the begining.  
+Binary protocol where each message contains `u8` head at the begining.  
 
 ## Messages
 ### InitReq
@@ -30,7 +30,7 @@ Central begins uploading
 | Firmware size | `u32` | Binary file size |
 | Package size | `u32` | Max package size, `0xFFFFFFFF` if any |
 | Buffer size | `u32` | Internal buffer size, `0xFFFFFFFF` if any, `0` if disable |
-| Compressed size | `u32` | Binary file size after compression |
+| Compressed size | `u32` | Binary file size after compression, any value if disable |
 | Flags | `u8` | Described below |
 
 | Flag | Info |
@@ -53,7 +53,7 @@ Central delivers binary data that will be stored in buffer, response not needed
 | Data | `u8[]` | Binary data |
 
 ### PackageReq
-Central delivers binary data that will be stored with buffered data in flash, response required
+Central delivers binary data that will be stored in flash or flush buffer if enable, response required
 | Field | Type | Info |
 | :---- | :--- | :--- |
 | Head | `u8` | `0x06` |
@@ -69,7 +69,7 @@ Central ends uploading
 | Field | Type | Info |
 | :---- | :--- | :--- |
 | Head | `u8` | `0x08` |
-| Firmware checksum | `u32` | Calulated checksum, `0` when disabled |
+| Firmware checksum | `u32` | Calulated checksum, any value if disable |
 
 ### EndResp
 | Field | Type | Info |
@@ -130,68 +130,65 @@ Internal buffer is created in order to increase upload speed. Packages can be ha
 Central send `PackageReq` when buffer is overloaded.  
 In order to know more about error codes ckeck scenarios below.
 
-## Comunication lost scenario
+## Comunication lost
 In this case buffer usage turns of and uploading starts from begining when `BeginReq` recives again.
 
-## Incorrect transfer block scenarios
-Zero size transfer block:
+## Incorrect message
+Incorrect message size
 ```
-c) <Zero size transfer block>
+c) <Incorrect message size>
 p) ErrorInd: Incorrect format
 ```
-Incorrect head code:
+Incorrect head code
 ```
 c) <Incorrect head code>
 p) ErrorInd: Incorrect format
 ```
 
-## Begin failure scenarios
-Incorrect firmware size format:
-```
-c) BeginReq <Incorrect message size>
-p) ErrorInd: Incorrect format
-```
-Firmware size to large:
-```
-c) BeginReq
-p) ErrorInd: Incorrect firmware size
-```
-Internal storage error:
-```
-c) BeginReq
-p) ErrorInd: Internal storage error
-```
-Upload disabled:
-```
-c) BeginReq
-p) ErrorInd: Upload disabled
-```
-Transfer start without BeginReq:
+## Incorrect messages order
+Upload not started
 ```
 c) PackageReq
 p) ErrorInd: Upload stopped
 ```
+Install running
+```
+c) PackageReq
+p) ErrorInd: Install running
+```
 
-## Package failure scenarios
-Uploaded packets size is higher than firmware size:
+## Begin failure
+Firmware size to large
+```
+c) BeginReq
+p) ErrorInd: Incorrect firmware size
+```
+Internal storage error
+```
+c) BeginReq
+p) ErrorInd: Internal storage error
+```
+Upload disabled
+```
+c) BeginReq
+p) ErrorInd: Upload disabled
+```
+
+## Package failure
+Uploaded packets size is higher than firmware size
 ```
 c) PackageReq
 p) ErrorInd: Incorrect firmware size
 ```
 
-## End failure scenarios
-Uploaded packets size is lower than firmware size:
+## End failure
+Uploaded packets size is lower than firmware size
 ```
 c) EndReq
 p) ErrorInd: Incorrect firmware size
 ```
-Incorrect checksum size format:
-```
-c) EndReq <Incorrect message size>
-p) ErrorInd: Incorrect format
-```
-Checksum doesn't match:
+Checksum doesn't match
 ```
 c) EndReq
-p) ErrorInd: Incorrect checksum 
+p) ErrorInd: Incorrect checksum
 ```
