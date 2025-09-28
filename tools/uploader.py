@@ -67,12 +67,15 @@ async def connect(dev):
     sw_name_char = service.get_characteristic(uuids.BLE_OTA_CHARACTERISTIC_UUID_SW_NAME)
     sw_ver_char = service.get_characteristic(uuids.BLE_OTA_CHARACTERISTIC_UUID_SW_VER)
 
-    mf = str(await client.read_gatt_char(mf_name_char), 'utf-8')
-    hw = str(await client.read_gatt_char(hw_name_char), 'utf-8')
-    sw = str(await client.read_gatt_char(sw_name_char), 'utf-8')
-    hw_ver = ".".join(map(str, await client.read_gatt_char(hw_ver_char)))
-    sw_ver = ".".join(map(str, await client.read_gatt_char(sw_ver_char)))
-    print(f"Device: name: (mf: {mf}, hw: {hw}, sw: {sw}), ver: (hw: {hw_ver}, sw: {sw_ver})")
+    if mf_name_char and hw_name_char and hw_ver_char and sw_name_char and sw_ver_char:
+        mf = str(await client.read_gatt_char(mf_name_char), 'utf-8')
+        hw = str(await client.read_gatt_char(hw_name_char), 'utf-8')
+        sw = str(await client.read_gatt_char(sw_name_char), 'utf-8')
+        hw_ver = ".".join(map(str, await client.read_gatt_char(hw_ver_char)))
+        sw_ver = ".".join(map(str, await client.read_gatt_char(sw_ver_char)))
+        print(f"Device: name: (mf: {mf}, hw: {hw}, sw: {sw}), ver: (hw: {hw_ver}, sw: {sw_ver})")
+    else:
+        print(f"Device info not available")
 
     return client, tx_char, rx_char
 

@@ -60,9 +60,8 @@ def connect(dev):
         hw_ver = ".".join(map(str, bytearray(hw_ver_char.value)))
         sw_ver = ".".join(map(str, bytearray(sw_ver_char.value)))
         print(f"Device: name: (mf: {mf}, hw: {hw}, sw: {sw}), ver: (hw: {hw_ver}, sw: {sw_ver})")
-    except Exception as e:
-        print(e)
-        return
+    except Exception:
+        print(f"Device info not available")
 
     return device, tx_char, rx_char
 
@@ -239,5 +238,14 @@ def scan_and_upload(paths: Paths):
     connect_and_upload(paths, devices[device_num])
 
 
+def try_scan_and_upload(paths: Paths):
+    try:
+        scan_and_upload(paths)
+    except KeyboardInterrupt:
+        print("User interrupt.")
+    except Exception as e:
+        print(e)
+
+
 if __name__ == '__main__':
-    scan_and_upload(Paths.parse(sys.argv))
+    try_scan_and_upload(Paths.parse(sys.argv))
