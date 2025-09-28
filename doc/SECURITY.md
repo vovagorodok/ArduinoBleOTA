@@ -2,7 +2,7 @@
 There are possibilities:
 - disable upload
 - change pin code
-- signature
+- sign the software
 
 ## Messages
 ### UploadEnableInd
