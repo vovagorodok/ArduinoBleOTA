@@ -311,7 +311,7 @@ class SignatureResp(Message):
         super().__init__(HeaderCode.SIGNATURE_RESP)
 
 
-headToMsg = {
+HEADER_TO_MESSAGE = {
     HeaderCode.INIT_REQ: InitReq,
     HeaderCode.INIT_RESP: InitResp,
     HeaderCode.BEGIN_REQ: BeginReq,
@@ -338,14 +338,14 @@ T = TypeVar("T", bound=Message)
 
 def parse_message_of_type(data: bytes, expected_cls: Type[T]) -> T:
     header = HeaderCode(data[0])
-    cls = headToMsg.get(header)
+    cls = HEADER_TO_MESSAGE.get(header)
     if cls is None:
         raise ValueError(f"Unknown message header: {header}")
 
     msg = cls.from_bytes(data)
 
     if isinstance(msg, ErrorInd):
-        raise ValueError(errToStr[msg.code])
+        raise ValueError(ERROR_TO_STR[msg.code])
 
     if not isinstance(msg, expected_cls):
         raise ValueError(f"Message type mismatch: expected {expected_cls.__name__}, got {type(msg).__name__}")
@@ -353,7 +353,7 @@ def parse_message_of_type(data: bytes, expected_cls: Type[T]) -> T:
     return msg
 
 
-errToStr = {
+ERROR_TO_STR = {
     ErrorCode.OK: "OK",
     ErrorCode.NOK: "Not ok",
     ErrorCode.INCORRECT_FORMAT: "Incorrect format",

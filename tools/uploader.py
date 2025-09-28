@@ -8,7 +8,7 @@ from ble_ota.messages import BeginReq, BeginResp
 from ble_ota.messages import PackageInd, PackageReq, PackageResp
 from ble_ota.messages import EndReq, EndResp
 from ble_ota.messages import SignatureReq, SignatureResp
-from ble_ota.messages import ErrorCode, parse_message_of_type, errToStr
+from ble_ota.messages import ErrorCode, parse_message_of_type, ERROR_TO_STR
 from ble_ota.utils import get_file_size, is_linux, is_fedora, create_compressed_file, create_signature_file
 from ble_ota.paths import Paths
 import asyncio
@@ -99,7 +99,7 @@ async def upload(paths: Paths, client: BleakClient, tx_char, rx_char):
     init_resp = parse_message_of_type(await queue.get(), InitResp)
 
     if not init_resp.flags.upload:
-        print(errToStr[ErrorCode.UPLOAD_DISABLED])
+        print(ERROR_TO_STR[ErrorCode.UPLOAD_DISABLED])
         return False
 
     if init_resp.flags.compression:
