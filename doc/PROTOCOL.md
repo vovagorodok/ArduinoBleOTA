@@ -1,5 +1,6 @@
 ## Overal
-Binary protocol where each message contains `u8` head at the begining.  
+Binary protocol with little-endian byte order and LSB-first bit order.  
+Each message contains `u8` head at the begining.
 
 ## Messages
 ### InitReq
