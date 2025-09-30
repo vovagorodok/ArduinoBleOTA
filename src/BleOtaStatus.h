@@ -4,10 +4,9 @@
 enum BleOtaStatus: uint8_t
 {
     Ok = 0x00,
-    Nok = 0x01,
-    IncorrectFormat = 0x02,
-    IncorrectFirmwareSize = 0x03,
-    InternalStorageError = 0x04,
+    IncorrectFormat = 0x01,
+    IncorrectFirmwareSize = 0x02,
+    InternalStorageError = 0x03,
 
     UploadDisabled = 0x10,
     UploadRunning = 0x11,

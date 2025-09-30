@@ -87,10 +87,9 @@ Peripheral indicates error
 | Code | Info |
 | :--- | :--- |
 | Ok | `0x00` |
-| Nok | `0x01` |
-| Incorrect format | `0x02` |
-| Incorrect firmware size | `0x03` |
-| Internal storage error | `0x04` |
+| Incorrect format | `0x01` |
+| Incorrect firmware size | `0x02` |
+| Internal storage error | `0x03` |
 | Upload disabled | `0x10` |
 | Upload running | `0x11` |
 | Upload stopped | `0x12` |

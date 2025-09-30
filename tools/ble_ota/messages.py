@@ -28,10 +28,9 @@ class HeaderCode(IntEnum):
 
 class ErrorCode(IntEnum):
     OK = 0x00
-    NOK = 0x01
-    INCORRECT_FORMAT = 0x02
-    INCORRECT_FIRMWARE_SIZE = 0x03
-    INTERNAL_STORAGE_ERROR = 0x04
+    INCORRECT_FORMAT = 0x01
+    INCORRECT_FIRMWARE_SIZE = 0x02
+    INTERNAL_STORAGE_ERROR = 0x03
     UPLOAD_DISABLED = 0x10
     UPLOAD_RUNNING = 0x11
     UPLOAD_STOPPED = 0x12
@@ -315,7 +314,6 @@ class RemovePinResp(Message):
 
 ERROR_TO_STR = {
     ErrorCode.OK: "OK",
-    ErrorCode.NOK: "Not ok",
     ErrorCode.INCORRECT_FORMAT: "Incorrect format",
     ErrorCode.INCORRECT_FIRMWARE_SIZE: "Incorrect firmware size",
     ErrorCode.INTERNAL_STORAGE_ERROR: "Internal storage error",
