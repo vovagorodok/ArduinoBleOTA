@@ -50,7 +50,7 @@ def connect(dev):
     print(f"Connecting to {dev.alias}")
     device.connect()
     if not device.connected:
-        print("Didn't connect to device!")
+        print("Connection fail")
         return
 
     try:

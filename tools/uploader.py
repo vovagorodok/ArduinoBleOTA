@@ -52,8 +52,9 @@ async def connect(dev):
     client = BleakClient(dev)
 
     print(f"Connecting to {dev.name}")
-    if not await client.connect():
-        print("Didn't connect to device!")
+    await client.connect()
+    if not client.is_connected:
+        print("Connection fail")
         return
 
     await acquire_mtu(client)
