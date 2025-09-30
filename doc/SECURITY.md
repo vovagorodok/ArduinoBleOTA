@@ -6,19 +6,19 @@ There are possibilities:
 
 ## Messages
 ### UploadEnableInd
-Peripheral enable upload
+Peripheral enables upload
 | Field | Type | Info |
 | :---- | :--- | :--- |
 | Head | `u8` | `0x11` |
 
 ### UploadDisableInd
-Peripheral disable upload
+Peripheral disables upload
 | Field | Type | Info |
 | :---- | :--- | :--- |
 | Head | `u8` | `0x12` |
 
 ### SetPinReq
-Central set pin
+Central sets pin
 | Field | Type | Info |
 | :---- | :--- | :--- |
 | Head | `u8` | `0x20` |
@@ -30,7 +30,7 @@ Central set pin
 | Head | `u8` | `0x21` |
 
 ### RemovePinReq
-Central remove pin
+Central removes pin
 | Field | Type | Info |
 | :---- | :--- | :--- |
 | Head | `u8` | `0x22` |
