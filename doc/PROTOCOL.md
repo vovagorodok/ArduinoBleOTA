@@ -1,18 +1,18 @@
 ## Overal
 Binary protocol with little-endian byte order and LSB-first bit order.  
-Each message contains `u8` head at the begining.
+Each message contains `u8` header at the begining.
 
 ## Messages
 ### InitReq
 Central checks peripheral compatibilities
 | Field | Type | Info |
 | :---- | :--- | :--- |
-| Head | `u8` | `0x01` |
+| Header | `u8` | `0x01` |
 
 ### InitResp
 | Field | Type | Info |
 | :---- | :--- | :--- |
-| Head | `u8` | `0x02` |
+| Header | `u8` | `0x02` |
 | Flags | `u8` | Described below |
 
 | Flag | Info |
@@ -27,7 +27,7 @@ Central checks peripheral compatibilities
 Central begins uploading
 | Field | Type | Info |
 | :---- | :--- | :--- |
-| Head | `u8` | `0x03` |
+| Header | `u8` | `0x03` |
 | Firmware size | `u32` | Binary file size |
 | Package size | `u32` | Max package size, `0xFFFFFFFF` if any |
 | Buffer size | `u32` | Internal buffer size, `0xFFFFFFFF` if any, `0` if disable |
@@ -42,7 +42,7 @@ Central begins uploading
 ### BeginResp
 | Field | Type | Info |
 | :---- | :--- | :--- |
-| Head | `u8` | `0x04` |
+| Header | `u8` | `0x04` |
 | Package size | `u32` | Negotiated max package size |
 | Buffer size | `u32` | Negotiated internal buffer size, `0` if disable |
 
@@ -50,38 +50,38 @@ Central begins uploading
 Central delivers binary data that will be stored in buffer, response not needed
 | Field | Type | Info |
 | :---- | :--- | :--- |
-| Head | `u8` | `0x05` |
+| Header | `u8` | `0x05` |
 | Data | `u8[]` | Binary data |
 
 ### PackageReq
 Central delivers binary data that will be stored in flash or flush buffer if enable, response required
 | Field | Type | Info |
 | :---- | :--- | :--- |
-| Head | `u8` | `0x06` |
+| Header | `u8` | `0x06` |
 | Data | `u8[]` | Binary data |
 
 ### PackageResp
 | Field | Type | Info |
 | :---- | :--- | :--- |
-| Head | `u8` | `0x07` |
+| Header | `u8` | `0x07` |
 
 ### EndReq
 Central ends uploading
 | Field | Type | Info |
 | :---- | :--- | :--- |
-| Head | `u8` | `0x08` |
+| Header | `u8` | `0x08` |
 | Firmware checksum | `u32` | Calulated checksum, any value if disable |
 
 ### EndResp
 | Field | Type | Info |
 | :---- | :--- | :--- |
-| Head | `u8` | `0x09` |
+| Header | `u8` | `0x09` |
 
 ### ErrorInd
 Peripheral indicates error
 | Field | Type | Info |
 | :---- | :--- | :--- |
-| Head | `u8` | `0x10` |
+| Header | `u8` | `0x10` |
 | Code | `u8` | Described below |
 
 | Code | Info |
@@ -140,9 +140,9 @@ Incorrect message size
 c) <Incorrect message size>
 p) ErrorInd: Incorrect format
 ```
-Incorrect head code
+Incorrect header code
 ```
-c) <Incorrect head code>
+c) <Incorrect header code>
 p) ErrorInd: Incorrect format
 ```
 
