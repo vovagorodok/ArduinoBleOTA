@@ -9,12 +9,12 @@ BleOtaLib::BleOtaLib():
 void BleOtaLib::begin(const std::string& deviceName,
                       OTAStorage& storage,
                       const BleOtaInfo& info,
-                      bool enableUpload)
+                      bool uploadEnable)
 {
     BLEDevice::init(deviceName);
     auto* server = BLEDevice::createServer();
 
-    begin(server, storage, info, enableUpload);
+    begin(server, storage, info, uploadEnable);
 
     auto* advertising = server->getAdvertising();
     advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
@@ -27,11 +27,11 @@ void BleOtaLib::begin(const std::string& deviceName,
 void BleOtaLib::begin(BLEServer* server,
                       OTAStorage& storage,
                       const BleOtaInfo& info,
-                      bool enableUpload)
+                      bool uploadEnable)
 {
     BLEDevice::setMTU(BLE_OTA_MTU_SIZE);
 
-    _uploader.begin(storage, enableUpload);
+    _uploader.begin(storage, uploadEnable);
     auto* service = server->createService(BLE_OTA_SERVICE_UUID);
 
     auto* rxCharacteristic = service->createCharacteristic(
@@ -87,7 +87,7 @@ void BleOtaLib::pull()
     _uploader.pull();
 }
 
-void BleOtaLib::setEnableUpload(bool enable)
+void BleOtaLib::setUploadEnable(bool enable)
 {
     _uploader.setEnable(enable);
 }

@@ -53,7 +53,7 @@ Central delivers signature data
 | Head | `u8` | `0x31` |
 
 ## Disable upload
-Uploads can be disabled at the bagining in `begin()` method or later by `setEnableUpload(false)` method.
+Uploads can be disabled at the bagining in `begin()` method or later by `setUploadEnable(false)` method.
 
 ## Change pin code
 Enable pin support by reimplement `BleOtaPinCallbacks` and by `setPinCallbacks()` method.

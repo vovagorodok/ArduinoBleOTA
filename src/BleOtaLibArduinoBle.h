@@ -14,13 +14,13 @@ public:
     bool begin(const char* deviceName,
                OTAStorage& storage,
                const BleOtaInfo& info = {},
-               bool enableUpload = true);
+               bool uploadEnable = true);
     void begin(OTAStorage& storage,
                const BleOtaInfo& info = {},
-               bool enableUpload = true);
+               bool uploadEnable = true);
     void pull();
 
-    void setEnableUpload(bool enable);
+    void setUploadEnable(bool enable);
     bool setSignatureKey(const char* key, size_t size);
     void setPinCallbacks(BleOtaPinCallbacks&);
     void setUploadCallbacks(BleOtaUploadCallbacks&);

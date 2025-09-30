@@ -8,7 +8,7 @@ void setup() {
     delay(1);
   }
   
-  ArduinoBleOTA.setEnableUpload(false);
+  ArduinoBleOTA.setUploadEnable(false);
 }
 
 void loop() {

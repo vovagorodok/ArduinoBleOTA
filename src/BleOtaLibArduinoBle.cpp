@@ -20,7 +20,7 @@ BleOtaLib::BleOtaLib():
 bool BleOtaLib::begin(const char* deviceName,
                       OTAStorage& storage,
                       const BleOtaInfo& info,
-                      bool enableUpload)
+                      bool uploadEnable)
 {
     if (!BLE.begin())
         return false;
@@ -28,16 +28,16 @@ bool BleOtaLib::begin(const char* deviceName,
     BLE.setLocalName(deviceName);
     BLE.setDeviceName(deviceName);
 
-    begin(storage, info, enableUpload);
+    begin(storage, info, uploadEnable);
 
     return BLE.setAdvertisedService(service) and BLE.advertise();
 }
 
 void BleOtaLib::begin(OTAStorage& storage,
                       const BleOtaInfo& info,
-                      bool enableUpload)
+                      bool uploadEnable)
 {
-    _uploader.begin(storage, enableUpload);
+    _uploader.begin(storage, uploadEnable);
     service.addCharacteristic(rxCharacteristic);
     service.addCharacteristic(txCharacteristic);
     rxCharacteristic.setEventHandler(BLEWritten, onWrite);
@@ -66,7 +66,7 @@ void BleOtaLib::pull()
     _uploader.pull();
 }
 
-void BleOtaLib::setEnableUpload(bool enable)
+void BleOtaLib::setUploadEnable(bool enable)
 {
     _uploader.setEnable(enable);
 }

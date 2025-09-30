@@ -8,7 +8,7 @@ BleOtaSecurityServer KEYWORD1
 # Methods and Functions (KEYWORD2)
 begin KEYWORD2
 poll  KEYWORD2
-setEnableUpload    KEYWORD2
+setUploadEnable    KEYWORD2
 setSignatureKey    KEYWORD2
 setPinCallbacks    KEYWORD2
 setUploadCallbacks KEYWORD2
