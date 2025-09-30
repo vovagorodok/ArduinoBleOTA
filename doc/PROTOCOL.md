@@ -105,7 +105,9 @@ Peripheral indicates error
 | Incorrect compression end | `0x35` |
 | Checksum not supported | `0x40` |
 | Incorrect checksum | `0x41` |
-| Incorrect signature | `0x50` |
+| Signature not supported | `0x50` |
+| Incorrect signature | `0x51` |
+| Incorrect signature size | `0x52` |
 
 ## Basic scenario
 Designations for examples:  
