@@ -30,4 +30,7 @@ enum BleOtaStatus: uint8_t
     SignatureNotSupported = 0x50,
     IncorrectSignature = 0x51,
     IncorrectSignatureSize = 0x52,
+
+    PinNotSupported = 0x60,
+    PinChangeError = 0x61,
 };

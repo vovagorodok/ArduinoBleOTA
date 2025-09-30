@@ -18,12 +18,12 @@ class HeaderCode(IntEnum):
     ERROR_IND = 0x10
     UPLOAD_ENABLE_IND = 0x11
     UPLOAD_DISABLE_IND = 0x12
-    SET_PIN_REQ = 0x20
-    SET_PIN_RESP = 0x21
-    REMOVE_PIN_REQ = 0x22
-    REMOVE_PIN_RESP = 0x23
-    SIGNATURE_REQ = 0x30
-    SIGNATURE_RESP = 0x31
+    SIGNATURE_REQ = 0x20
+    SIGNATURE_RESP = 0x21
+    SET_PIN_REQ = 0x30
+    SET_PIN_RESP = 0x31
+    REMOVE_PIN_REQ = 0x32
+    REMOVE_PIN_RESP = 0x33
 
 
 class ErrorCode(IntEnum):
@@ -49,6 +49,8 @@ class ErrorCode(IntEnum):
     SIGNATURE_NOT_SUPPORTED = 0x50
     INCORRECT_SIGNATURE = 0x51
     INCORRECT_SIGNATURE_SIZE = 0x52
+    PIN_NOT_SUPPORTED = 0x60
+    PIN_CHANGE_ERROR = 0x61
 
 
 @dataclass
@@ -87,21 +89,21 @@ class InitResp(Message):
         compression: bool
         checksum: bool
         upload: bool
-        pin: bool
         signature: bool
+        pin: bool
 
         def to_byte(self) -> int:
             return Message.bools_to_byte((
                 self.compression,
                 self.checksum,
                 self.upload,
-                self.pin,
-                self.signature))
+                self.signature,
+                self.pin))
 
         @classmethod
         def from_byte(cls, value: int):
-            compression, checksum, upload, pin, signature = Message.byte_to_bools(value, 5)
-            return cls(compression, checksum, upload, pin, signature)
+            compression, checksum, upload, signature, pin = Message.byte_to_bools(value, 5)
+            return cls(compression, checksum, upload, signature, pin)
 
     flags: Flags
 
@@ -265,6 +267,18 @@ class UploadDisableInd(Message):
 
 
 @dataclass
+class SignatureReq(Package):
+    def __init__(self, data: bytes):
+        super().__init__(HeaderCode.SIGNATURE_REQ, data)
+
+
+@dataclass
+class SignatureResp(Message):
+    def __init__(self):
+        super().__init__(HeaderCode.SIGNATURE_RESP)
+
+
+@dataclass
 class SetPinReq(Message):
     pin: int
 
@@ -299,18 +313,6 @@ class RemovePinResp(Message):
         super().__init__(HeaderCode.REMOVE_PIN_RESP)
 
 
-@dataclass
-class SignatureReq(Package):
-    def __init__(self, data: bytes):
-        super().__init__(HeaderCode.SIGNATURE_REQ, data)
-
-
-@dataclass
-class SignatureResp(Message):
-    def __init__(self):
-        super().__init__(HeaderCode.SIGNATURE_RESP)
-
-
 ERROR_TO_STR = {
     ErrorCode.OK: "OK",
     ErrorCode.NOK: "Not ok",
@@ -334,6 +336,8 @@ ERROR_TO_STR = {
     ErrorCode.SIGNATURE_NOT_SUPPORTED: "Signature not supported",
     ErrorCode.INCORRECT_SIGNATURE: "Incorrect signature",
     ErrorCode.INCORRECT_SIGNATURE_SIZE: "Incorrect signature size",
+    ErrorCode.PIN_NOT_SUPPORTED: "Pin not supported",
+    ErrorCode.PIN_CHANGE_ERROR: "Pin change error",
 }
 
 
@@ -350,12 +354,12 @@ HEADER_TO_MESSAGE = {
     HeaderCode.ERROR_IND: ErrorInd,
     HeaderCode.UPLOAD_ENABLE_IND: UploadEnableInd,
     HeaderCode.UPLOAD_DISABLE_IND: UploadDisableInd,
+    HeaderCode.SIGNATURE_REQ: SignatureReq,
+    HeaderCode.SIGNATURE_RESP: SignatureResp,
     HeaderCode.SET_PIN_REQ: SetPinReq,
     HeaderCode.SET_PIN_RESP: SetPinResp,
     HeaderCode.REMOVE_PIN_REQ: RemovePinReq,
     HeaderCode.REMOVE_PIN_RESP: RemovePinResp,
-    HeaderCode.SIGNATURE_REQ: SignatureReq,
-    HeaderCode.SIGNATURE_RESP: SignatureResp,
 }
 
 

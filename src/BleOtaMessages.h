@@ -15,12 +15,12 @@ enum BleOtaHeader: uint8_t
     ErrorInd = 0x10,
     UploadEnableInd = 0x11,
     UploadDisableInd = 0x12,
-    SetPinReq = 0x20,
-    SetPinResp = 0x21,
-    RemovePinReq = 0x22,
-    RemovePinResp = 0x23,
-    SignatureReq = 0x30,
-    SignatureResp = 0x31,
+    SignatureReq = 0x20,
+    SignatureResp = 0x21,
+    SetPinReq = 0x30,
+    SetPinResp = 0x31,
+    RemovePinReq = 0x32,
+    RemovePinResp = 0x33,
 };
 
 struct BleOtaMessage
@@ -56,8 +56,8 @@ struct BleOtaInitResp: public BleOtaMessage
         bool compression: 1;
         bool checksum: 1;
         bool upload: 1;
-        bool pin: 1;
         bool signature: 1;
+        bool pin: 1;
     };
 
     BleOtaInitResp(EnableFlags flags):
@@ -229,6 +229,20 @@ struct BleOtaUploadDisableInd: public BleOtaMessage
     {}
 };
 
+struct BleOtaSignatureReq: public BleOtaPackage
+{
+    BleOtaSignatureReq(const uint8_t* data, size_t size):
+        BleOtaPackage(BleOtaHeader::SignatureReq, data, size)
+    {}
+};
+
+struct BleOtaSignatureResp: public BleOtaMessage
+{
+    BleOtaSignatureResp():
+        BleOtaMessage(BleOtaHeader::SignatureResp)
+    {}
+};
+
 struct BleOtaSetPinReq: public BleOtaMessage
 {
 private:
@@ -282,19 +296,5 @@ struct BleOtaRemovePinResp: public BleOtaMessage
 {
     BleOtaRemovePinResp():
         BleOtaMessage(BleOtaHeader::RemovePinResp)
-    {}
-};
-
-struct BleOtaSignatureReq: public BleOtaPackage
-{
-    BleOtaSignatureReq(const uint8_t* data, size_t size):
-        BleOtaPackage(BleOtaHeader::SignatureReq, data, size)
-    {}
-};
-
-struct BleOtaSignatureResp: public BleOtaMessage
-{
-    BleOtaSignatureResp():
-        BleOtaMessage(BleOtaHeader::SignatureResp)
     {}
 };

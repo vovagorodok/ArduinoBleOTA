@@ -20,8 +20,8 @@ Central checks peripheral compatibilities
 | Compression | Compression supported |
 | Checksum | Checksum supported |
 | Upload | Upload enabled |
-| Pin | Pin change supported |
 | Signature | Signature required |
+| Pin | Pin change supported |
 
 ### BeginReq
 Central begins uploading
@@ -108,6 +108,8 @@ Peripheral indicates error
 | Signature not supported | `0x50` |
 | Incorrect signature | `0x51` |
 | Incorrect signature size | `0x52` |
+| Pin not supported | `0x60` |
+| Pin change error | `0x61` |
 
 ## Basic scenario
 Designations for examples:  

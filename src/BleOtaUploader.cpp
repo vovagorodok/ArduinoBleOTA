@@ -90,6 +90,9 @@ void BleOtaUploader::onData(const uint8_t* data, size_t size)
             handleEndReq(BleOtaEndReq{data}) :
             handleError(BleOtaStatus::IncorrectFormat);
         break;
+    case BleOtaHeader::SignatureReq:
+        handleSignatureReq(BleOtaSignatureReq{data, size});
+        break;
     case BleOtaHeader::SetPinReq:
         BleOtaSetPinReq::isValidSize(size) ?
             handleSetPinReq(BleOtaSetPinReq{data}) :
@@ -99,9 +102,6 @@ void BleOtaUploader::onData(const uint8_t* data, size_t size)
         BleOtaRemovePinReq::isValidSize(size) ?
             handleRemovePinReq(BleOtaRemovePinReq{}) :
             handleError(BleOtaStatus::IncorrectFormat);
-        break;
-    case BleOtaHeader::SignatureReq:
-        handleSignatureReq(BleOtaSignatureReq{data, size});
         break;
     default:
         handleError(BleOtaStatus::IncorrectFormat);
@@ -131,19 +131,19 @@ void BleOtaUploader::handleInitReq(const BleOtaInitReq& req)
     const bool canCompress = _decompressor.isSupported();
     const bool canChecksum = _checksum.isSupported();
     const bool canUpload = _state != State::Disable;
-    const bool canPin = _pinCallbacks != &dummyPinCallbacks;
     const bool canSignature = _signature.isEnabled();
+    const bool canPin = _pinCallbacks != &dummyPinCallbacks;
 
     BLE_OTA_LOG(TAG, "Send InitResp: "
-        "flags: (compr: %u, checksum: %u, upload: %u, pin: %u, sig: %u)",
-        canCompress, canChecksum, canUpload, canPin, canSignature);
+        "flags: (compr: %u, checksum: %u, upload: %u, sig: %u, pin: %u)",
+        canCompress, canChecksum, canUpload, canSignature, canPin);
 
     sendMessage(BleOtaInitResp{{
         .compression = canCompress,
         .checksum = canChecksum,
         .upload = canUpload,
-        .pin = canPin,
-        .signature = canSignature
+        .signature = canSignature,
+        .pin = canPin
     }});
 }
 
@@ -344,36 +344,6 @@ void BleOtaUploader::handleEndReq(const BleOtaEndReq& req)
     _uploadCallbacks->handleUploadEnd();
 }
 
-void BleOtaUploader::handleSetPinReq(const BleOtaSetPinReq& req)
-{
-    BLE_OTA_LOG(TAG, "Handle SetPinReq: pin: %lu", req.pin);
-
-    if (_state == State::Upload)
-    {
-        handleError(BleOtaStatus::UploadRunning);
-        return;
-    }
-
-    _pinCallbacks->setPinCode(req.pin) ?
-        sendMessage(BleOtaSetPinResp{}) :
-        sendMessage(BleOtaErrorInd{BleOtaStatus::Nok});
-}
-
-void BleOtaUploader::handleRemovePinReq(const BleOtaRemovePinReq& req)
-{
-    BLE_OTA_LOG(TAG, "Handle RemovePinReq");
-
-    if (_state == State::Upload)
-    {
-        handleError(BleOtaStatus::UploadRunning);
-        return;
-    }
-
-    _pinCallbacks->removePinCode() ?
-        sendMessage(BleOtaRemovePinResp{}) :
-        sendMessage(BleOtaErrorInd{BleOtaStatus::Nok});
-}
-
 void BleOtaUploader::handleSignatureReq(const BleOtaSignatureReq& req)
 {
     BLE_OTA_LOG(TAG, "Handle SignatureReq");
@@ -400,6 +370,48 @@ void BleOtaUploader::handleSignatureReq(const BleOtaSignatureReq& req)
     }
 
     sendMessage(BleOtaSignatureResp{});
+}
+
+void BleOtaUploader::handleSetPinReq(const BleOtaSetPinReq& req)
+{
+    BLE_OTA_LOG(TAG, "Handle SetPinReq: pin: %lu", req.pin);
+
+    if (_state == State::Upload)
+    {
+        handleError(BleOtaStatus::UploadRunning);
+        return;
+    }
+
+    if (_pinCallbacks == &dummyPinCallbacks)
+    {
+        handleError(BleOtaStatus::PinNotSupported);
+        return;
+    }
+
+    _pinCallbacks->setPinCode(req.pin) ?
+        sendMessage(BleOtaSetPinResp{}) :
+        handleError(BleOtaStatus::PinChangeError);
+}
+
+void BleOtaUploader::handleRemovePinReq(const BleOtaRemovePinReq& req)
+{
+    BLE_OTA_LOG(TAG, "Handle RemovePinReq");
+
+    if (_state == State::Upload)
+    {
+        handleError(BleOtaStatus::UploadRunning);
+        return;
+    }
+
+    if (_pinCallbacks == &dummyPinCallbacks)
+    {
+        handleError(BleOtaStatus::PinNotSupported);
+        return;
+    }
+
+    _pinCallbacks->removePinCode() ?
+        sendMessage(BleOtaRemovePinResp{}) :
+        handleError(BleOtaStatus::PinChangeError);
 }
 
 void BleOtaUploader::handleInstall()

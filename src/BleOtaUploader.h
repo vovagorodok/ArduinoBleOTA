@@ -29,9 +29,9 @@ private:
     void handlePackageReq(const BleOtaPackageReq& req);
     void handlePackageInd(const BleOtaPackageInd& ind);
     void handleEndReq(const BleOtaEndReq& req);
+    void handleSignatureReq(const BleOtaSignatureReq& req);
     void handleSetPinReq(const BleOtaSetPinReq& req);
     void handleRemovePinReq(const BleOtaRemovePinReq& req);
-    void handleSignatureReq(const BleOtaSignatureReq& req);
     void handleInstall();
     void handleError(BleOtaStatus code);
     void send(const uint8_t* data, size_t size);
