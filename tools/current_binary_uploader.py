@@ -39,7 +39,7 @@ def find_firmware_bin_path(script_dir):
     return firmware_bin_path
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     script_dir = os.path.dirname(os.path.abspath(__file__))
     paths = Paths(find_firmware_bin_path(script_dir), create_private_key_path(script_dir))
     try_scan_and_upload(paths)

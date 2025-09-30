@@ -72,11 +72,11 @@ async def connect(dev):
         mf = str(await client.read_gatt_char(mf_name_char), 'utf-8')
         hw = str(await client.read_gatt_char(hw_name_char), 'utf-8')
         sw = str(await client.read_gatt_char(sw_name_char), 'utf-8')
-        hw_ver = ".".join(map(str, await client.read_gatt_char(hw_ver_char)))
-        sw_ver = ".".join(map(str, await client.read_gatt_char(sw_ver_char)))
+        hw_ver = '.'.join(map(str, await client.read_gatt_char(hw_ver_char)))
+        sw_ver = '.'.join(map(str, await client.read_gatt_char(sw_ver_char)))
         print(f"Device: name: (mf: {mf}, hw: {hw}, sw: {sw}), ver: (hw: {hw_ver}, sw: {sw_ver})")
     else:
-        print(f"Device info not available")
+        print("Device info not available")
 
     return client, tx_char, rx_char
 
@@ -107,7 +107,7 @@ async def upload(paths: Paths, client: BleakClient, tx_char, rx_char):
         return False
 
     if init_resp.flags.compression:
-        compressed_path = firmware_path + ".zlib"
+        compressed_path = firmware_path + '.zlib'
         create_compressed_file(firmware_path, compressed_path)
         compressed_size = get_file_size(compressed_path)
         upload_size = compressed_size
@@ -118,10 +118,10 @@ async def upload(paths: Paths, client: BleakClient, tx_char, rx_char):
         upload_size = firmware_size
 
     if init_resp.flags.signature:
-        signature_path = firmware_path + ".sig"
+        signature_path = firmware_path + '.sig'
         private_key_path = paths.private_key
         if not private_key_path or not os.path.isfile(private_key_path):
-            print(f"Private key required")
+            print("Private key required")
             return False
         create_signature_file(firmware_path, signature_path, private_key_path)
         signature_size = get_file_size(signature_path)
@@ -166,7 +166,7 @@ async def upload(paths: Paths, client: BleakClient, tx_char, rx_char):
             print(f"Uploaded: {uploaded_size}/{upload_size}")
 
     if signature_size:
-        print(f"Signature upload")
+        print("Signature upload")
         uploaded_size = 0
         with open(signature_path, 'rb') as f:
             while True:
@@ -257,5 +257,5 @@ def try_scan_and_upload(paths: Paths):
         print(e)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     try_scan_and_upload(Paths.parse(sys.argv))

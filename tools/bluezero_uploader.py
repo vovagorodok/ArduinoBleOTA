@@ -57,11 +57,11 @@ def connect(dev):
         mf = str(bytearray(mf_name_char.value), 'utf-8')
         hw = str(bytearray(hw_name_char.value), 'utf-8')
         sw = str(bytearray(sw_name_char.value), 'utf-8')
-        hw_ver = ".".join(map(str, bytearray(hw_ver_char.value)))
-        sw_ver = ".".join(map(str, bytearray(sw_ver_char.value)))
+        hw_ver = '.'.join(map(str, bytearray(hw_ver_char.value)))
+        sw_ver = '.'.join(map(str, bytearray(sw_ver_char.value)))
         print(f"Device: name: (mf: {mf}, hw: {hw}, sw: {sw}), ver: (hw: {hw_ver}, sw: {sw_ver})")
     except Exception:
-        print(f"Device info not available")
+        print("Device info not available")
 
     return device, tx_char, rx_char
 
@@ -94,7 +94,7 @@ def upload(paths: Paths, tx_char, rx_char):
         return False
 
     if init_resp.flags.compression:
-        compressed_path = firmware_path + ".zlib"
+        compressed_path = firmware_path + '.zlib'
         create_compressed_file(firmware_path, compressed_path)
         compressed_size = get_file_size(compressed_path)
         upload_size = compressed_size
@@ -105,10 +105,10 @@ def upload(paths: Paths, tx_char, rx_char):
         upload_size = firmware_size
 
     if init_resp.flags.signature:
-        signature_path = firmware_path + ".sig"
+        signature_path = firmware_path + '.sig'
         private_key_path = paths.private_key
         if not private_key_path or not os.path.isfile(private_key_path):
-            print(f"Private key required")
+            print("Private key required")
             return False
         create_signature_file(firmware_path, signature_path, private_key_path)
         signature_size = get_file_size(signature_path)
@@ -152,7 +152,7 @@ def upload(paths: Paths, tx_char, rx_char):
             print(f"Uploaded: {uploaded_size}/{upload_size}")
 
     if signature_size:
-        print(f"Signature upload")
+        print("Signature upload")
         uploaded_size = 0
         with open(signature_path, 'rb') as f:
             while True:

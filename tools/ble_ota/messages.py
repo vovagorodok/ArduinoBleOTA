@@ -56,7 +56,7 @@ class Message:
     header: HeaderCode
 
     def to_bytes(self) -> bytes:
-        return struct.pack("<B", self.header)
+        return struct.pack('<B', self.header)
 
     @classmethod
     def from_bytes(cls, data: bytes):
@@ -110,11 +110,11 @@ class InitResp(Message):
         self.flags = flags
 
     def to_bytes(self) -> bytes:
-        return struct.pack("<BB", self.header, self.flags.to_byte())
+        return struct.pack('<BB', self.header, self.flags.to_byte())
 
     @classmethod
     def from_bytes(cls, data: bytes):
-        _, flags_byte = struct.unpack("<BB", data)
+        _, flags_byte = struct.unpack('<BB', data)
         flags = InitResp.Flags.from_byte(flags_byte)
         return cls(flags)
 
@@ -149,11 +149,11 @@ class BeginReq(Message):
         self.flags = flags
 
     def to_bytes(self) -> bytes:
-        return struct.pack("<BIIIIB", self.header, self.firmware_size, self.package_size, self.buffer_size, self.compressed_size, self.flags.to_byte())
+        return struct.pack('<BIIIIB', self.header, self.firmware_size, self.package_size, self.buffer_size, self.compressed_size, self.flags.to_byte())
 
     @classmethod
     def from_bytes(cls, data: bytes):
-        _, firmware_size, package_size, buffer_size, compressed_size, flags_byte = struct.unpack("<BIIIIB", data)
+        _, firmware_size, package_size, buffer_size, compressed_size, flags_byte = struct.unpack('<BIIIIB', data)
         flags = BeginReq.Flags.from_byte(flags_byte)
         return cls(firmware_size, package_size, buffer_size, compressed_size, flags)
 
@@ -169,11 +169,11 @@ class BeginResp(Message):
         self.buffer_size = buffer_size
 
     def to_bytes(self) -> bytes:
-        return struct.pack("<BII", self.header, self.package_size, self.buffer_size)
+        return struct.pack('<BII', self.header, self.package_size, self.buffer_size)
 
     @classmethod
     def from_bytes(cls, data: bytes):
-        _, pkg_size, buf_size = struct.unpack("<BII", data)
+        _, pkg_size, buf_size = struct.unpack('<BII', data)
         return cls(pkg_size, buf_size)
 
 
@@ -186,7 +186,7 @@ class Package(Message):
         self.data = data
 
     def to_bytes(self) -> bytes:
-        return struct.pack("<B", self.header) + self.data
+        return struct.pack('<B', self.header) + self.data
 
     @classmethod
     def from_bytes(cls, data: bytes):
@@ -221,11 +221,11 @@ class EndReq(Message):
         self.firmware_crc = firmware_crc
 
     def to_bytes(self) -> bytes:
-        return struct.pack("<BI", self.header, self.firmware_crc)
+        return struct.pack('<BI', self.header, self.firmware_crc)
 
     @classmethod
     def from_bytes(cls, data: bytes):
-        _, crc = struct.unpack("<BI", data)
+        _, crc = struct.unpack('<BI', data)
         return cls(crc)
 
 
@@ -244,11 +244,11 @@ class ErrorInd(Message):
         self.code = code
 
     def to_bytes(self) -> bytes:
-        return struct.pack("<BB", self.header, self.code)
+        return struct.pack('<BB', self.header, self.code)
 
     @classmethod
     def from_bytes(cls, data: bytes):
-        _, code = struct.unpack("<BB", data)
+        _, code = struct.unpack('<BB', data)
         return cls(ErrorCode(code))
 
 
@@ -273,11 +273,11 @@ class SetPinReq(Message):
         self.pin = pin
 
     def to_bytes(self) -> bytes:
-        return struct.pack("<BI", self.header, self.pin)
+        return struct.pack('<BI', self.header, self.pin)
 
     @classmethod
     def from_bytes(cls, data: bytes):
-        _, pin = struct.unpack("<BI", data)
+        _, pin = struct.unpack('<BI', data)
         return cls(pin)
 
 
@@ -359,7 +359,7 @@ HEADER_TO_MESSAGE = {
 }
 
 
-T = TypeVar("T", bound=Message)
+T = TypeVar('T', bound=Message)
 
 
 def parse_message_of_type(data: bytes, expected_cls: Type[T]) -> T:

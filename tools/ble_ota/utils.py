@@ -24,17 +24,17 @@ def create_private_key_path(script_dir: str):
 
 
 def create_compressed_file(firmware_path: str, compressed_path: str):
-    with open(firmware_path, "rb") as fin, open(compressed_path, "wb") as fout:
+    with open(firmware_path, 'rb') as fin, open(compressed_path, 'wb') as fout:
         fout.write(zlib.compress(fin.read()))
 
 
 def create_signature_file(firmware_path: str, signature_path: str, private_key_path: str):
     cmd = [
-        "openssl", "dgst",
-        "-sign", private_key_path,
-        "-keyform", "PEM",
-        "-sha256",
-        "-out", signature_path,
-        "-binary", firmware_path
+        'openssl', 'dgst',
+        '-sign', private_key_path,
+        '-keyform', 'PEM',
+        '-sha256',
+        '-out', signature_path,
+        '-binary', firmware_path
     ]
     subprocess.run(cmd, check=True)
