@@ -60,7 +60,7 @@ void BleOtaUploader::onData(const uint8_t* data, size_t size)
 
     if (not BleOtaMessage::isValidSize(size))
     {
-        handleError(BleOtaStatus::IncorrectFormat);
+        handleError(BleOtaStatus::IncorrectMessageSize);
         return;
     }
 
@@ -72,12 +72,12 @@ void BleOtaUploader::onData(const uint8_t* data, size_t size)
     case BleOtaHeader::InitReq:
         BleOtaInitReq::isValidSize(size) ?
             handleInitReq(BleOtaInitReq{}) :
-            handleError(BleOtaStatus::IncorrectFormat);
+            handleError(BleOtaStatus::IncorrectMessageSize);
         break;
     case BleOtaHeader::BeginReq:
         BleOtaBeginReq::isValidSize(size) ?
             handleBeginReq(BleOtaBeginReq{data}) :
-            handleError(BleOtaStatus::IncorrectFormat);
+            handleError(BleOtaStatus::IncorrectMessageSize);
         break;
     case BleOtaHeader::PackageReq:
         handlePackageReq(BleOtaPackageReq{data, size});
@@ -88,7 +88,7 @@ void BleOtaUploader::onData(const uint8_t* data, size_t size)
     case BleOtaHeader::EndReq:
         BleOtaEndReq::isValidSize(size) ?
             handleEndReq(BleOtaEndReq{data}) :
-            handleError(BleOtaStatus::IncorrectFormat);
+            handleError(BleOtaStatus::IncorrectMessageSize);
         break;
     case BleOtaHeader::SignatureReq:
         handleSignatureReq(BleOtaSignatureReq{data, size});
@@ -96,15 +96,15 @@ void BleOtaUploader::onData(const uint8_t* data, size_t size)
     case BleOtaHeader::SetPinReq:
         BleOtaSetPinReq::isValidSize(size) ?
             handleSetPinReq(BleOtaSetPinReq{data}) :
-            handleError(BleOtaStatus::IncorrectFormat);
+            handleError(BleOtaStatus::IncorrectMessageSize);
         break;
     case BleOtaHeader::RemovePinReq:
         BleOtaRemovePinReq::isValidSize(size) ?
             handleRemovePinReq(BleOtaRemovePinReq{}) :
-            handleError(BleOtaStatus::IncorrectFormat);
+            handleError(BleOtaStatus::IncorrectMessageSize);
         break;
     default:
-        handleError(BleOtaStatus::IncorrectFormat);
+        handleError(BleOtaStatus::IncorrectMessageHeader);
         break;
     }
 }
