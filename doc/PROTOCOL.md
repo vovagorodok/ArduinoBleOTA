@@ -87,9 +87,10 @@ Peripheral indicates error
 | Code | Info |
 | :--- | :--- |
 | Ok | `0x00` |
-| Incorrect format | `0x01` |
-| Incorrect firmware size | `0x02` |
-| Internal storage error | `0x03` |
+| Incorrect message size | `0x01` |
+| Incorrect message header | `0x02` |
+| Incorrect firmware size | `0x03` |
+| Internal storage error | `0x04` |
 | Upload disabled | `0x10` |
 | Upload running | `0x11` |
 | Upload stopped | `0x12` |
@@ -141,12 +142,12 @@ In this case buffer usage turns of and uploading starts from begining when `Begi
 Incorrect message size
 ```
 c) <Incorrect message size>
-p) ErrorInd: Incorrect format
+p) ErrorInd: Incorrect message size
 ```
 Incorrect header code
 ```
 c) <Incorrect header code>
-p) ErrorInd: Incorrect format
+p) ErrorInd: Incorrect message header
 ```
 
 ## Incorrect messages order
