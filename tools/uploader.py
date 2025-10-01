@@ -99,7 +99,7 @@ async def upload(paths: Paths, client: BleakClient, tx_char, rx_char):
     await client.start_notify(rx_char, callback)
 
     init_req = InitReq()
-    await client.write_gatt_char(tx_char, init_req.to_bytes())
+    await client.write_gatt_char(tx_char, init_req.to_bytes(), response=False)
     init_resp = parse_message_of_type(await queue.get(), InitResp)
 
     if not init_resp.flags.upload:
@@ -136,7 +136,7 @@ async def upload(paths: Paths, client: BleakClient, tx_char, rx_char):
 
     begin_req_flags = BeginReq.Flags(init_resp.flags.compression, init_resp.flags.checksum)
     begin_req = BeginReq(firmware_size, package_size, buffer_size, compressed_size, begin_req_flags)
-    await client.write_gatt_char(tx_char, begin_req.to_bytes())
+    await client.write_gatt_char(tx_char, begin_req.to_bytes(), response=False)
     begin_resp = parse_message_of_type(await queue.get(), BeginResp)
 
     package_size = begin_resp.package_size
@@ -152,12 +152,12 @@ async def upload(paths: Paths, client: BleakClient, tx_char, rx_char):
 
             if current_buffer_size + len(data) > buffer_size:
                 package_req = PackageReq(data)
-                await client.write_gatt_char(tx_char, package_req.to_bytes())
+                await client.write_gatt_char(tx_char, package_req.to_bytes(), response=False)
                 parse_message_of_type(await queue.get(), PackageResp)
                 current_buffer_size = 0
             else:
                 package_ind = PackageInd(data)
-                await client.write_gatt_char(tx_char, package_ind.to_bytes())
+                await client.write_gatt_char(tx_char, package_ind.to_bytes(), response=False)
 
             current_buffer_size += len(data)
             uploaded_size += len(data)
@@ -175,14 +175,14 @@ async def upload(paths: Paths, client: BleakClient, tx_char, rx_char):
                     break
 
                 signature_req = SignatureReq(data)
-                await client.write_gatt_char(tx_char, signature_req.to_bytes())
+                await client.write_gatt_char(tx_char, signature_req.to_bytes(), response=False)
                 parse_message_of_type(await queue.get(), SignatureResp)
 
                 uploaded_size += len(data)
                 print(f"Uploaded: {uploaded_size}/{signature_size}")
 
     end_req = EndReq(crc)
-    await client.write_gatt_char(tx_char, end_req.to_bytes())
+    await client.write_gatt_char(tx_char, end_req.to_bytes(), response=False)
     parse_message_of_type(await queue.get(), EndResp)
 
     return True
