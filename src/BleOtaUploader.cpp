@@ -427,16 +427,11 @@ void BleOtaUploader::handleError(BleOtaStatus code)
     _uploadCallbacks->handleUploadError(code);
 }
 
-void BleOtaUploader::send(const uint8_t* data, size_t size)
-{
-    ArduinoBleOTA.send(data, size);
-}
-
 template <typename T>
 void BleOtaUploader::sendMessage(const T& msg)
 {
     BLE_OTA_LOG(TAG, "Send message: header: %x", msg.header);
-    send(reinterpret_cast<const uint8_t*>(&msg), sizeof(T));
+    ArduinoBleOTA.send(reinterpret_cast<const uint8_t*>(&msg), sizeof(T));
 }
 
 void BleOtaUploader::terminateUpload(BleOtaStatus code)

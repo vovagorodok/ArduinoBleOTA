@@ -35,7 +35,6 @@ private:
     void handleRemovePinReq(const BleOtaRemovePinReq& req);
     void handleInstall();
     void handleError(BleOtaStatus code);
-    void send(const uint8_t* data, size_t size);
     template <typename T>
     void sendMessage(const T& msg);
     void terminateUpload(BleOtaStatus code);
