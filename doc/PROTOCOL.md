@@ -17,10 +17,10 @@ Central checks peripheral compatibilities
 
 | Flag | Info |
 | :--- | :--- |
-| Compression | Compression supported, require zlib |
-| Checksum | Checksum supported, require crc32 |
+| Compression | Compression supported, use zlib |
+| Checksum | Checksum supported, use crc32 |
 | Upload | Upload enabled |
-| Signature | Signature required, require sha256 |
+| Signature | Signature required, use sha256 |
 | Pin | Pin change supported |
 
 ### BeginReq
