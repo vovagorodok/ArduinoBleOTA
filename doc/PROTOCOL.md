@@ -1,6 +1,7 @@
 ## Overal
 Binary protocol with little-endian byte order and LSB-first bit order.  
-Each message contains `u8` header at the begining.
+Each message contains `u8` header at the begining.  
+Additionally require zlib for compression and sha256 for signature if supported.
 
 ## Messages
 ### InitReq
