@@ -1,7 +1,6 @@
 ## Overal
 Binary protocol with little-endian byte order and LSB-first bit order.  
 Each message contains `u8` header at the begining.  
-Additionally require zlib for compression and sha256 for signature if supported.
 
 ## Messages
 ### InitReq
@@ -18,10 +17,10 @@ Central checks peripheral compatibilities
 
 | Flag | Info |
 | :--- | :--- |
-| Compression | Compression supported |
-| Checksum | Checksum supported |
+| Compression | Compression supported, require zlib |
+| Checksum | Checksum supported, require crc32 |
 | Upload | Upload enabled |
-| Signature | Signature required |
+| Signature | Signature required, require sha256 |
 | Pin | Pin change supported |
 
 ### BeginReq
