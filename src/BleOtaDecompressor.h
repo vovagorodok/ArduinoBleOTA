@@ -1,5 +1,5 @@
 #pragma once
-#include "BleOtaStorage.h"
+#include "BleOtaStatus.h"
 #include <Arduino.h>
 
 #if !defined(BLE_OTA_NO_COMPRESSION)
@@ -34,10 +34,12 @@
     #endif
 #endif
 
+class BleOtaUploader;
+
 class BleOtaDecompressor
 {
 public:
-    BleOtaDecompressor(BleOtaStorage& storage);
+    BleOtaDecompressor(BleOtaUploader* uploader);
 
     void begin(size_t compressedSize);
     BleOtaStatus push(const uint8_t* data, size_t size);
@@ -49,7 +51,7 @@ public:
 private:
     void clear();
 
-    BleOtaStorage& _storage;
+    BleOtaUploader* _uploader;
 #if defined(BLE_OTA_STATIC_COMPRESSION)
     tinfl_decompressor _decompressorData;
     uint8_t _bufferData[TINFL_LZ_DICT_SIZE];

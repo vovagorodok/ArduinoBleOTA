@@ -15,7 +15,7 @@ BleOtaUploader::BleOtaUploader():
     _terminateCode(BleOtaStatus::Ok),
     _storage(),
     _buffer(),
-    _decompressor(_storage),
+    _decompressor(this),
     _checksum(),
     _signature(),
     _pinCallbacks(&dummyPinCallbacks),
@@ -233,10 +233,10 @@ void BleOtaUploader::handlePackageReq(const BleOtaPackageReq& req)
     }
     else
     {
-        status = push(req.data, req.size);
+        status = pushFirmware(req.data, req.size);
     }
 #else
-    const auto status = push(req.data, req.size);
+    const auto status = pushFirmware(req.data, req.size);
 #endif
 
     if (status != BleOtaStatus::Ok)
@@ -466,31 +466,36 @@ void BleOtaUploader::terminateUpload(BleOtaStatus code)
 #endif
 }
 
-BleOtaStatus BleOtaUploader::push(const uint8_t* data, size_t size)
+BleOtaStatus BleOtaUploader::pushFirmware(const uint8_t* data, size_t size)
 {
 #ifndef BLE_OTA_NO_CHECKSUM
     if (_checksum.isEnabled())
         _checksum.push(data, size);
 #endif
 
+#ifndef BLE_OTA_NO_COMPRESSION
+    return _decompressor.isEnabled() ?
+        _decompressor.push(data, size) :
+        pushDecompressed(data, size);
+#else
+    return pushDecompressed(data, size);
+#endif
+}
+
+BleOtaStatus BleOtaUploader::pushDecompressed(const uint8_t* data, size_t size)
+{
 #ifndef BLE_OTA_NO_SIGNATURE
     if (_signature.isEnabled())
         _signature.push(data, size);
 #endif
 
-#ifndef BLE_OTA_NO_COMPRESSION
-    return _decompressor.isEnabled() ?
-        _decompressor.push(data, size) :
-        _storage.push(data, size);
-#else
     return _storage.push(data, size);
-#endif
 }
 
 BleOtaStatus BleOtaUploader::flushBuffer()
 {
 #ifndef BLE_OTA_NO_BUFFER
-    const auto status = push(_buffer.data(), _buffer.size());
+    const auto status = pushFirmware(_buffer.data(), _buffer.size());
     _buffer.clear();
     return status;
 #else

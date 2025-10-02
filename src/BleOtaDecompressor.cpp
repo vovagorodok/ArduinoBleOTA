@@ -1,4 +1,5 @@
 #include "BleOtaDecompressor.h"
+#include "BleOtaUploader.h"
 #include "BleOtaLogger.h"
 #ifdef ARDUINO_ARCH_ESP32
 #include "esp_task_wdt.h"
@@ -9,11 +10,11 @@ namespace
 #define TAG "Decompress"
 }
 
-BleOtaDecompressor::BleOtaDecompressor(BleOtaStorage& storage):
+BleOtaDecompressor::BleOtaDecompressor(BleOtaUploader* uploader):
 #ifndef BLE_OTA_NO_COMPRESSION
-    _storage(storage),
+    _uploader(uploader),
 #else
-    _storage(storage)
+    _uploader(uploader)
 #endif
 #if defined(BLE_OTA_STATIC_COMPRESSION)
     _decompressorData(),
@@ -107,7 +108,7 @@ BleOtaStatus BleOtaDecompressor::push(const uint8_t* data, size_t size)
             }
         }
 
-        const auto status = _storage.push(outBufferPos, outBufferSize);
+        const auto status = _uploader->pushDecompressed(outBufferPos, outBufferSize);
         if (status != BleOtaStatus::Ok)
             return status;
 

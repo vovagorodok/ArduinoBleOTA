@@ -24,6 +24,7 @@ public:
     void setUploadCallbacks(BleOtaUploadCallbacks&);
 
 private:
+    friend BleOtaDecompressor;
     void handleInitReq(const BleOtaInitReq& req);
     void handleBeginReq(const BleOtaBeginReq& req);
     void handlePackageReq(const BleOtaPackageReq& req);
@@ -38,7 +39,8 @@ private:
     template <typename T>
     void sendMessage(const T& msg);
     void terminateUpload(BleOtaStatus code);
-    BleOtaStatus push(const uint8_t* data, size_t size);
+    BleOtaStatus pushFirmware(const uint8_t* data, size_t size);
+    BleOtaStatus pushDecompressed(const uint8_t* data, size_t size);
     BleOtaStatus flushBuffer();
 
     enum class State {

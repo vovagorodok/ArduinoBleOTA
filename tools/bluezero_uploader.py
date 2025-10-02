@@ -93,17 +93,6 @@ def upload(paths: Paths, tx_char, rx_char):
         print(ERROR_TO_STR[ErrorCode.UPLOAD_DISABLED])
         return False
 
-    if init_resp.flags.compression:
-        compressed_path = firmware_path + '.zlib'
-        create_compressed_file(firmware_path, compressed_path)
-        compressed_size = get_file_size(compressed_path)
-        upload_size = compressed_size
-        firmware_path = compressed_path
-        print(f"Firmware compressed: {firmware_size} -> {compressed_size}")
-    else:
-        compressed_size = firmware_size
-        upload_size = firmware_size
-
     if init_resp.flags.signature:
         signature_path = firmware_path + '.sig'
         private_key_path = paths.private_key
@@ -116,6 +105,17 @@ def upload(paths: Paths, tx_char, rx_char):
     else:
         signature_path = None
         signature_size = 0
+
+    if init_resp.flags.compression:
+        compressed_path = firmware_path + '.zlib'
+        create_compressed_file(firmware_path, compressed_path)
+        compressed_size = get_file_size(compressed_path)
+        upload_size = compressed_size
+        firmware_path = compressed_path
+        print(f"Firmware compressed: {firmware_size} -> {compressed_size}")
+    else:
+        compressed_size = firmware_size
+        upload_size = firmware_size
 
     package_size = consts.MAX_U32
     buffer_size = consts.MAX_U32
