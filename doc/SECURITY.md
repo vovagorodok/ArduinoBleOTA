@@ -64,9 +64,13 @@ Generate public key
 ```
 openssl rsa -in priv_key.pem -pubout > rsa_key.pub
 ```
-Signature can be generated using SHA256 and private key
+Generate signature file if needed by using SHA256 and private key
 ```
 openssl dgst -sign priv_key.pem -keyform PEM -sha256 -out signature.sig -binary firmware.bin
+```
+Create firmware file with signatue if needed
+```
+cat firmware.bin signature.sig > firmware.sig.bin
 ```
 Enable signature checking by copy public key to source code and by `setSignatureKey()` method.
 
