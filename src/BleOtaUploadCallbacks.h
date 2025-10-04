@@ -8,4 +8,6 @@ public:
     virtual void handleUploadProgress(size_t percentages) {}
     virtual void handleUploadEnd() {}
     virtual void handleUploadError(BleOtaStatus errorCode) {}
+
+    virtual ~BleOtaUploadCallbacks() = default;
 };

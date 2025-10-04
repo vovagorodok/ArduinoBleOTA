@@ -13,4 +13,6 @@ public:
     {
         return false;
     }
+
+    virtual ~BleOtaPinCallbacks() = default;
 };
