@@ -155,18 +155,18 @@ void BleOtaUploader::handleBeginReq(const BleOtaBeginReq& req)
         req.firmwareSize, req.packageSize, req.bufferSize, req.compressedSize,
         req.flags.compression, req.flags.checksum);
 
+    if (_state == State::Disable)
+    {
+        handleError(BleOtaStatus::UploadDisabled);
+        return;
+    }
+
     if (_state == State::Upload)
     {
         BLE_OTA_LOG(TAG, "Terminate");
         terminateUpload(BleOtaStatus::Ok);
     }
 
-    if (_state == State::Disable)
-    {
-        handleError(BleOtaStatus::UploadDisabled);
-        return;
-    }
-   
     const bool withCompression = req.flags.compression;
     if (withCompression)
     {
