@@ -24,7 +24,7 @@ enum BleOtaHeader: uint8_t
 };
 
 template <typename T>
-T copyMessage(const uint8_t* data)
+T copyMessagePack(const uint8_t* data)
 {
     // Use copies instead casts in order to prevent hard faults
     // caused by unaligned 32-bit accesses on Cortex-M
@@ -107,7 +107,7 @@ private:
 
 public:
     BleOtaBeginReq(const uint8_t* data):
-        BleOtaBeginReq(copyMessage<Packed>(data))
+        BleOtaBeginReq(copyMessagePack<Packed>(data))
     {}
     static bool isValidSize(size_t size)
     {
@@ -184,7 +184,7 @@ private:
 
 public:
     BleOtaEndReq(const uint8_t* data):
-        BleOtaEndReq(copyMessage<Packed>(data))
+        BleOtaEndReq(copyMessagePack<Packed>(data))
     {}
     static bool isValidSize(size_t size)
     {
@@ -255,7 +255,7 @@ private:
 
 public:
     BleOtaSetPinReq(const uint8_t* data):
-        BleOtaSetPinReq(copyMessage<Packed>(data))
+        BleOtaSetPinReq(copyMessagePack<Packed>(data))
     {}
     static bool isValidSize(size_t size)
     {
