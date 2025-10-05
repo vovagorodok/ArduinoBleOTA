@@ -23,6 +23,16 @@ enum BleOtaHeader: uint8_t
     RemovePinResp = 0x33,
 };
 
+template <typename T>
+T copyMessage(const uint8_t* data)
+{
+    // Use copies instead casts in order to prevent hard faults
+    // caused by unaligned 32-bit accesses on Cortex-M
+    T message;
+    memcpy(&message, data + sizeof(BleOtaHeader), sizeof(T));
+    return message;
+}
+
 struct BleOtaMessage
 {
     BleOtaMessage(BleOtaHeader header):
@@ -94,17 +104,10 @@ private:
         compressedSize(packed.compressedSize),
         flags(packed.flags)
     {}
-    static Packed pack(const uint8_t* data)
-    {
-        // Use copies in order to prevent hard faults caused by unaligned 32-bit accesses on Cortex-M
-        Packed packed;
-        memcpy(&packed, data + sizeof(BleOtaHeader), sizeof(Packed));
-        return packed;
-    }
 
 public:
     BleOtaBeginReq(const uint8_t* data):
-        BleOtaBeginReq(pack(data))
+        BleOtaBeginReq(copyMessage<Packed>(data))
     {}
     static bool isValidSize(size_t size)
     {
@@ -178,16 +181,10 @@ private:
         BleOtaMessage(BleOtaHeader::EndReq),
         firmwareCrc(packed.firmwareCrc)
     {}
-    static Packed pack(const uint8_t* data)
-    {
-        Packed packed;
-        memcpy(&packed, data + sizeof(BleOtaHeader), sizeof(Packed));
-        return packed;
-    }
 
 public:
     BleOtaEndReq(const uint8_t* data):
-        BleOtaEndReq(pack(data))
+        BleOtaEndReq(copyMessage<Packed>(data))
     {}
     static bool isValidSize(size_t size)
     {
@@ -255,16 +252,10 @@ private:
         BleOtaMessage(BleOtaHeader::SetPinReq),
         pin(packed.pin)
     {}
-    static Packed pack(const uint8_t* data)
-    {
-        Packed packed;
-        memcpy(&packed, data + sizeof(BleOtaHeader), sizeof(Packed));
-        return packed;
-    }
 
 public:
     BleOtaSetPinReq(const uint8_t* data):
-        BleOtaSetPinReq(pack(data))
+        BleOtaSetPinReq(copyMessage<Packed>(data))
     {}
     static bool isValidSize(size_t size)
     {
