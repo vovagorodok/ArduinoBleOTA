@@ -88,7 +88,9 @@ void BleOtaLib::setUploadCallbacks(BleOtaUploadCallbacks& cb)
 
 void BleOtaLib::onWrite(const BLECharacteristic& characteristic)
 {
-    _uploader.onData(rxCharacteristic.value(), rxCharacteristic.valueLength());
+    _uploader.handleData(
+        rxCharacteristic.value(),
+        rxCharacteristic.valueLength());
 }
 
 void BleOtaLib::send(const uint8_t* data, size_t size)

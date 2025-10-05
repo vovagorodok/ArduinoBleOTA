@@ -112,7 +112,7 @@ void BleOtaLib::onWrite(BLECharacteristic* characteristic)
     auto data = value.data();
     auto size = value.length();
 
-    _uploader.onData(data, size);
+    _uploader.handleData(data, size);
 }
 
 void BleOtaLib::send(const uint8_t* data, size_t size)

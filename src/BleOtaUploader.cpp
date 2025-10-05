@@ -50,7 +50,7 @@ void BleOtaUploader::setEnable(bool enable)
     }
 }
 
-void BleOtaUploader::onData(const uint8_t* data, size_t size)
+void BleOtaUploader::handleData(const uint8_t* data, size_t size)
 {
     if (_state == State::Install)
     {

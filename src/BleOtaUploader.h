@@ -17,7 +17,7 @@ public:
     void begin(OTAStorage& storage, bool enable);
     void pull();
     void setEnable(bool enable);
-    void onData(const uint8_t* data, size_t size);
+    void handleData(const uint8_t* data, size_t size);
 
     bool setSignatureKey(const char* key, size_t size);
     void setPinCallbacks(BleOtaPinCallbacks&);
