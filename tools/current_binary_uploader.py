@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+import json
+import os
+
 from uploader import try_scan_and_upload
 from ble_ota.utils import create_private_key_path
 from ble_ota.paths import Paths
-import os
-import json
+
 
 
 def find_abs_dir_that_contains(abs_dir, relative_path):
