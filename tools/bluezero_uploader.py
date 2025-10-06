@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
+import sys
+import zlib
+import datetime
+import os
+from time import sleep
+
 from bluezero import adapter
 from bluezero import central
-from time import sleep
+
 from ble_ota import uuids
 from ble_ota import consts
 from ble_ota.messages import InitReq, InitResp
@@ -12,10 +18,6 @@ from ble_ota.messages import SignatureReq, SignatureResp
 from ble_ota.messages import ErrorCode, parse_message_of_type, ERROR_TO_STR
 from ble_ota.utils import get_file_size, create_compressed_file, create_signature_file
 from ble_ota.paths import Paths
-import sys
-import zlib
-import datetime
-import os
 
 
 def scan_ota_devices(adapter_address=None, timeout=5.0):

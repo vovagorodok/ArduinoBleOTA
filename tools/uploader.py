@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
-from bleak import BleakClient, BleakScanner
+import asyncio
+import sys
+import zlib
+import datetime
+import os
 from time import sleep
+
+from bleak import BleakClient, BleakScanner
+
 from ble_ota import uuids
 from ble_ota import consts
 from ble_ota.messages import InitReq, InitResp
@@ -11,11 +18,6 @@ from ble_ota.messages import SignatureReq, SignatureResp
 from ble_ota.messages import ErrorCode, parse_message_of_type, ERROR_TO_STR
 from ble_ota.utils import get_file_size, is_linux, is_fedora, create_compressed_file, create_signature_file
 from ble_ota.paths import Paths
-import asyncio
-import sys
-import zlib
-import datetime
-import os
 
 
 async def scan_ota_devices(timeout=5.0):

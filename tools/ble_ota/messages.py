@@ -1,8 +1,9 @@
+import struct
 from dataclasses import dataclass
 from enum import IntEnum
 from typing import Type, TypeVar
+
 from ble_ota import consts
-import struct
 
 
 class HeaderCode(IntEnum):
