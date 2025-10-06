@@ -130,7 +130,7 @@ def upload(paths: Paths, tx_char, rx_char):
     package_size = begin_resp.package_size
     buffer_size = begin_resp.buffer_size
 
-    print(f"Begin upload sizes: firmware: {firmware_size}, package: {package_size}, buffer: {buffer_size}, compressed: {compressed_size}")
+    print(f"Begin upload: firmware: {firmware_size}, package: {package_size}, buffer: {buffer_size}, compressed: {compressed_size}")
 
     with open(firmware_path, 'rb') as f:
         while True:
