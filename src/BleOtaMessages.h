@@ -28,9 +28,9 @@ T copyMessagePack(const uint8_t* data)
 {
     // Use copies instead casts in order to prevent hard faults
     // caused by unaligned 32-bit accesses on Cortex-M
-    T message;
-    memcpy(&message, data + sizeof(BleOtaHeader), sizeof(T));
-    return message;
+    T pack;
+    memcpy(&pack, data + sizeof(BleOtaHeader), sizeof(T));
+    return pack;
 }
 
 struct BleOtaMessage
