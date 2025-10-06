@@ -67,11 +67,8 @@ void BleOtaBuffer::end()
 #endif
 
 #ifdef BLE_OTA_DYNAMIC_BUFFER
-    if (_buffer != nullptr)
-    {
-        delete[] _buffer;
-        _buffer = nullptr;
-    }
+    delete[] _buffer;
+    _buffer = nullptr;
 #endif
 }
 

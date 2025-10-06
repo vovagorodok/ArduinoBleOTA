@@ -196,15 +196,10 @@ bool BleOtaDecompressor::isSupported() const
 void BleOtaDecompressor::clear()
 {
 #ifdef BLE_OTA_DYNAMIC_COMPRESSION
-    if (_decompressor != nullptr)
-    {
-        delete _decompressor;
-        _decompressor = nullptr;
-    }
-    if (_buffer != nullptr)
-    {
-        delete[] _buffer;
-        _buffer = nullptr;
-    }
+    delete _decompressor;
+    _decompressor = nullptr;
+
+    delete[] _buffer;
+    _buffer = nullptr;
 #endif
 }

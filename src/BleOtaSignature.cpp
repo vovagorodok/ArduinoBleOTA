@@ -128,11 +128,7 @@ bool BleOtaSignature::setPublicKey(const char* key, size_t size)
     }
 
 #ifdef BLE_OTA_DYNAMIC_SIGNATURE
-    if (_pkContext != nullptr)
-    {
-        delete _pkContext;
-        _pkContext = nullptr;
-    }
+    delete _pkContext;
     _pkContext = new mbedtls_pk_context;
 #endif
 
@@ -170,20 +166,13 @@ bool BleOtaSignature::isEnabled() const
 void BleOtaSignature::clear()
 {
 #ifdef BLE_OTA_DYNAMIC_SIGNATURE
-    if (_sha256Context != nullptr)
-    {
-        delete _sha256Context;
-        _sha256Context = nullptr;
-    }
-    if (_hash != nullptr)
-    {
-        delete[] _hash;
-        _hash = nullptr;
-    }
-    if (_signature != nullptr)
-    {
-        delete[] _signature;
-        _signature = nullptr;
-    }
+    delete _sha256Context;
+    _sha256Context = nullptr;
+
+    delete[] _hash;
+    _hash = nullptr;
+
+    delete[] _signature;
+    _signature = nullptr;
 #endif
 }
