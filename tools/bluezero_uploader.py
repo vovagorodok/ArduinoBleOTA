@@ -17,7 +17,7 @@ from ble_ota.messages import EndReq, EndResp
 from ble_ota.messages import SignatureReq, SignatureResp
 from ble_ota.messages import ErrorCode, parse_message_of_type, ERROR_TO_STR
 from ble_ota.utils import get_file_size, create_compressed_file, create_signature_file
-from ble_ota.paths import Paths
+from ble_ota.paths import InputPaths
 
 
 def scan_ota_devices(adapter_address=None, timeout=5.0):
@@ -76,7 +76,7 @@ def receive(rx_char):
     return bytes(rx_char.value)
 
 
-def upload(paths: Paths, tx_char, rx_char):
+def upload(paths: InputPaths, tx_char, rx_char):
     crc = 0
     uploaded_size = 0
     current_buffer_size = 0
@@ -176,7 +176,7 @@ def upload(paths: Paths, tx_char, rx_char):
     return True
 
 
-def try_upload(paths: Paths, tx_char, rx_char):
+def try_upload(paths: InputPaths, tx_char, rx_char):
     time = datetime.datetime.now()
 
     try:
@@ -191,7 +191,7 @@ def try_upload(paths: Paths, tx_char, rx_char):
     return True
 
 
-def connect_and_upload(paths: Paths, dev):
+def connect_and_upload(paths: InputPaths, dev):
     res = connect(dev)
     if not res:
         return
@@ -212,7 +212,7 @@ def connect_and_upload(paths: Paths, dev):
     print("Success!")
 
 
-def scan_and_upload(paths: Paths):
+def scan_and_upload(paths: InputPaths):
     devices = list()
 
     print("Devices:")
@@ -240,7 +240,7 @@ def scan_and_upload(paths: Paths):
     connect_and_upload(paths, devices[device_num])
 
 
-def try_scan_and_upload(paths: Paths):
+def try_scan_and_upload(paths: InputPaths):
     try:
         scan_and_upload(paths)
     except KeyboardInterrupt:
@@ -250,4 +250,4 @@ def try_scan_and_upload(paths: Paths):
 
 
 if __name__ == '__main__':
-    try_scan_and_upload(Paths.parse(sys.argv))
+    try_scan_and_upload(InputPaths.parse(sys.argv))

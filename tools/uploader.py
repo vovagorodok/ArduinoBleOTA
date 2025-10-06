@@ -17,7 +17,7 @@ from ble_ota.messages import EndReq, EndResp
 from ble_ota.messages import SignatureReq, SignatureResp
 from ble_ota.messages import ErrorCode, parse_message_of_type, ERROR_TO_STR
 from ble_ota.utils import get_file_size, is_linux, is_fedora, create_compressed_file, create_signature_file
-from ble_ota.paths import Paths
+from ble_ota.paths import InputPaths
 
 
 async def scan_ota_devices(timeout=5.0):
@@ -83,7 +83,7 @@ async def connect(dev):
     return client, tx_char, rx_char
 
 
-async def upload(paths: Paths, client: BleakClient, tx_char, rx_char):
+async def upload(paths: InputPaths, client: BleakClient, tx_char, rx_char):
     crc = 0
     uploaded_size = 0
     current_buffer_size = 0
@@ -190,7 +190,7 @@ async def upload(paths: Paths, client: BleakClient, tx_char, rx_char):
     return True
 
 
-async def try_upload(paths: Paths, client, tx_char, rx_char):
+async def try_upload(paths: InputPaths, client, tx_char, rx_char):
     time = datetime.datetime.now()
 
     if not await upload(paths, client, tx_char, rx_char):
@@ -201,7 +201,7 @@ async def try_upload(paths: Paths, client, tx_char, rx_char):
     return True
 
 
-async def connect_and_upload(paths: Paths, dev):
+async def connect_and_upload(paths: InputPaths, dev):
     res = await connect(dev)
     if not res:
         return
@@ -222,7 +222,7 @@ async def connect_and_upload(paths: Paths, dev):
     print("Success!")
 
 
-async def scan_and_upload(paths: Paths):
+async def scan_and_upload(paths: InputPaths):
     devices = list()
 
     print("Devices:")
@@ -250,7 +250,7 @@ async def scan_and_upload(paths: Paths):
     await connect_and_upload(paths, devices[device_num])
 
 
-def try_scan_and_upload(paths: Paths):
+def try_scan_and_upload(paths: InputPaths):
     try:
         asyncio.run(scan_and_upload(paths))
     except KeyboardInterrupt:
@@ -260,4 +260,4 @@ def try_scan_and_upload(paths: Paths):
 
 
 if __name__ == '__main__':
-    try_scan_and_upload(Paths.parse(sys.argv))
+    try_scan_and_upload(InputPaths.parse(sys.argv))

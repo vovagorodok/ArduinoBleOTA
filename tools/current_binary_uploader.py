@@ -4,7 +4,7 @@ import os
 
 from uploader import try_scan_and_upload
 from ble_ota.utils import create_private_key_path
-from ble_ota.paths import Paths
+from ble_ota.paths import InputPaths
 
 
 def find_abs_dir_that_contains(abs_dir, relative_path):
@@ -42,5 +42,5 @@ def find_firmware_bin_path(script_dir):
 
 if __name__ == '__main__':
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    paths = Paths(find_firmware_bin_path(script_dir), create_private_key_path(script_dir))
+    paths = InputPaths(find_firmware_bin_path(script_dir), create_private_key_path(script_dir))
     try_scan_and_upload(paths)

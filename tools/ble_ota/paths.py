@@ -1,13 +1,8 @@
-from dataclasses import dataclass
+from typing import NamedTuple
 
-@dataclass
-class Paths():
+class InputPaths(NamedTuple):
     firmware: str
-    private_key: str | None
-
-    def __init__(self, firmware_path: str, private_key: str = None):
-        self.firmware = firmware_path
-        self.private_key = private_key
+    private_key: str | None = None
 
     @classmethod
     def parse(cls, argv: list[str]):
