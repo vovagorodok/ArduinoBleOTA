@@ -163,7 +163,7 @@ void BleOtaUploader::handleBeginReq(const BleOtaBeginReq& req)
 
     if (_state == State::Upload)
     {
-        BLE_OTA_LOG(TAG, "Terminate");
+        BLE_OTA_LOG(TAG, "Restart");
         terminateUpload(BleOtaStatus::Ok);
     }
 
