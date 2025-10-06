@@ -88,7 +88,7 @@ struct BleOtaBeginReq: public BleOtaMessage
 
 private:
 #pragma pack(push, 1)
-    struct Packed {
+    struct Pack {
         uint32_t firmwareSize;
         uint32_t packageSize;
         uint32_t bufferSize;
@@ -96,22 +96,22 @@ private:
         EnableFlags flags;
     };
 #pragma pack(pop)
-    BleOtaBeginReq(Packed packed):
+    BleOtaBeginReq(Pack pack):
         BleOtaMessage(BleOtaHeader::BeginReq),
-        firmwareSize(packed.firmwareSize),
-        packageSize(packed.packageSize),
-        bufferSize(packed.bufferSize),
-        compressedSize(packed.compressedSize),
-        flags(packed.flags)
+        firmwareSize(pack.firmwareSize),
+        packageSize(pack.packageSize),
+        bufferSize(pack.bufferSize),
+        compressedSize(pack.compressedSize),
+        flags(pack.flags)
     {}
 
 public:
     BleOtaBeginReq(const uint8_t* data):
-        BleOtaBeginReq(copyMessagePack<Packed>(data))
+        BleOtaBeginReq(copyMessagePack<Pack>(data))
     {}
     static bool isValidSize(size_t size)
     {
-        return size == sizeof(BleOtaHeader) + sizeof(Packed);
+        return size == sizeof(BleOtaHeader) + sizeof(Pack);
     }
 
     uint32_t firmwareSize;
@@ -173,22 +173,22 @@ struct BleOtaEndReq: public BleOtaMessage
 {
 private:
 #pragma pack(push, 1)
-    struct Packed {
+    struct Pack {
         uint32_t firmwareCrc;
     };
 #pragma pack(pop)
-    BleOtaEndReq(Packed packed):
+    BleOtaEndReq(Pack pack):
         BleOtaMessage(BleOtaHeader::EndReq),
-        firmwareCrc(packed.firmwareCrc)
+        firmwareCrc(pack.firmwareCrc)
     {}
 
 public:
     BleOtaEndReq(const uint8_t* data):
-        BleOtaEndReq(copyMessagePack<Packed>(data))
+        BleOtaEndReq(copyMessagePack<Pack>(data))
     {}
     static bool isValidSize(size_t size)
     {
-        return size == sizeof(BleOtaHeader) + sizeof(Packed);
+        return size == sizeof(BleOtaHeader) + sizeof(Pack);
     }
 
     uint32_t firmwareCrc;
@@ -244,22 +244,22 @@ struct BleOtaSetPinReq: public BleOtaMessage
 {
 private:
 #pragma pack(push, 1)
-    struct Packed {
+    struct Pack {
         uint32_t pin;
     };
 #pragma pack(pop)
-    BleOtaSetPinReq(Packed packed):
+    BleOtaSetPinReq(Pack pack):
         BleOtaMessage(BleOtaHeader::SetPinReq),
-        pin(packed.pin)
+        pin(pack.pin)
     {}
 
 public:
     BleOtaSetPinReq(const uint8_t* data):
-        BleOtaSetPinReq(copyMessagePack<Packed>(data))
+        BleOtaSetPinReq(copyMessagePack<Pack>(data))
     {}
     static bool isValidSize(size_t size)
     {
-        return size == sizeof(BleOtaHeader) + sizeof(Packed);
+        return size == sizeof(BleOtaHeader) + sizeof(Pack);
     }
 
     uint32_t pin;
