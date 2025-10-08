@@ -10,18 +10,20 @@
   #define LED_BUILTIN 2
 #endif
 
-#if defined(BLE_OTA_LIB_ARDUINO_BLE)
+#ifdef BLE_OTA_LIB_ARDUINO_BLE
 BLEService ledService(LED_SERVICE_UUID);
 BLEBooleanCharacteristic ledCharacteristic(LED_CHARACTERISTIC_UUID, BLERead | BLEWrite);
 void onWrite(BLEDevice central, BLECharacteristic characteristic) {
   digitalWrite(LED_BUILTIN, ledCharacteristic.value());
 }
-#elif defined(BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO)
+#endif
+
+#ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO
 class LedCharacteristicCallbacks: public BLECharacteristicCallbacks {
 public:
-#if defined(BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V1)
+#ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V1
   void onWrite(BLECharacteristic* characteristic) override {
-#elif defined(BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V2)
+#else
   void onWrite(BLECharacteristic* characteristic, BLEConnInfo& connInfo) override {
 #endif
     digitalWrite(LED_BUILTIN, characteristic->getValue<bool>());
@@ -33,7 +35,7 @@ LedCharacteristicCallbacks ledCallbacks;
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 
-#if defined(BLE_OTA_LIB_ARDUINO_BLE)
+#ifdef BLE_OTA_LIB_ARDUINO_BLE
   initBle(NAME);
   ledService.addCharacteristic(ledCharacteristic);
   BLE.addService(ledService);
@@ -41,7 +43,9 @@ void setup() {
   ledCharacteristic.writeValue(0);
   ArduinoBleOTA.begin(InternalStorage);
   advertiseBle(NAME, BLE_OTA_SERVICE_UUID, LED_SERVICE_UUID);
-#elif defined(BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO)
+#endif
+
+#ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO
   auto server = initBle(NAME);
   auto ledService = server->createService(LED_SERVICE_UUID);
   auto ledCharacteristic = ledService->createCharacteristic(
