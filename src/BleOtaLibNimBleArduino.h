@@ -29,7 +29,11 @@ public:
 private:
     friend BleOtaUploader;
     void begin(BLEService& service, const BleOtaInfo& info);
+#ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V1
     void onWrite(BLECharacteristic* characteristic) override;
+#else
+    void onWrite(BLECharacteristic* characteristic, BLEConnInfo& connInfo) override;
+#endif
     void send(const uint8_t* data, size_t size);
 
     BLECharacteristic* _txCharacteristic;

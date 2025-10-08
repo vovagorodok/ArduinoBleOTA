@@ -53,10 +53,17 @@ public:
         return result;
     }
 
+#ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V1
     void onConnect(BLEServer* srv, ble_gap_conn_desc* desc) override
     {
         BLEDevice::startSecurity(desc->conn_handle);
     }
+#else
+    void onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) override
+    {
+        BLEDevice::startSecurity(connInfo.getConnHandle());
+    }
+#endif
 
 private:
     Preferences prefs;

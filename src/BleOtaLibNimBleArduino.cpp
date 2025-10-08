@@ -19,9 +19,11 @@ bool BleOtaLib::begin(const std::string& deviceName,
 
     auto* advertising = server->getAdvertising();
     advertising->addServiceUUID(BLE_OTA_SERVICE_UUID);
+#ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V1
     advertising->setScanResponse(true);
     advertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
     advertising->setMaxPreferred(0x12);
+#endif
     return advertising->start();
 }
 
@@ -106,7 +108,11 @@ void BleOtaLib::setUploadCallbacks(BleOtaUploadCallbacks& cb)
     _uploader.setUploadCallbacks(cb);
 }
 
+#ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V1
 void BleOtaLib::onWrite(BLECharacteristic* characteristic)
+#else
+void BleOtaLib::onWrite(BLECharacteristic* characteristic, BLEConnInfo& connInfo)
+#endif
 {
     auto value = characteristic->getValue();
     auto data = value.data();

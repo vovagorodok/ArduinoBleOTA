@@ -8,6 +8,12 @@
     #include <NimBLEDevice.h>
     #define BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO
     #define BLE_OTA_LIB_NIM_BLE_ARDUINO
+#if !defined(CONFIG_NIMBLE_MAX_CONNECTIONS) && \
+    !defined(CONFIG_NIMBLE_CPP_DEBUG_ASSERT_ENABLED)
+    #define BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V1
+#else
+    #define BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V2
+#endif
 #elif defined(ARDUINO_ARCH_ESP32)
     #include <BLEDevice.h>
     #define BLE_OTA_BLE_LIB_ESP32
