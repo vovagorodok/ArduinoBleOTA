@@ -76,7 +76,9 @@ async def connect(dev):
         sw = str(await client.read_gatt_char(sw_name_char), 'utf-8')
         hw_ver = '.'.join(map(str, await client.read_gatt_char(hw_ver_char)))
         sw_ver = '.'.join(map(str, await client.read_gatt_char(sw_ver_char)))
-        print(f"Device: name: (mf: {mf}, hw: {hw}, sw: {sw}), ver: (hw: {hw_ver}, sw: {sw_ver})")
+        print(f"Manufacture: {mf}")
+        print(f"Hardware: {hw} v{hw_ver}")
+        print(f"Software: {sw} v{sw_ver}")
     else:
         print("Device info not available")
 

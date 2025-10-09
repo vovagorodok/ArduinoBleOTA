@@ -61,7 +61,9 @@ def connect(dev):
         sw = str(bytearray(sw_name_char.value), 'utf-8')
         hw_ver = '.'.join(map(str, bytearray(hw_ver_char.value)))
         sw_ver = '.'.join(map(str, bytearray(sw_ver_char.value)))
-        print(f"Device: name: (mf: {mf}, hw: {hw}, sw: {sw}), ver: (hw: {hw_ver}, sw: {sw_ver})")
+        print(f"Manufacture: {mf}")
+        print(f"Hardware: {hw} v{hw_ver}")
+        print(f"Software: {sw} v{sw_ver}")
     except Exception:
         print("Device info not available")
 
