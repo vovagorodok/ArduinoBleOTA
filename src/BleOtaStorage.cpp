@@ -23,7 +23,7 @@ BleOtaStatus BleOtaStorage::open(size_t firmwareSize)
     const auto capacity = _storage->maxSize();
     if (capacity <= 0)
         return BleOtaStatus::InternalStorageError;
-    if (firmwareSize > capacity)
+    if (firmwareSize > static_cast<size_t>(capacity))
         return BleOtaStatus::IncorrectFirmwareSize;
 
     _firmwareSize = firmwareSize;
