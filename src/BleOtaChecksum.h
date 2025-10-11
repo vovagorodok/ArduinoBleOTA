@@ -1,7 +1,22 @@
 #pragma once
 #include <Arduino.h>
 
-#if !defined(BLE_OTA_NO_CHECKSUM)
+#if defined(BLE_OTA_CHECKSUM_LIB_MINIZ)
+    #include <miniz.h>
+    #define BLE_OTA_CHECKSUM_LIB_PREDEFINED
+#elif defined(BLE_OTA_CHECKSUM_LIB_CRC)
+    #include <CRC32.h>
+    #define BLE_OTA_CHECKSUM_LIB_PREDEFINED
+#elif defined(BLE_OTA_NO_CHECKSUM)
+    #define BLE_OTA_CHECKSUM_LIB_PREDEFINED
+#endif
+
+#if !defined(PLATFORMIO) && !defined(BLE_OTA_CHECKSUM_LIB_PREDEFINED)
+    #define BLE_OTA_NO_CHECKSUM
+    #define BLE_OTA_CHECKSUM_LIB_PREDEFINED
+#endif
+
+#if !defined(BLE_OTA_CHECKSUM_LIB_PREDEFINED)
     #if defined(BLE_OTA_CHECKSUM_LIB_CRC)
         #include <CRC32.h>
     #elif __has_include("miniz.h")

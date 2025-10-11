@@ -2,7 +2,19 @@
 #include "BleOtaStatus.h"
 #include <Arduino.h>
 
-#if !defined(BLE_OTA_NO_COMPRESSION)
+#if defined(BLE_OTA_COMPRESSION_LIB_MINIZ)
+    #include <miniz.h>
+    #define BLE_OTA_COMPRESSION_LIB_PREDEFINED
+#elif defined(BLE_OTA_NO_COMPRESSION)
+    #define BLE_OTA_COMPRESSION_LIB_PREDEFINED
+#endif
+
+#if !defined(PLATFORMIO) && !defined(BLE_OTA_COMPRESSION_LIB_PREDEFINED)
+    #define BLE_OTA_NO_COMPRESSION
+    #define BLE_OTA_COMPRESSION_LIB_PREDEFINED
+#endif
+
+#if !defined(BLE_OTA_COMPRESSION_LIB_PREDEFINED)
     #if __has_include("miniz.h")
         #include <miniz.h>
         #define BLE_OTA_COMPRESSION_LIB_MINIZ

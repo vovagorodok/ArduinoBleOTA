@@ -37,6 +37,7 @@
     #include <ArduinoBLE.h>
     #define BLE_OTA_BLE_LIB_ARDUINO_BLE
     #define BLE_OTA_LIB_ARDUINO_BLE
+    #define BLE_OTA_BLE_LIB_PREDEFINED
 #endif
 
 #ifndef BLE_OTA_BLE_LIB_PREDEFINED
