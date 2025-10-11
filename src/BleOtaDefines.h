@@ -33,6 +33,12 @@
     #define BLE_OTA_BLE_LIB_PREDEFINED
 #endif
 
+#if !defined(PLATFORMIO) && !defined(BLE_OTA_BLE_LIB_PREDEFINED)
+    #include <ArduinoBLE.h>
+    #define BLE_OTA_BLE_LIB_ARDUINO_BLE
+    #define BLE_OTA_LIB_ARDUINO_BLE
+#endif
+
 #ifndef BLE_OTA_BLE_LIB_PREDEFINED
     #if __has_include("ArduinoBLE.h")
         #include <ArduinoBLE.h>
