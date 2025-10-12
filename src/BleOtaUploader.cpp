@@ -205,7 +205,7 @@ void BleOtaUploader::handleBeginReq(const BleOtaBeginReq& req)
 
     _state = State::Upload;
 
-    const uint32_t packageSize = min(req.packageSize, BLE_OTA_PACKAGE_SIZE);
+    const uint32_t packageSize = min(req.packageSize, static_cast<uint32_t>(BLE_OTA_PACKAGE_SIZE));
     const uint32_t bufferSize = _buffer.begin(req.bufferSize, packageSize);
     BLE_OTA_LOG(TAG, "Send BeginResp: size: (pkg: %lu, buff: %lu)", packageSize, bufferSize);
     sendMessage(BleOtaBeginResp{packageSize, bufferSize});

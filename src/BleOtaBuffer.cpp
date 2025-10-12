@@ -27,7 +27,7 @@ size_t BleOtaBuffer::begin(size_t bufferSize, size_t packageSize)
         return 0;
     }
 
-    _capacity = min(bufferSize, BLE_OTA_BUFFER_SIZE);
+    _capacity = min(bufferSize, static_cast<size_t>(BLE_OTA_BUFFER_SIZE));
 
     if (_capacity < packageSize)
     {
