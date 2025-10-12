@@ -7,6 +7,7 @@
 #endif
 
 #if !defined(PLATFORMIO) && !defined(BLE_OTA_STORAGE_LIB_PREDEFINED)
+    #include <ArduinoOTA.h>
     #define BLE_OTA_STORAGE_LIB_ARDUINO_OTA
     #define BLE_OTA_STORAGE_LIB_PREDEFINED
 #endif
@@ -23,7 +24,7 @@
     // Copied from https://github.com/JAndrassy/ArduinoOTA/blob/master/src/ArduinoOTA.h
     #ifdef __AVR__
         #if FLASHEND >= 0xFFFF
-            #include "InternalStorageAVR.h"
+            #include <InternalStorageAVR.h>
         #endif
     #elif defined(ARDUINO_ARCH_STM32)
         #include <InternalStorageSTM32.h>
@@ -32,16 +33,16 @@
     #elif defined(ARDUINO_ARCH_RENESAS_UNO)
         #include <InternalStorageRenesas.h>
     #elif defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_ESP8266)
-        #include "InternalStorageESP.h"
+        #include <InternalStorageESP.h>
     #else
-        #include "InternalStorage.h"
+        #include <InternalStorage.h>
     #endif
     #ifdef __SD_H__
-        #include "SDStorage.h"
+        #include <SDStorage.h>
         SDStorageClass SDStorage;
     #endif
     #ifdef SerialFlash_h_
-        #include "SerialFlashStorage.h"
+        #include <SerialFlashStorage.h>
         SerialFlashStorageClass SerialFlashStorage;
     #endif
 #elif defined(BLE_OTA_STORAGE_LIB_INTERNAL)

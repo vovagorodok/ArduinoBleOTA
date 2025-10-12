@@ -2,8 +2,8 @@
 #include "BleOtaStatus.h"
 
 #if defined(BLE_OTA_SIGNATURE_LIB_MBEDTLS)
-    #include "mbedtls/sha256.h"
-    #include "mbedtls/pk.h"
+    #include <mbedtls/sha256.h>
+    #include <mbedtls/pk.h>
     #define BLE_OTA_SIGNATURE_LIB_PREDEFINED
 #elif defined(BLE_OTA_NO_SIGNATURE)
     #define BLE_OTA_SIGNATURE_LIB_PREDEFINED
@@ -16,8 +16,8 @@
 
 #if !defined(BLE_OTA_SIGNATURE_LIB_PREDEFINED)
     #if __has_include("mbedtls/sha256.h") && __has_include("mbedtls/pk.h")
-        #include "mbedtls/sha256.h"
-        #include "mbedtls/pk.h"
+        #include <mbedtls/sha256.h>
+        #include <mbedtls/pk.h>
         #define BLE_OTA_SIGNATURE_LIB_MBEDTLS
     #else
         #define BLE_OTA_NO_SIGNATURE

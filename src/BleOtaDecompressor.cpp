@@ -2,7 +2,7 @@
 #include "BleOtaUploader.h"
 #include "BleOtaLogger.h"
 #ifdef ARDUINO_ARCH_ESP32
-#include "esp_task_wdt.h"
+#include <esp_task_wdt.h>
 #endif
 
 namespace
