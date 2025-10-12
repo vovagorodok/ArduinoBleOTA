@@ -8,11 +8,11 @@ void setup() {
     delay(1);
   }
   
-  ArduinoBleOTA.disableUpload();
+  ArduinoBleOTA.setUploadEnable(false);
 }
 
 void loop() {
-#ifdef USE_ARDUINO_BLE_LIB
+#ifdef BLE_OTA_LIB_ARDUINO_BLE
   BLE.poll();
 #endif
   ArduinoBleOTA.pull();

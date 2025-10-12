@@ -1,6 +1,6 @@
 {
     "name": "ArduinoBleOTA",
-    "version": "1.2.0",
+    "version": "2.0.0",
     "description": "Bluetooth low energy (BLE) library for uploads",
     "keywords": "BLE, OTA, bluetooth, upload, update",
     "repository":
@@ -24,13 +24,7 @@
     ],
     "license": "MIT",
     "homepage": "https://github.com/vovagorodok/ArduinoBleOTA",
-    "dependencies":
-    {
-      "jandrassy/ArduinoOTA":"^1.1.0",
-      "robtillaart/CRC":"^1.0.3",
-      "rlogiacco/CircularBuffer":"^1.4.0"
-    },
-    "headers": ["ArduinoBleOTA.h", "BleOtaMultiservice.h"],
+    "headers": ["ArduinoBleOTA.h", "ArduinoBleOtaMultiservice.h"],
     "frameworks": "arduino",
     "platforms": ["*"]
   }

@@ -1,18 +1,20 @@
 #include <ArduinoBleOTA.h>
 
 #define DEVICE_NAME "ArduinoBleOTA"
-#define MF_NAME "Example MF"
-#define HW_NAME "Example HW"
-#define HW_VER {1, 0, 0}
-#define SW_NAME "Example SW"
-#define SW_VER {1, 0, 0}
+BleOtaInfo info {
+  "Example MF",
+  "Example HW",
+  "Example SW",
+  {1, 0, 0},
+  {1, 0, 0}
+};
 
 void setup() {
-  ArduinoBleOTA.begin(DEVICE_NAME, InternalStorage, MF_NAME, HW_NAME, HW_VER, SW_NAME, SW_VER);
+  ArduinoBleOTA.begin(DEVICE_NAME, InternalStorage, info);
 }
 
 void loop() {
-#ifdef USE_ARDUINO_BLE_LIB
+#ifdef BLE_OTA_LIB_ARDUINO_BLE
   BLE.poll();
 #endif
   ArduinoBleOTA.pull();

@@ -1,10 +1,11 @@
 #pragma once
-
 #include "BleOtaDefines.h"
-#ifdef USE_NIM_BLE_ARDUINO_LIB
-#include "ArduinoBleOtaClassNimBle.h"
-#elif USE_NATIVE_ESP32_BLE_LIB
-#include "ArduinoBleOtaClassNativeESP32.h"
+#if defined(BLE_OTA_BLE_LIB_ARDUINO_BLE)
+#include "BleOtaLibArduinoBle.h"
+#elif defined(BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO)
+#include "BleOtaLibNimBleArduino.h"
+#elif defined(BLE_OTA_BLE_LIB_ESP32)
+#include "BleOtaLibESP32.h"
 #else
-#include "ArduinoBleOtaClass.h"
+#error "Unsupported BLE library."
 #endif

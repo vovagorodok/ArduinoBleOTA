@@ -1,14 +1,14 @@
 #pragma once
-#include "BleOtaSecurityCallbacks.h"
-#ifdef USE_NIM_BLE_ARDUINO_LIB
+#include "BleOtaPinCallbacks.h"
+#ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO
 #include <NimBLEDevice.h>
 #include <Preferences.h>
 
 #define BLE_OTA_SECURITY_DICT "ota_security"
 #define BLE_OTA_PIN_CODE_KEY "ota_pin"
 
-class BleOtaSecurityOnConnect : public BleOtaSecurityCallbacks,
-                                public BLEServerCallbacks
+class BleOtaSecurityServer: public BleOtaPinCallbacks,
+                            public BLEServerCallbacks
 {
 public:
     void begin()
@@ -53,10 +53,17 @@ public:
         return result;
     }
 
+#ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V1
     void onConnect(BLEServer* srv, ble_gap_conn_desc* desc) override
     {
         BLEDevice::startSecurity(desc->conn_handle);
     }
+#else
+    void onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) override
+    {
+        BLEDevice::startSecurity(connInfo.getConnHandle());
+    }
+#endif
 
 private:
     Preferences prefs;

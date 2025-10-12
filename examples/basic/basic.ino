@@ -5,7 +5,7 @@ void setup() {
 }
 
 void loop() {
-#ifdef USE_ARDUINO_BLE_LIB
+#ifdef BLE_OTA_LIB_ARDUINO_BLE
   BLE.poll();
 #endif
   ArduinoBleOTA.pull();

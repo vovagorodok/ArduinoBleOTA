@@ -1,36 +1,55 @@
 #include <ArduinoBleOTA.h>
-#include <BleOtaSecurityOnConnect.h>
+#include <BleOtaSecurityServer.h>
 
 #define DEVICE_NAME "ArduinoBleOTA"
-#define MF_NAME "Example MF"
 
-#ifdef ARDUINO_ARCH_ESP32
+#if defined(ARDUINO_ARCH_ESP32)
   #define HW_NAME "Example ESP32"
-#elif ARDUINO_ARCH_SAMD
+#elif defined(ARDUINO_ARCH_SAMD)
   #define HW_NAME "Example SAMD"
 #else
   #define HW_NAME "Example HW"
 #endif
 
-#define HW_VER {1, 0, 0}
-#define SW_NAME "Example SW"
-#define SW_VER {1, 0, 0}
+BleOtaInfo info {
+  "Example MF",
+  HW_NAME,
+  "Example SW",
+  {1, 0, 0},
+  {1, 0, 0}
+};
 
-#ifdef USE_NIM_BLE_ARDUINO_LIB
-BleOtaSecurityOnConnect security;
+#ifdef BLE_OTA_LOGS
+#ifndef ARDUINO_ARCH_ESP32
+extern "C" {
+int _write(int fd, char *ptr, int len) {
+  (void) fd;
+  return Serial.write(ptr, len);
+}
+}
+#endif
+#endif
+
+#ifdef BLE_OTA_LIB_NIM_BLE_ARDUINO
+BleOtaSecurityServer security;
 #endif
 
 void setup() {
-  ArduinoBleOTA.begin(DEVICE_NAME, InternalStorage, MF_NAME, HW_NAME, HW_VER, SW_NAME, SW_VER);
+#ifdef BLE_OTA_LOGS
+  Serial.begin(115200);
+  while (!Serial);
+#endif
 
-#ifdef USE_NIM_BLE_ARDUINO_LIB
-  ArduinoBleOTA.setSecurityCallbacks(security);
+  ArduinoBleOTA.begin(DEVICE_NAME, InternalStorage, info);
+
+#ifdef BLE_OTA_LIB_NIM_BLE_ARDUINO
+  ArduinoBleOTA.setPinCallbacks(security);
   security.begin();
 #endif
 }
 
 void loop() {
-#ifdef USE_ARDUINO_BLE_LIB
+#ifdef BLE_OTA_LIB_ARDUINO_BLE
   BLE.poll();
 #endif
   ArduinoBleOTA.pull();
