@@ -54,5 +54,5 @@ build_firmware_for_platform() {
     build_firmware $BUILD_PLATFORM $BUILD_ENV "other_v1.6.6" "Other SW" "SW_VER {1, 6, 6}" "HW_VER {1, 0, 0}"
 }
 
-build_firmware_for_platform "esp32" "esp32dev"
-build_firmware_for_platform "samd" "nano_33_iot"
+build_firmware_for_platform "esp32" "esp32dev_nim_ble_arduino"
+build_firmware_for_platform "samd" "nano_33_iot_arduino_ble"

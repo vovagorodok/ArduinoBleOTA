@@ -3,6 +3,7 @@
 
 #define DEVICE_NAME "ArduinoBleOTA"
 
+#define MF_NAME "Example MF"
 #if defined(ARDUINO_ARCH_ESP32)
   #define HW_NAME "Example ESP32"
 #elif defined(ARDUINO_ARCH_SAMD)
@@ -10,13 +11,16 @@
 #else
   #define HW_NAME "Example HW"
 #endif
+#define SW_NAME "Example SW"
+#define HW_VER {1, 0, 0}
+#define SW_VER {1, 0, 0}
 
 BleOtaInfo info {
-  "Example MF",
+  MF_NAME,
   HW_NAME,
-  "Example SW",
-  {1, 0, 0},
-  {1, 0, 0}
+  SW_NAME,
+  HW_VER,
+  SW_VER
 };
 
 #ifdef BLE_OTA_LOGS
