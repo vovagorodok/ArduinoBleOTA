@@ -18,7 +18,7 @@ void onWrite(BLEDevice central, BLECharacteristic characteristic) {
 }
 #endif
 
-#ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO
+#ifdef BLE_OTA_LIB_NIM_BLE_ARDUINO
 class LedCharacteristicCallbacks: public BLECharacteristicCallbacks {
 public:
 #ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V1
@@ -45,7 +45,7 @@ void setup() {
   advertiseBle(NAME, BLE_OTA_SERVICE_UUID, LED_SERVICE_UUID);
 #endif
 
-#ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO
+#ifdef BLE_OTA_LIB_NIM_BLE_ARDUINO
   auto server = initBle(NAME);
   auto ledService = server->createService(LED_SERVICE_UUID);
   auto ledCharacteristic = ledService->createCharacteristic(
