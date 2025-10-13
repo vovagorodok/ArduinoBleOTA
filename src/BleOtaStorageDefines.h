@@ -7,7 +7,6 @@
 #endif
 
 #if !defined(PLATFORMIO) && !defined(BLE_OTA_STORAGE_LIB_PREDEFINED)
-    #include <ArduinoOTA.h>
     #define BLE_OTA_STORAGE_LIB_ARDUINO_OTA
     #define BLE_OTA_STORAGE_LIB_PREDEFINED
 #endif
