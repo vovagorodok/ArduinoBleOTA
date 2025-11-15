@@ -14,7 +14,7 @@ public:
     void apply();
     void clear();
     bool isFull() const;
-    size_t calcProgress() const;
+    uint8_t calcProgress() const;
 
 private:
     OTAStorage* _storage;

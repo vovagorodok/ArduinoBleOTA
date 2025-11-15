@@ -5,7 +5,7 @@ class BleOtaUploadCallbacks
 {
 public:
     virtual void handleUploadBegin() {}
-    virtual void handleUploadProgress(size_t percentages) {}
+    virtual void handleUploadProgress(uint8_t percentages) {}
     virtual void handleUploadEnd() {}
     virtual void handleUploadError(BleOtaStatus errorCode) {}
 
