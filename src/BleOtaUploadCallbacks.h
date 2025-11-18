@@ -1,11 +1,12 @@
 #pragma once
 #include "BleOtaStatus.h"
+#include "BleOtaPercentages.h"
 
 class BleOtaUploadCallbacks
 {
 public:
     virtual void handleUploadBegin() {}
-    virtual void handleUploadProgress(uint8_t percentages) {}
+    virtual void handleUploadProgress(BleOtaPercentages progress) {}
     virtual void handleUploadEnd() {}
     virtual void handleUploadError(BleOtaStatus errorCode) {}
 

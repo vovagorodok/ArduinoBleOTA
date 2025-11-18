@@ -1,6 +1,7 @@
 #pragma once
 #include "BleOtaStatus.h"
 #include "BleOtaStorageDefines.h"
+#include "BleOtaPercentages.h"
 
 class BleOtaStorage
 {
@@ -14,7 +15,7 @@ public:
     void apply();
     void clear();
     bool isFull() const;
-    uint8_t calcProgress() const;
+    BleOtaPercentages calcProgress() const;
 
 private:
     OTAStorage* _storage;

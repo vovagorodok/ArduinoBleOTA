@@ -73,7 +73,7 @@ bool BleOtaStorage::isFull() const
     return _size == _firmwareSize;
 }
 
-uint8_t BleOtaStorage::calcProgress() const
+BleOtaPercentages BleOtaStorage::calcProgress() const
 {
-    return static_cast<uint8_t>(_size * 100 / _firmwareSize);
+    return static_cast<BleOtaPercentages>(_size * 100 / _firmwareSize);
 }
