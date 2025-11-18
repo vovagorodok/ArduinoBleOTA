@@ -8,21 +8,21 @@
 
             "software_name": "Example SW",
             "software_version": [1, 0, 0],
-            "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/2.0.3/firmware_esp32_example_v1.0.0.bin",
+            "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/2.0.5/firmware_esp32_example_v1.0.0.bin",
             "software_icon": "https://raw.githubusercontent.com/vovagorodok/ble_ota_app/main/web/icons/Icon-192.png",
             "hardware_version": [1, 0, 0]
         },
         {
             "software_name": "Example SW",
             "software_version": [1, 1, 0],
-            "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/2.0.3/firmware_esp32_example_v1.1.0.bin",
+            "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/2.0.5/firmware_esp32_example_v1.1.0.bin",
             "software_icon": "https://raw.githubusercontent.com/vovagorodok/ble_ota_app/main/web/icons/Icon-192.png",
             "hardware_version": [1, 0, 0]
         },
         {
             "software_name": "Example SW",
             "software_version": [1, 1, 2],
-            "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/2.0.3/firmware_esp32_example_v1.1.2.bin",
+            "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/2.0.5/firmware_esp32_example_v1.1.2.bin",
             "software_icon": "https://raw.githubusercontent.com/vovagorodok/ble_ota_app/main/web/icons/Icon-192.png",
             "min_hardware_version": [1, 0, 0],
             "max_hardware_version": [1, 0, 2]
@@ -30,7 +30,7 @@
         {
             "software_name": "Example SW",
             "software_version": [2, 0, 0],
-            "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/2.0.3/firmware_esp32_example_v2.0.0.bin",
+            "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/2.0.5/firmware_esp32_example_v2.0.0.bin",
             "software_icon": "https://raw.githubusercontent.com/vovagorodok/ble_ota_app/main/web/icons/Icon-192.png",
             "min_hardware_version": [2, 0, 0],
             "max_hardware_version": [2, 0, 1]
@@ -38,7 +38,7 @@
         {
             "software_name": "Other SW",
             "software_version": [1, 6, 6],
-            "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/2.0.3/firmware_esp32_other_v1.6.6.bin",
+            "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/2.0.5/firmware_esp32_other_v1.6.6.bin",
             "software_page": "https://github.com/vovagorodok/ArduinoBleOTA?tab=readme-ov-file#arduino-ble-ota",
             "min_hardware_version": [1, 0, 0],
             "max_hardware_version": [1, 0, 3]
@@ -46,7 +46,7 @@
         {
             "software_name": "Experimental SW",
             "software_version": [1, 1, 2],
-            "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/2.0.3/firmware_esp32_experimental_v1.1.2.bin",
+            "software_path": "https://github.com/vovagorodok/ArduinoBleOTA/releases/download/2.0.5/firmware_esp32_experimental_v1.1.2.bin",
             "software_text": "https://raw.githubusercontent.com/vovagorodok/ArduinoBleOTA/main/tools/release_builder/example_software_text.md",
             "software_page": "https://github.com/vovagorodok/ArduinoBleOTA?tab=readme-ov-file#arduino-ble-ota"
         }
