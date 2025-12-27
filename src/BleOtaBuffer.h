@@ -1,7 +1,7 @@
 #pragma once
 #include "BleOtaSizes.h"
 #include "BleOtaStatus.h"
-#include <Arduino.h>
+#include "BleOtaDefinesArduino.h"
 
 #if defined(BLE_OTA_STATIC_BUFFER) && defined(BLE_OTA_DYNAMIC_BUFFER)
     #error "BLE_OTA_STATIC_BUFFER and BLE_OTA_DYNAMIC_BUFFER cannot be defined at the same time."

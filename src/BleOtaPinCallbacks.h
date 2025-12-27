@@ -1,5 +1,5 @@
 #pragma once
-#include <Arduino.h>
+#include "BleOtaDefinesArduino.h"
 
 class BleOtaPinCallbacks
 {

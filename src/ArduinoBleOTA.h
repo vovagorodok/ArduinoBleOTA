@@ -6,6 +6,8 @@
 #include "BleOtaLibNimBleArduino.h"
 #elif defined(BLE_OTA_BLE_LIB_ESP32)
 #include "BleOtaLibESP32.h"
+#elif defined(BLE_OTA_BLE_LIB_FAKE)
+#include "BleOtaLibFake.h"
 #else
 #error "Unsupported BLE library."
 #endif

@@ -1,5 +1,5 @@
 #pragma once
-#include <Arduino.h>
+#include "BleOtaDefinesArduino.h"
 
 #if defined(BLE_OTA_CHECKSUM_LIB_MINIZ)
     #include <miniz.h>

@@ -4,6 +4,8 @@
     #define BLE_OTA_STORAGE_LIB_PREDEFINED
 #elif defined(BLE_OTA_STORAGE_LIB_INTERNAL)
     #define BLE_OTA_STORAGE_LIB_PREDEFINED
+#elif defined(BLE_OTA_STORAGE_LIB_FAKE)
+    #define BLE_OTA_STORAGE_LIB_PREDEFINED
 #endif
 
 #if !defined(PLATFORMIO) && !defined(BLE_OTA_STORAGE_LIB_PREDEFINED)
@@ -14,6 +16,8 @@
 #if !defined(BLE_OTA_STORAGE_LIB_PREDEFINED)
     #if __has_include("ArduinoOTA.h") && __has_include("OTAStorage.h")
         #define BLE_OTA_STORAGE_LIB_ARDUINO_OTA
+    #elif !defined(ARDUINO)
+        #define BLE_OTA_STORAGE_LIB_FAKE
     #else
         #define BLE_OTA_STORAGE_LIB_INTERNAL
     #endif
@@ -50,6 +54,8 @@
     #else
         #error "Unsupported storage library. Consider ArduinoOTA."
     #endif
+#elif defined(BLE_OTA_STORAGE_LIB_FAKE)
+    #include "BleOtaInternalStorageFake.h"
 #else
     #error "Unsupported storage library. Consider ArduinoOTA."
 #endif

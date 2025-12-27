@@ -1,5 +1,5 @@
 #pragma once
-#include <Arduino.h>
+#include "BleOtaDefinesArduino.h"
 
 #ifdef BLE_OTA_LOGS
     #if defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_ESP8266)

@@ -1,6 +1,6 @@
 #pragma once
 #include "BleOtaStatus.h"
-#include <Arduino.h>
+#include "BleOtaDefinesArduino.h"
 
 #if defined(BLE_OTA_COMPRESSION_LIB_MINIZ)
     #include <miniz.h>

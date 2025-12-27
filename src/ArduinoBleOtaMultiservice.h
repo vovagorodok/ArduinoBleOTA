@@ -2,7 +2,45 @@
 #include <ArduinoBleOTA.h>
 #include "BleOtaUuids.h"
 
-#ifdef BLE_OTA_BLE_LIB_ARDUINO_BLE
+#if defined(BLE_OTA_BLE_LIB_FAKE)
+inline bool initBle(const char* deviceName)
+{
+    return false;
+}
+inline bool advertiseBle(const char* deviceName,
+                         const char* primaryUUID,
+                         const char* secondaryUUID)
+{
+    return false;
+}
+inline bool advertiseBle(const char* deviceName,
+                         const char* secondaryUUID)
+{
+    return false;
+}
+inline BleOtaServerFake* initBle(const std::string& deviceName)
+{
+    return nullptr;
+}
+inline bool advertiseBle(BleOtaServerFake* server,
+                         const std::string& deviceName,
+                         const std::string& primaryUUID,
+                         const std::string& secondaryUUID)
+{
+    return false;
+}
+inline bool advertiseBle(const std::string& deviceName,
+                         const std::string& primaryUUID,
+                         const std::string& secondaryUUID)
+{
+    return false;
+}
+inline bool advertiseBle(const std::string& deviceName,
+                         const std::string& secondaryUUID)
+{
+    return false;
+}
+#elif defined(BLE_OTA_BLE_LIB_ARDUINO_BLE)
 inline bool initBle(const char* deviceName)
 {
     if (!BLE.begin())

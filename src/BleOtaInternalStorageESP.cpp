@@ -1,6 +1,6 @@
 #include "BleOtaInternalStorageESP.h"
 #ifdef BLE_OTA_STORAGE_LIB_INTERNAL
-#include <Arduino.h>
+#include "BleOtaDefinesArduino.h"
 #ifdef ARDUINO_ARCH_ESP32
 #include <Update.h>
 #endif

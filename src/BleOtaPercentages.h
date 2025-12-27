@@ -1,4 +1,4 @@
 #pragma once
-#include <Arduino.h>
+#include "BleOtaDefinesArduino.h"
 
 using BleOtaPercentages = uint8_t;

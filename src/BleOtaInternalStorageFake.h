@@ -1,6 +1,6 @@
 #pragma once
 #include "BleOtaStorageDefines.h"
-#ifdef BLE_OTA_STORAGE_LIB_INTERNAL
+#ifdef BLE_OTA_STORAGE_LIB_FAKE
 #include "BleOtaDefinesArduino.h"
 
 class OTAStorage
