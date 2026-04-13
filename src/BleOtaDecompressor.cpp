@@ -1,8 +1,10 @@
 #include "BleOtaDecompressor.h"
 #include "BleOtaUploader.h"
 #include "BleOtaLogger.h"
+#ifdef BLE_OTA_WTD_RESET
 #ifdef ARDUINO_ARCH_ESP32
 #include <esp_task_wdt.h>
+#endif
 #endif
 
 namespace
@@ -147,8 +149,10 @@ BleOtaStatus BleOtaDecompressor::push(const uint8_t* data, size_t size)
             return BleOtaStatus::Ok;
         }
 
+#ifdef BLE_OTA_WTD_RESET
 #ifdef ARDUINO_ARCH_ESP32
         esp_task_wdt_reset();
+#endif
 #endif
     }
 #else
