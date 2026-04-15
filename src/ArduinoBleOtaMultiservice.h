@@ -125,3 +125,9 @@ inline bool advertiseBle(const std::string& deviceName,
     return advertiseBle(deviceName, BLE_OTA_SERVICE_UUID, secondaryUUID);
 }
 #endif
+
+#if defined(BLE_OTA_BLE_LIB_FAKE)
+using BleOtaServer = BleOtaServerFake;
+#elif !defined(BLE_OTA_BLE_LIB_ARDUINO_BLE)
+using BleOtaServer = BLEServer;
+#endif
