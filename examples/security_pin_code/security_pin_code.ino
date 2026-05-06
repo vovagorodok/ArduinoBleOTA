@@ -6,17 +6,17 @@ BleOtaSecurityServer security;
 #endif
 
 void setup() {
-  ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
+    ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
 
 #ifdef BLE_OTA_LIB_NIM_BLE_ARDUINO
-  ArduinoBleOTA.setPinCallbacks(security);
-  security.begin();
+    ArduinoBleOTA.setPinCallbacks(security);
+    security.begin();
 #endif
 }
 
 void loop() {
 #ifdef BLE_OTA_LIB_ARDUINO_BLE
-  BLE.poll();
+    BLE.poll();
 #endif
-  ArduinoBleOTA.pull();
+    ArduinoBleOTA.pull();
 }

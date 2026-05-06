@@ -1,22 +1,20 @@
 #include "BleOtaChecksum.h"
 #include "BleOtaLogger.h"
 
-namespace
-{
+namespace {
 #define TAG "Checksum"
 }
 
 #ifdef BLE_OTA_NO_CHECKSUM
-BleOtaChecksum::BleOtaChecksum()
+BleOtaChecksum::BleOtaChecksum() {
 #else
-BleOtaChecksum::BleOtaChecksum():
+BleOtaChecksum::BleOtaChecksum() :
     _crc(),
-    _enable(false)
+    _enable(false) {
 #endif
-{}
+}
 
-void BleOtaChecksum::begin()
-{
+void BleOtaChecksum::begin() {
 #ifndef BLE_OTA_NO_CHECKSUM
     BLE_OTA_LOG(TAG, "Begin");
 #endif
@@ -28,8 +26,7 @@ void BleOtaChecksum::begin()
 #endif
 }
 
-void BleOtaChecksum::push(const uint8_t* data, size_t size)
-{
+void BleOtaChecksum::push(const uint8_t* data, size_t size) {
 #if defined(BLE_OTA_CHECKSUM_LIB_CRC)
     _crc.add(data, size);
 #elif defined(BLE_OTA_CHECKSUM_LIB_MINIZ)
@@ -37,8 +34,7 @@ void BleOtaChecksum::push(const uint8_t* data, size_t size)
 #endif
 }
 
-uint32_t BleOtaChecksum::calc() const
-{
+uint32_t BleOtaChecksum::calc() const {
 #if defined(BLE_OTA_CHECKSUM_LIB_CRC)
     const auto crc = _crc.calc();
     BLE_OTA_LOG(TAG, "Calc: %lu", crc);
@@ -51,16 +47,14 @@ uint32_t BleOtaChecksum::calc() const
 #endif
 }
 
-void BleOtaChecksum::setEnable(bool enable)
-{
+void BleOtaChecksum::setEnable(bool enable) {
 #ifndef BLE_OTA_NO_CHECKSUM
     BLE_OTA_LOG(TAG, "Enable: %u", enable);
     _enable = enable;
 #endif
 }
 
-bool BleOtaChecksum::isEnabled() const
-{
+bool BleOtaChecksum::isEnabled() const {
 #ifndef BLE_OTA_NO_CHECKSUM
     return _enable;
 #else
@@ -68,8 +62,7 @@ bool BleOtaChecksum::isEnabled() const
 #endif
 }
 
-bool BleOtaChecksum::isSupported() const
-{
+bool BleOtaChecksum::isSupported() const {
 #ifndef BLE_OTA_NO_CHECKSUM
     return true;
 #else

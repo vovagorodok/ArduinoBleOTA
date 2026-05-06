@@ -1,8 +1,7 @@
 #pragma once
 #include "BleOtaDefinesArduino.h"
 
-enum BleOtaStatus: uint8_t
-{
+enum BleOtaStatus : uint8_t {
     Ok = 0x00,
     IncorrectMessageSize = 0x01,
     IncorrectMessageHeader = 0x02,

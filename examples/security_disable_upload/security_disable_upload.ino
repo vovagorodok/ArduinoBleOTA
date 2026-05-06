@@ -1,19 +1,19 @@
 #include <ArduinoBleOTA.h>
 
 void setup() {
-  ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
+    ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
 
-  for (int i = 0; i < 5000; i++) {
-    loop();
-    delay(1);
-  }
-  
-  ArduinoBleOTA.setUploadEnable(false);
+    for (int i = 0; i < 5000; i++) {
+        loop();
+        delay(1);
+    }
+
+    ArduinoBleOTA.setUploadEnable(false);
 }
 
 void loop() {
 #ifdef BLE_OTA_LIB_ARDUINO_BLE
-  BLE.poll();
+    BLE.poll();
 #endif
-  ArduinoBleOTA.pull();
+    ArduinoBleOTA.pull();
 }

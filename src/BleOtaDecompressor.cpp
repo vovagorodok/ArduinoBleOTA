@@ -7,23 +7,23 @@
 #endif
 #endif
 
-namespace
-{
+namespace {
 #define TAG "Decompress"
 }
 
-BleOtaDecompressor::BleOtaDecompressor(BleOtaUploader* uploader):
+BleOtaDecompressor::BleOtaDecompressor(BleOtaUploader* uploader) :
 #ifndef BLE_OTA_NO_COMPRESSION
     _uploader(uploader),
 #else
-    _uploader(uploader)
+    _uploader(uploader) {
 #endif
-#if defined(BLE_OTA_STATIC_COMPRESSION)
+#ifdef BLE_OTA_STATIC_COMPRESSION
     _decompressorData(),
     _bufferData(),
     _decompressor(&_decompressorData),
     _buffer(_bufferData),
-#elif defined(BLE_OTA_DYNAMIC_COMPRESSION)
+#endif
+#ifdef BLE_OTA_DYNAMIC_COMPRESSION
     _decompressor(nullptr),
     _buffer(nullptr),
 #endif
@@ -31,12 +31,11 @@ BleOtaDecompressor::BleOtaDecompressor(BleOtaUploader* uploader):
     _bufferSize(),
     _compressedSize(),
     _size(),
-    _enable(false)
+    _enable(false) {
 #endif
-{}
+}
 
-void BleOtaDecompressor::begin(size_t compressedSize)
-{
+void BleOtaDecompressor::begin(size_t compressedSize) {
 #ifndef BLE_OTA_NO_COMPRESSION
     BLE_OTA_LOG(TAG, "Begin: compressed size: %u", compressedSize);
 
@@ -56,21 +55,20 @@ void BleOtaDecompressor::begin(size_t compressedSize)
 #endif
 }
 
-BleOtaStatus BleOtaDecompressor::push(const uint8_t* data, size_t size)
-{
+BleOtaStatus BleOtaDecompressor::push(const uint8_t* data, size_t size) {
 #ifndef BLE_OTA_NO_COMPRESSION
     const size_t finalSize = _size + size;
 
-    if (finalSize > _compressedSize)
-    {
+    if (finalSize > _compressedSize) {
         BLE_OTA_LOG(TAG, "Incorrect size: total: %u, final: %u", _size, finalSize);
         return BleOtaStatus::IncorrectCompressedSize;
     }
 
     const bool isFinal = finalSize == _compressedSize;
     mz_uint32 decompFlags = TINFL_FLAG_PARSE_ZLIB_HEADER | TINFL_FLAG_COMPUTE_ADLER32;
-    if (not isFinal)
+    if (not isFinal) {
         decompFlags |= TINFL_FLAG_HAS_MORE_INPUT;
+    }
 
     const uint8_t* inBufferPos = data;
     size_t inBufferAvailable = size;
@@ -78,41 +76,39 @@ BleOtaStatus BleOtaDecompressor::push(const uint8_t* data, size_t size)
     uint8_t* outBufferPos = _buffer + _bufferSize;
     size_t outBufferAvailable = TINFL_LZ_DICT_SIZE - _bufferSize;
 
-    BLE_OTA_LOG(TAG, "Push: "
-        "size: %u, is final: %u, flags: %u",
-        size, isFinal, decompFlags);
-    BLE_OTA_LOG(TAG, "Before: "
-        "in: (avail: %u, pos: %p), "
-        "out: (avail: %u, pos: %p), "
-        "size: (total: %u, buff: %u)",
-        inBufferAvailable, inBufferPos,
-        outBufferAvailable, outBufferPos,
-        _size, _bufferSize);
+    BLE_OTA_LOG(TAG,
+                "Push: "
+                "size: %u, is final: %u, flags: %u",
+                size, isFinal, decompFlags);
+    BLE_OTA_LOG(TAG,
+                "Before: "
+                "in: (avail: %u, pos: %p), "
+                "out: (avail: %u, pos: %p), "
+                "size: (total: %u, buff: %u)",
+                inBufferAvailable, inBufferPos, outBufferAvailable, outBufferPos, _size, _bufferSize);
 
-    while (true)
-    {
+    while (true) {
         size_t inBufferSize = inBufferAvailable;
         size_t outBufferSize = outBufferAvailable;
 
-        tinfl_status decompStatus = tinfl_decompress(
-            _decompressor, inBufferPos, &inBufferSize, _buffer, outBufferPos, &outBufferSize, decompFlags);
+        tinfl_status decompStatus = tinfl_decompress(_decompressor, inBufferPos, &inBufferSize, _buffer, outBufferPos,
+                                                     &outBufferSize, decompFlags);
 
-        if (decompStatus < TINFL_STATUS_DONE)
-        {
-            switch (decompStatus)
-            {
-            case TINFL_STATUS_BAD_PARAM:
-                return BleOtaStatus::IncorrectCompressionParam;
-            case TINFL_STATUS_ADLER32_MISMATCH:
-                return BleOtaStatus::IncorrectCompressionChecksum;
-            default:
-                return BleOtaStatus::IncorrectCompression;
+        if (decompStatus < TINFL_STATUS_DONE) {
+            switch (decompStatus) {
+                case TINFL_STATUS_BAD_PARAM:
+                    return BleOtaStatus::IncorrectCompressionParam;
+                case TINFL_STATUS_ADLER32_MISMATCH:
+                    return BleOtaStatus::IncorrectCompressionChecksum;
+                default:
+                    return BleOtaStatus::IncorrectCompression;
             }
         }
 
         const auto status = _uploader->pushDecompressed(outBufferPos, outBufferSize);
-        if (status != BleOtaStatus::Ok)
+        if (status != BleOtaStatus::Ok) {
             return status;
+        }
 
         inBufferPos += inBufferSize;
         inBufferAvailable -= inBufferSize;
@@ -121,30 +117,28 @@ BleOtaStatus BleOtaDecompressor::push(const uint8_t* data, size_t size)
         _bufferSize += outBufferSize;
         _size += inBufferSize;
 
-        BLE_OTA_LOG(TAG, "After: "
-            "in: (avail: %u, pos: %p), "
-            "out: (avail: %u, pos: %p), "
-            "size: (total: %u, buff: %u, in: %u, out: %u)",
-            inBufferAvailable, inBufferPos,
-            outBufferAvailable, outBufferPos,
-            _size, _bufferSize, inBufferSize, outBufferSize);
+        BLE_OTA_LOG(TAG,
+                    "After: "
+                    "in: (avail: %u, pos: %p), "
+                    "out: (avail: %u, pos: %p), "
+                    "size: (total: %u, buff: %u, in: %u, out: %u)",
+                    inBufferAvailable, inBufferPos, outBufferAvailable, outBufferPos, _size, _bufferSize, inBufferSize,
+                    outBufferSize);
         BLE_OTA_LOG(TAG, "Status: %d", decompStatus);
 
-        if (decompStatus == TINFL_STATUS_DONE or decompStatus == TINFL_STATUS_HAS_MORE_OUTPUT or not outBufferAvailable)
-        {
+        if (decompStatus == TINFL_STATUS_DONE or decompStatus == TINFL_STATUS_HAS_MORE_OUTPUT or
+            not outBufferAvailable) {
             BLE_OTA_LOG(TAG, "Reset buffer");
             _bufferSize = 0;
             outBufferPos = _buffer;
             outBufferAvailable = TINFL_LZ_DICT_SIZE;
         }
 
-        if (decompStatus > TINFL_STATUS_DONE and isFinal and not inBufferAvailable)
-        {
+        if (decompStatus > TINFL_STATUS_DONE and isFinal and not inBufferAvailable) {
             return BleOtaStatus::IncorrectCompressionEnd;
         }
 
-        if (decompStatus >= TINFL_STATUS_DONE and not inBufferAvailable)
-        {
+        if (decompStatus >= TINFL_STATUS_DONE and not inBufferAvailable) {
             BLE_OTA_LOG(TAG, "Pushed");
             return BleOtaStatus::Ok;
         }
@@ -160,8 +154,7 @@ BleOtaStatus BleOtaDecompressor::push(const uint8_t* data, size_t size)
 #endif
 }
 
-void BleOtaDecompressor::end()
-{
+void BleOtaDecompressor::end() {
 #ifndef BLE_OTA_NO_COMPRESSION
     BLE_OTA_LOG(TAG, "End");
 #endif
@@ -171,16 +164,14 @@ void BleOtaDecompressor::end()
 #endif
 }
 
-void BleOtaDecompressor::setEnable(bool enable)
-{
+void BleOtaDecompressor::setEnable(bool enable) {
 #ifndef BLE_OTA_NO_COMPRESSION
     BLE_OTA_LOG(TAG, "Enable: %u", enable);
     _enable = enable;
 #endif
 }
 
-bool BleOtaDecompressor::isEnabled() const
-{
+bool BleOtaDecompressor::isEnabled() const {
 #ifndef BLE_OTA_NO_COMPRESSION
     return _enable;
 #else
@@ -188,8 +179,7 @@ bool BleOtaDecompressor::isEnabled() const
 #endif
 }
 
-bool BleOtaDecompressor::isSupported() const
-{
+bool BleOtaDecompressor::isSupported() const {
 #ifndef BLE_OTA_NO_COMPRESSION
     return true;
 #else
@@ -197,8 +187,7 @@ bool BleOtaDecompressor::isSupported() const
 #endif
 }
 
-void BleOtaDecompressor::clear()
-{
+void BleOtaDecompressor::clear() {
 #ifdef BLE_OTA_DYNAMIC_COMPRESSION
     delete _decompressor;
     _decompressor = nullptr;

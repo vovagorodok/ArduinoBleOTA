@@ -1,44 +1,42 @@
 #include "BleOtaStorage.h"
 #include "BleOtaLogger.h"
 
-namespace
-{
+namespace {
 #define TAG "Storage"
 }
 
-BleOtaStorage::BleOtaStorage():
+BleOtaStorage::BleOtaStorage() :
     _storage(&InternalStorage),
-    _size()
-{}
+    _size() {
+}
 
-void BleOtaStorage::begin(OTAStorage& storage)
-{
+void BleOtaStorage::begin(OTAStorage& storage) {
     _storage = &storage;
 }
 
-BleOtaStatus BleOtaStorage::open(size_t firmwareSize)
-{
+BleOtaStatus BleOtaStorage::open(size_t firmwareSize) {
     BLE_OTA_LOG(TAG, "Open: firmware size: %u", firmwareSize);
 
     const auto capacity = _storage->maxSize();
-    if (capacity <= 0)
+    if (capacity <= 0) {
         return BleOtaStatus::InternalStorageError;
-    if (firmwareSize > static_cast<size_t>(capacity))
+    }
+    if (firmwareSize > static_cast<size_t>(capacity)) {
         return BleOtaStatus::IncorrectFirmwareSize;
+    }
 
     _firmwareSize = firmwareSize;
     _size = 0;
     return _storage->open(firmwareSize) ? BleOtaStatus::Ok : BleOtaStatus::InternalStorageError;
 }
 
-BleOtaStatus BleOtaStorage::push(const uint8_t* data, size_t size)
-{
-    if (_size + size > _firmwareSize)
+BleOtaStatus BleOtaStorage::push(const uint8_t* data, size_t size) {
+    if (_size + size > _firmwareSize) {
         return BleOtaStatus::IncorrectFirmwareSize;
+    }
 
 #if defined(BLE_OTA_STORAGE_LIB_ARDUINO_OTA)
-    for (size_t i = 0; i < size; i++)
-    {
+    for (size_t i = 0; i < size; i++) {
         _storage->write(data[i]);
     }
 #else
@@ -49,31 +47,26 @@ BleOtaStatus BleOtaStorage::push(const uint8_t* data, size_t size)
     return BleOtaStatus::Ok;
 }
 
-void BleOtaStorage::close()
-{
+void BleOtaStorage::close() {
     BLE_OTA_LOG(TAG, "Close");
     _storage->close();
 }
 
-void BleOtaStorage::apply()
-{
+void BleOtaStorage::apply() {
     BLE_OTA_LOG(TAG, "Apply");
     _storage->apply();
 }
 
-void BleOtaStorage::clear()
-{
+void BleOtaStorage::clear() {
     BLE_OTA_LOG(TAG, "Clear");
     _storage->clear();
     _size = 0;
 }
 
-bool BleOtaStorage::isFull() const
-{
+bool BleOtaStorage::isFull() const {
     return _size == _firmwareSize;
 }
 
-BleOtaPercentages BleOtaStorage::calcProgress() const
-{
+BleOtaPercentages BleOtaStorage::calcProgress() const {
     return static_cast<BleOtaPercentages>(_size * 100 / _firmwareSize);
 }

@@ -6,19 +6,13 @@
 #include "BleOtaInfo.h"
 #include "BleOtaUploader.h"
 
-class BleOtaLib: public BLECharacteristicCallbacks
-{
-public:
+class BleOtaLib : public BLECharacteristicCallbacks {
+ public:
     BleOtaLib();
 
-    bool begin(const std::string& deviceName,
-               OTAStorage& storage,
-               const BleOtaInfo& info = {},
+    bool begin(const std::string& deviceName, OTAStorage& storage, const BleOtaInfo& info = {},
                bool uploadEnable = true);
-    bool begin(BLEServer* server,
-               OTAStorage& storage,
-               const BleOtaInfo& info = {},
-               bool uploadEnable = true);
+    bool begin(BLEServer* server, OTAStorage& storage, const BleOtaInfo& info = {}, bool uploadEnable = true);
     void pull();
 
     void setUploadEnable(bool enable);
@@ -26,7 +20,7 @@ public:
     void setPinCallbacks(BleOtaPinCallbacks&);
     void setUploadCallbacks(BleOtaUploadCallbacks&);
 
-private:
+ private:
     friend BleOtaUploader;
     void begin(BLEService& service, const BleOtaInfo& info);
 #ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V1

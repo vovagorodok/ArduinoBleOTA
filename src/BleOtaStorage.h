@@ -3,9 +3,8 @@
 #include "BleOtaStorageDefines.h"
 #include "BleOtaPercentages.h"
 
-class BleOtaStorage
-{
-public:
+class BleOtaStorage {
+ public:
     BleOtaStorage();
 
     void begin(OTAStorage& storage);
@@ -17,7 +16,7 @@ public:
     bool isFull() const;
     BleOtaPercentages calcProgress() const;
 
-private:
+ private:
     OTAStorage* _storage;
     size_t _firmwareSize;
     size_t _size;

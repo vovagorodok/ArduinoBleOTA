@@ -9,26 +9,15 @@
 
 using BleOtaServerFake = int;
 
-class BleOtaLib
-{
-public:
+class BleOtaLib {
+ public:
     BleOtaLib();
 
-    bool begin(const char* deviceName,
-               OTAStorage& storage,
-               const BleOtaInfo& info = {},
+    bool begin(const char* deviceName, OTAStorage& storage, const BleOtaInfo& info = {}, bool uploadEnable = true);
+    void begin(OTAStorage& storage, const BleOtaInfo& info = {}, bool uploadEnable = true);
+    bool begin(const std::string& deviceName, OTAStorage& storage, const BleOtaInfo& info = {},
                bool uploadEnable = true);
-    void begin(OTAStorage& storage,
-               const BleOtaInfo& info = {},
-               bool uploadEnable = true);
-    bool begin(const std::string& deviceName,
-               OTAStorage& storage,
-               const BleOtaInfo& info = {},
-               bool uploadEnable = true);
-    bool begin(BleOtaServerFake* server,
-               OTAStorage& storage,
-               const BleOtaInfo& info = {},
-               bool uploadEnable = true);
+    bool begin(BleOtaServerFake* server, OTAStorage& storage, const BleOtaInfo& info = {}, bool uploadEnable = true);
     void pull();
 
     void setUploadEnable(bool enable);
@@ -36,7 +25,7 @@ public:
     void setPinCallbacks(BleOtaPinCallbacks&);
     void setUploadCallbacks(BleOtaUploadCallbacks&);
 
-private:
+ private:
     friend BleOtaUploader;
     void send(const uint8_t* data, size_t size);
 };

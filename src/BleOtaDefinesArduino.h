@@ -10,5 +10,6 @@
 
 using namespace std;
 
-inline void delay(unsigned long ms) {}
+inline void delay(unsigned long ms) {
+}
 #endif

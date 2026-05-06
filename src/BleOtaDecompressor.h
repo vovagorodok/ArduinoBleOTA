@@ -2,6 +2,7 @@
 #include "BleOtaStatus.h"
 #include "BleOtaDefinesArduino.h"
 
+// clang-format off: Used IndentPPDirectives with BeforeHash
 #if defined(BLE_OTA_COMPRESSION_LIB_MINIZ)
     #include <miniz.h>
     #define BLE_OTA_COMPRESSION_LIB_PREDEFINED
@@ -45,12 +46,12 @@
         #define BLE_OTA_DYNAMIC_COMPRESSION
     #endif
 #endif
+// clang-format on
 
 class BleOtaUploader;
 
-class BleOtaDecompressor
-{
-public:
+class BleOtaDecompressor {
+ public:
     BleOtaDecompressor(BleOtaUploader* uploader);
 
     void begin(size_t compressedSize);
@@ -60,11 +61,11 @@ public:
     bool isEnabled() const;
     bool isSupported() const;
 
-private:
+ private:
     void clear();
 
     BleOtaUploader* _uploader;
-#if defined(BLE_OTA_STATIC_COMPRESSION)
+#ifdef BLE_OTA_STATIC_COMPRESSION
     tinfl_decompressor _decompressorData;
     uint8_t _bufferData[TINFL_LZ_DICT_SIZE];
 #endif

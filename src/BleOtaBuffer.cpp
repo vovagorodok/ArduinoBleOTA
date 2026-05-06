@@ -1,36 +1,34 @@
 #include "BleOtaBuffer.h"
 
 #ifndef BLE_OTA_NO_BUFFER
-BleOtaBuffer::BleOtaBuffer():
+BleOtaBuffer::BleOtaBuffer() :
 #else
-BleOtaBuffer::BleOtaBuffer()
+BleOtaBuffer::BleOtaBuffer() {
 #endif
-#if defined(BLE_OTA_STATIC_BUFFER)
+#ifdef BLE_OTA_STATIC_BUFFER
     _buffer(),
-#elif defined(BLE_OTA_DYNAMIC_BUFFER)
+#endif
+#ifdef BLE_OTA_DYNAMIC_BUFFER
     _buffer(nullptr),
 #endif
 #ifndef BLE_OTA_NO_BUFFER
     _size(),
     _capacity(),
-    _enable(true)
+    _enable(true) {
 #endif
-{}
+}
 
-size_t BleOtaBuffer::begin(size_t bufferSize, size_t packageSize)
-{
+size_t BleOtaBuffer::begin(size_t bufferSize, size_t packageSize) {
 #ifndef BLE_OTA_NO_BUFFER
     end();
 
-    if (not _enable)
-    {
+    if (not _enable) {
         return 0;
     }
 
     _capacity = min(bufferSize, static_cast<size_t>(BLE_OTA_BUFFER_SIZE));
 
-    if (_capacity < packageSize)
-    {
+    if (_capacity < packageSize) {
         _enable = false;
         return 0;
     }
@@ -47,11 +45,11 @@ size_t BleOtaBuffer::begin(size_t bufferSize, size_t packageSize)
 #endif
 }
 
-BleOtaStatus BleOtaBuffer::push(const uint8_t* data, size_t size)
-{
+BleOtaStatus BleOtaBuffer::push(const uint8_t* data, size_t size) {
 #ifndef BLE_OTA_NO_BUFFER
-    if (_size + size > _capacity)
+    if (_size + size > _capacity) {
         return BleOtaStatus::BufferOverflow;
+    }
     memcpy(_buffer + _size, data, size);
     _size += size;
     return BleOtaStatus::Ok;
@@ -60,8 +58,7 @@ BleOtaStatus BleOtaBuffer::push(const uint8_t* data, size_t size)
 #endif
 }
 
-void BleOtaBuffer::end()
-{
+void BleOtaBuffer::end() {
 #ifndef BLE_OTA_NO_BUFFER
     clear();
 #endif
@@ -72,15 +69,13 @@ void BleOtaBuffer::end()
 #endif
 }
 
-void BleOtaBuffer::clear()
-{
+void BleOtaBuffer::clear() {
 #ifndef BLE_OTA_NO_BUFFER
     _size = 0;
 #endif
 }
 
-const uint8_t* BleOtaBuffer::data() const
-{
+const uint8_t* BleOtaBuffer::data() const {
 #ifndef BLE_OTA_NO_BUFFER
     return _buffer;
 #else
@@ -88,8 +83,7 @@ const uint8_t* BleOtaBuffer::data() const
 #endif
 }
 
-size_t BleOtaBuffer::size() const
-{
+size_t BleOtaBuffer::size() const {
 #ifndef BLE_OTA_NO_BUFFER
     return _size;
 #else
@@ -97,15 +91,13 @@ size_t BleOtaBuffer::size() const
 #endif
 }
 
-void BleOtaBuffer::setEnable(bool enable)
-{
+void BleOtaBuffer::setEnable(bool enable) {
 #ifndef BLE_OTA_NO_BUFFER
     _enable = enable;
 #endif
 }
 
-bool BleOtaBuffer::isEnabled() const
-{
+bool BleOtaBuffer::isEnabled() const {
 #ifndef BLE_OTA_NO_BUFFER
     return _enable;
 #else

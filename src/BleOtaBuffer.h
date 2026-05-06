@@ -3,6 +3,7 @@
 #include "BleOtaStatus.h"
 #include "BleOtaDefinesArduino.h"
 
+// clang-format off: Used IndentPPDirectives with BeforeHash
 #if defined(BLE_OTA_STATIC_BUFFER) && defined(BLE_OTA_DYNAMIC_BUFFER)
     #error "BLE_OTA_STATIC_BUFFER and BLE_OTA_DYNAMIC_BUFFER cannot be defined at the same time."
 #elif defined(BLE_OTA_STATIC_BUFFER) && defined(BLE_OTA_NO_BUFFER)
@@ -22,10 +23,10 @@
         #define BLE_OTA_DYNAMIC_BUFFER
     #endif
 #endif
+// clang-format on
 
-class BleOtaBuffer
-{
-public:
+class BleOtaBuffer {
+ public:
     BleOtaBuffer();
 
     size_t begin(size_t bufferSize, size_t packageSize);
@@ -37,10 +38,11 @@ public:
     void setEnable(bool enable);
     bool isEnabled() const;
 
-private:
-#if defined(BLE_OTA_STATIC_BUFFER)
+ private:
+#ifdef BLE_OTA_STATIC_BUFFER
     uint8_t _buffer[BLE_OTA_BUFFER_SIZE];
-#elif defined(BLE_OTA_DYNAMIC_BUFFER)
+#endif
+#ifdef BLE_OTA_DYNAMIC_BUFFER
     uint8_t* _buffer;
 #endif
 #ifndef BLE_OTA_NO_BUFFER

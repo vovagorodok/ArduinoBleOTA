@@ -7,17 +7,15 @@
 #define BLE_OTA_SECURITY_DICT "ota_security"
 #define BLE_OTA_PIN_CODE_KEY "ota_pin"
 
-class BleOtaSecurityServer: public BleOtaPinCallbacks,
-                            public BLEServerCallbacks
-{
-public:
-    void begin()
-    {
-        if (not prefs.begin(BLE_OTA_SECURITY_DICT))
+class BleOtaSecurityServer : public BleOtaPinCallbacks,
+                             public BLEServerCallbacks {
+ public:
+    void begin() {
+        if (not prefs.begin(BLE_OTA_SECURITY_DICT)) {
             return;
+        }
 
-        if (not prefs.isKey(BLE_OTA_PIN_CODE_KEY))
-        {
+        if (not prefs.isKey(BLE_OTA_PIN_CODE_KEY)) {
             prefs.end();
             return;
         }
@@ -30,10 +28,10 @@ public:
         prefs.end();
     }
 
-    bool setPinCode(uint32_t pinCode) override
-    {
-        if (not prefs.begin(BLE_OTA_SECURITY_DICT))
+    bool setPinCode(uint32_t pinCode) override {
+        if (not prefs.begin(BLE_OTA_SECURITY_DICT)) {
             return false;
+        }
 
         const bool result = prefs.putUInt(BLE_OTA_PIN_CODE_KEY, pinCode);
 
@@ -41,31 +39,26 @@ public:
         return result;
     }
 
-    bool removePinCode() override
-    {
-        if (not prefs.begin(BLE_OTA_SECURITY_DICT))
+    bool removePinCode() override {
+        if (not prefs.begin(BLE_OTA_SECURITY_DICT)) {
             return false;
+        }
 
-        const bool result = not prefs.isKey(BLE_OTA_PIN_CODE_KEY) or
-                            prefs.remove(BLE_OTA_PIN_CODE_KEY);
+        const bool result = not prefs.isKey(BLE_OTA_PIN_CODE_KEY) or prefs.remove(BLE_OTA_PIN_CODE_KEY);
 
         prefs.end();
         return result;
     }
 
 #ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V1
-    void onConnect(BLEServer* srv, ble_gap_conn_desc* desc) override
-    {
-        BLEDevice::startSecurity(desc->conn_handle);
-    }
+    void onConnect(BLEServer* srv, ble_gap_conn_desc* desc) override { BLEDevice::startSecurity(desc->conn_handle); }
 #else
-    void onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) override
-    {
+    void onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) override {
         BLEDevice::startSecurity(connInfo.getConnHandle());
     }
 #endif
 
-private:
+ private:
     Preferences prefs;
 };
 

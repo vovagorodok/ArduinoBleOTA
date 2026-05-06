@@ -1,6 +1,7 @@
 #pragma once
 #include "BleOtaStatus.h"
 
+// clang-format off: Used IndentPPDirectives with BeforeHash
 #if defined(BLE_OTA_SIGNATURE_LIB_MBEDTLS)
     #include <mbedtls/sha256.h>
     #include <mbedtls/pk.h>
@@ -45,13 +46,13 @@
 #endif
 
 #ifndef BLE_OTA_NO_SIGNATURE
-#define BLE_OTA_SIGNATURE_SIZE 256
-#define BLE_OTA_SIGNATURE_HASH_SIZE 32
+    #define BLE_OTA_SIGNATURE_SIZE 256
+    #define BLE_OTA_SIGNATURE_HASH_SIZE 32
 #endif
+// clang-format on
 
-class BleOtaSignature
-{
-public:
+class BleOtaSignature {
+ public:
     BleOtaSignature();
 
     void begin();
@@ -62,8 +63,8 @@ public:
     bool setPublicKey(const char* key, size_t size);
     bool isEnabled() const;
 
-private:
-#if defined(BLE_OTA_STATIC_SIGNATURE)
+ private:
+#ifdef BLE_OTA_STATIC_SIGNATURE
     mbedtls_sha256_context _sha256ContextData;
     mbedtls_pk_context _pkContextData;
     uint8_t _hashData[BLE_OTA_SIGNATURE_HASH_SIZE];

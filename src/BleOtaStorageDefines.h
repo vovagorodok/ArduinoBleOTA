@@ -1,5 +1,6 @@
 #pragma once
 
+// clang-format off: Used IndentPPDirectives with BeforeHash
 #if defined(BLE_OTA_STORAGE_LIB_ARDUINO_OTA)
     #define BLE_OTA_STORAGE_LIB_PREDEFINED
 #elif defined(BLE_OTA_STORAGE_LIB_INTERNAL)
@@ -59,3 +60,4 @@
 #else
     #error "Unsupported storage library. Consider ArduinoOTA."
 #endif
+// clang-format on

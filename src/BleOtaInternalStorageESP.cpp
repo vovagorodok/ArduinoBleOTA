@@ -5,36 +5,30 @@
 #include <Update.h>
 #endif
 
-bool OTAStorage::open(int size)
-{
-  return Update.begin(size);
+bool OTAStorage::open(int size) {
+    return Update.begin(size);
 }
 
-size_t OTAStorage::push(const uint8_t* data, size_t size)
-{
-  return Update.write(const_cast<uint8_t*>(data), size);
+size_t OTAStorage::push(const uint8_t* data, size_t size) {
+    return Update.write(const_cast<uint8_t*>(data), size);
 }
 
-void OTAStorage::close()
-{
-  Update.end();
+void OTAStorage::close() {
+    Update.end();
 }
 
-void OTAStorage::clear()
-{
+void OTAStorage::clear() {
 #ifdef ARDUINO_ARCH_ESP32
-  Update.abort();
+    Update.abort();
 #endif
 }
 
-void OTAStorage::apply()
-{
-  ESP.restart();
+void OTAStorage::apply() {
+    ESP.restart();
 }
 
-size_t OTAStorage::maxSize() const
-{
-  return ESP.getFlashChipSize() / 2; // Update.begin() in open() does the exact check
+size_t OTAStorage::maxSize() const {
+    return ESP.getFlashChipSize() / 2; // Update.begin() in open() does the exact check
 }
 
 OTAStorage InternalStorage;

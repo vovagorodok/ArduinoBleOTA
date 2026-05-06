@@ -1,6 +1,7 @@
 #pragma once
 #include "BleOtaDefinesArduino.h"
 
+// clang-format off: Used IndentPPDirectives with BeforeHash
 #ifdef BLE_OTA_LOGS
     #if defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_ESP8266)
         #define BLE_OTA_PRINTF Serial.printf
@@ -14,3 +15,4 @@
     #define BLE_OTA_LOG(fmt, ...) \
         do {} while (0)
 #endif
+// clang-format on

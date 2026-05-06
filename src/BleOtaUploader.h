@@ -9,9 +9,8 @@
 #include "BleOtaPinCallbacks.h"
 #include "BleOtaUploadCallbacks.h"
 
-class BleOtaUploader
-{
-public:
+class BleOtaUploader {
+ public:
     BleOtaUploader();
 
     void begin(OTAStorage& storage, bool enable);
@@ -23,7 +22,7 @@ public:
     void setPinCallbacks(BleOtaPinCallbacks&);
     void setUploadCallbacks(BleOtaUploadCallbacks&);
 
-private:
+ private:
     friend BleOtaDecompressor;
     void handleInitReq(const BleOtaInitReq& req);
     void handleBeginReq(const BleOtaBeginReq& req);

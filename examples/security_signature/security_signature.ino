@@ -13,17 +13,18 @@ swIDAQAB
 
 void setup() {
 #ifdef BLE_OTA_LOGS
-  Serial.begin(115200);
-  while (!Serial);
+    Serial.begin(115200);
+    while (!Serial)
+        ;
 #endif
 
-  ArduinoBleOTA.setSignatureKey(key, strlen(key));
-  ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
+    ArduinoBleOTA.setSignatureKey(key, strlen(key));
+    ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
 }
 
 void loop() {
 #ifdef BLE_OTA_LIB_ARDUINO_BLE
-  BLE.poll();
+    BLE.poll();
 #endif
-  ArduinoBleOTA.pull();
+    ArduinoBleOTA.pull();
 }

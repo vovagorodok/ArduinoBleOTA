@@ -1,12 +1,12 @@
 #include <ArduinoBleOTA.h>
 
 void setup() {
-  ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
+    ArduinoBleOTA.begin("ArduinoBleOTA", InternalStorage);
 }
 
 void loop() {
 #ifdef BLE_OTA_LIB_ARDUINO_BLE
-  BLE.poll();
+    BLE.poll();
 #endif
-  ArduinoBleOTA.pull();
+    ArduinoBleOTA.pull();
 }

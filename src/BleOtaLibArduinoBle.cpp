@@ -1,8 +1,7 @@
 #include "BleOtaLibArduinoBle.h"
 #ifdef BLE_OTA_BLE_LIB_ARDUINO_BLE
 
-namespace
-{
+namespace {
 BLEService service(BLE_OTA_SERVICE_UUID);
 BLECharacteristic rxCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_RX, BLEWriteWithoutResponse, BLE_OTA_MAX_ATTR_SIZE);
 BLECharacteristic txCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_TX, BLERead | BLENotify, BLE_OTA_MAX_ATTR_SIZE);
@@ -13,17 +12,14 @@ BLECharacteristic hwVerCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_HW_VER, BLERea
 BLECharacteristic swVerCharacteristic(BLE_OTA_CHARACTERISTIC_UUID_SW_VER, BLERead, sizeof(BleOtaVersion), true);
 }
 
-BleOtaLib::BleOtaLib():
-    _uploader()
-{}
+BleOtaLib::BleOtaLib() :
+    _uploader() {
+}
 
-bool BleOtaLib::begin(const char* deviceName,
-                      OTAStorage& storage,
-                      const BleOtaInfo& info,
-                      bool uploadEnable)
-{
-    if (!BLE.begin())
+bool BleOtaLib::begin(const char* deviceName, OTAStorage& storage, const BleOtaInfo& info, bool uploadEnable) {
+    if (!BLE.begin()) {
         return false;
+    }
 
     BLE.setLocalName(deviceName);
     BLE.setDeviceName(deviceName);
@@ -33,10 +29,7 @@ bool BleOtaLib::begin(const char* deviceName,
     return BLE.setAdvertisedService(service) and BLE.advertise();
 }
 
-void BleOtaLib::begin(OTAStorage& storage,
-                      const BleOtaInfo& info,
-                      bool uploadEnable)
-{
+void BleOtaLib::begin(OTAStorage& storage, const BleOtaInfo& info, bool uploadEnable) {
     _uploader.begin(storage, uploadEnable);
     service.addCharacteristic(rxCharacteristic);
     service.addCharacteristic(txCharacteristic);
@@ -47,8 +40,7 @@ void BleOtaLib::begin(OTAStorage& storage,
     BLE.addService(service);
 }
 
-void BleOtaLib::begin(const BleOtaInfo& info)
-{
+void BleOtaLib::begin(const BleOtaInfo& info) {
     service.addCharacteristic(mfNameCharacteristic);
     mfNameCharacteristic.setValue(info.mfName);
     service.addCharacteristic(hwNameCharacteristic);
@@ -61,45 +53,35 @@ void BleOtaLib::begin(const BleOtaInfo& info)
     swVerCharacteristic.setValue(reinterpret_cast<const uint8_t*>(&info.swVersion), sizeof(BleOtaVersion));
 }
 
-void BleOtaLib::pull()
-{
+void BleOtaLib::pull() {
     _uploader.pull();
 }
 
-void BleOtaLib::setUploadEnable(bool enable)
-{
+void BleOtaLib::setUploadEnable(bool enable) {
     _uploader.setEnable(enable);
 }
 
-bool BleOtaLib::setSignatureKey(const char* key, size_t size)
-{
+bool BleOtaLib::setSignatureKey(const char* key, size_t size) {
     return _uploader.setSignatureKey(key, size);
 }
 
-void BleOtaLib::setPinCallbacks(BleOtaPinCallbacks& cb)
-{
+void BleOtaLib::setPinCallbacks(BleOtaPinCallbacks& cb) {
     _uploader.setPinCallbacks(cb);
 }
 
-void BleOtaLib::setUploadCallbacks(BleOtaUploadCallbacks& cb)
-{
+void BleOtaLib::setUploadCallbacks(BleOtaUploadCallbacks& cb) {
     _uploader.setUploadCallbacks(cb);
 }
 
-void BleOtaLib::onWrite(const BLECharacteristic& characteristic)
-{
-    _uploader.handleData(
-        rxCharacteristic.value(),
-        rxCharacteristic.valueLength());
+void BleOtaLib::onWrite(const BLECharacteristic& characteristic) {
+    _uploader.handleData(rxCharacteristic.value(), rxCharacteristic.valueLength());
 }
 
-void BleOtaLib::send(const uint8_t* data, size_t size)
-{
+void BleOtaLib::send(const uint8_t* data, size_t size) {
     txCharacteristic.setValue(data, size);
 }
 
-void BleOtaLib::onWrite(BLEDevice central, BLECharacteristic characteristic)
-{
+void BleOtaLib::onWrite(BLEDevice central, BLECharacteristic characteristic) {
     ArduinoBleOTA.onWrite(characteristic);
 }
 

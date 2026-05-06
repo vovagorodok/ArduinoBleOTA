@@ -2,9 +2,8 @@
 #include "BleOtaStatus.h"
 #include "BleOtaPercentages.h"
 
-class BleOtaUploadCallbacks
-{
-public:
+class BleOtaUploadCallbacks {
+ public:
     virtual void handleUploadBegin() {}
     virtual void handleUploadProgress(BleOtaPercentages progress) {}
     virtual void handleUploadEnd() {}

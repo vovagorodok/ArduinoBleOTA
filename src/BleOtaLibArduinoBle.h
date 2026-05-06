@@ -6,18 +6,12 @@
 #include "BleOtaInfo.h"
 #include "BleOtaUploader.h"
 
-class BleOtaLib
-{
-public:
+class BleOtaLib {
+ public:
     BleOtaLib();
 
-    bool begin(const char* deviceName,
-               OTAStorage& storage,
-               const BleOtaInfo& info = {},
-               bool uploadEnable = true);
-    void begin(OTAStorage& storage,
-               const BleOtaInfo& info = {},
-               bool uploadEnable = true);
+    bool begin(const char* deviceName, OTAStorage& storage, const BleOtaInfo& info = {}, bool uploadEnable = true);
+    void begin(OTAStorage& storage, const BleOtaInfo& info = {}, bool uploadEnable = true);
     void pull();
 
     void setUploadEnable(bool enable);
@@ -25,7 +19,7 @@ public:
     void setPinCallbacks(BleOtaPinCallbacks&);
     void setUploadCallbacks(BleOtaUploadCallbacks&);
 
-private:
+ private:
     friend BleOtaUploader;
     void begin(const BleOtaInfo& info);
     void onWrite(const BLECharacteristic& characteristic);

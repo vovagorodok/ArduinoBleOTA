@@ -1,6 +1,7 @@
 #pragma once
 #include "BleOtaDefinesArduino.h"
 
+// clang-format off: Used IndentPPDirectives with BeforeHash
 #if defined(BLE_OTA_CHECKSUM_LIB_MINIZ)
     #include <miniz.h>
     #define BLE_OTA_CHECKSUM_LIB_PREDEFINED
@@ -32,10 +33,10 @@
         #define BLE_OTA_NO_CHECKSUM
     #endif
 #endif
+// clang-format on
 
-class BleOtaChecksum
-{
-public:
+class BleOtaChecksum {
+ public:
     BleOtaChecksum();
 
     void begin();
@@ -45,10 +46,11 @@ public:
     bool isEnabled() const;
     bool isSupported() const;
 
-private:
-#if defined(BLE_OTA_CHECKSUM_LIB_CRC)
+ private:
+#ifdef BLE_OTA_CHECKSUM_LIB_CRC
     CRC32 _crc;
-#elif defined(BLE_OTA_CHECKSUM_LIB_MINIZ)
+#endif
+#ifdef BLE_OTA_CHECKSUM_LIB_MINIZ
     mz_ulong _crc = 0;
 #endif
 #ifndef BLE_OTA_NO_CHECKSUM
