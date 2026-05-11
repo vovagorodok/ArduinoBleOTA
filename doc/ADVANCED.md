@@ -1,6 +1,6 @@
 ## Internal buffer
 Response for each package take a lot of time.
-In order to increase speed decided to create buffer in RAM (in static memory).
+In order to increase speed decided to create buffer in RAM.
 Each package quickly saves in this buffer.
 Once in a while (when buffer is full), all data saves from buffer to flash and response is sent.
 

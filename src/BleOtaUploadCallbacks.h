@@ -1,10 +1,13 @@
 #pragma once
-#include <Arduino.h>
+#include "BleOtaStatus.h"
+#include "BleOtaPercentages.h"
 
-class BleOtaUploadCallbacks
-{
-public:
-    virtual void onBegin(uint32_t firmwareLength) {}
-    virtual void onEnd() {}
-    virtual void onError(uint8_t errorCode) {}
+class BleOtaUploadCallbacks {
+ public:
+    virtual void handleUploadBegin() {}
+    virtual void handleUploadProgress(BleOtaPercentages progress) {}
+    virtual void handleUploadEnd() {}
+    virtual void handleUploadError(BleOtaStatus errorCode) {}
+
+    virtual ~BleOtaUploadCallbacks() = default;
 };
