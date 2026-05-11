@@ -2,7 +2,11 @@
 
 // clang-format off: Used IndentPPDirectives with BeforeHash
 #if defined(BLE_OTA_LIB_ARDUINO_BLE) || defined(BLE_OTA_BLE_LIB_ARDUINO_BLE)
-    #include <ArduinoBLE.h>
+    #ifdef ARDUINO_ARCH_STM32
+        #include <STM32duinoBLE.h>
+    #else
+        #include <ArduinoBLE.h>
+    #endif
     #ifndef BLE_OTA_BLE_LIB_ARDUINO_BLE
         #define BLE_OTA_BLE_LIB_ARDUINO_BLE
     #endif
@@ -35,14 +39,22 @@
 #endif
 
 #if !defined(PLATFORMIO) && !defined(BLE_OTA_BLE_LIB_PREDEFINED)
-    #include <ArduinoBLE.h>
+    #ifdef ARDUINO_ARCH_STM32
+        #include <STM32duinoBLE.h>
+    #else
+        #include <ArduinoBLE.h>
+    #endif
     #define BLE_OTA_BLE_LIB_ARDUINO_BLE
     #define BLE_OTA_LIB_ARDUINO_BLE
     #define BLE_OTA_BLE_LIB_PREDEFINED
 #endif
 
 #ifndef BLE_OTA_BLE_LIB_PREDEFINED
-    #if __has_include("ArduinoBLE.h")
+    #if __has_include("STM32duinoBLE.h")
+        #include <STM32duinoBLE.h>
+        #define BLE_OTA_BLE_LIB_ARDUINO_BLE
+        #define BLE_OTA_LIB_ARDUINO_BLE
+    #elif __has_include("ArduinoBLE.h")
         #include <ArduinoBLE.h>
         #define BLE_OTA_BLE_LIB_ARDUINO_BLE
         #define BLE_OTA_LIB_ARDUINO_BLE

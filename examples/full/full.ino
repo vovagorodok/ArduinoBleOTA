@@ -9,6 +9,8 @@
     #define HW_NAME "Example ESP32"
 #elif defined(ARDUINO_ARCH_SAMD)
     #define HW_NAME "Example SAMD"
+#elif defined(ARDUINO_ARCH_STM32)
+    #define HW_NAME "Example STM32"
 #else
     #define HW_NAME "Example HW"
 #endif
