@@ -39,7 +39,7 @@ bool BleOtaLib::begin(BLEServer* server, OTAStorage& storage, const BleOtaInfo& 
 
     begin(*service, info);
 
-#ifdef BLE_SERIAL_BLE_LIB_NIM_BLE_ARDUINO_V1
+#ifdef BLE_OTA_BLE_LIB_NIM_BLE_ARDUINO_V1
     return service->start();
 #else
     return true;
