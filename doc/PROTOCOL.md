@@ -1,6 +1,6 @@
-## Overal
+## Overall
 Binary protocol with little-endian byte order and LSB-first bit order.  
-Each message contains `u8` header at the begining.  
+Each message contains `u8` header at the beginning.  
 
 ## Messages
 ### InitReq
@@ -70,7 +70,7 @@ Central ends uploading
 | Field | Type | Info |
 | :---- | :--- | :--- |
 | Header | `u8` | `0x08` |
-| Firmware checksum | `u32` | Calulated checksum, any value if disable |
+| Firmware checksum | `u32` | Calculated checksum, any value if disable |
 
 ### EndResp
 | Field | Type | Info |
@@ -133,10 +133,10 @@ p) EndResp
 
 Internal buffer is created in order to increase upload speed. Packages can be handled immediately, because are stored in RAM instead of flash.
 Central send `PackageReq` when buffer is overloaded.  
-In order to know more about error codes ckeck scenarios below.
+In order to know more about error codes check scenarios below.
 
-## Comunication lost
-In this case buffer usage turns of and uploading starts from begining when `BeginReq` recives again.
+## Communication lost
+In this case buffer usage turns of and uploading starts from beginning when `BeginReq` receives again.
 
 ## Incorrect message
 Incorrect message size

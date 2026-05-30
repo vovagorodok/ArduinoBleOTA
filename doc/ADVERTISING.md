@@ -2,7 +2,7 @@
 Service advertises on uuid `dac890c2-35a1-11ef-aba0-9b95565f4ffb`.
 
 ## Characteristics
-Upload characteristics to comunicate via protocol. More at `PROTOCOL.md`.
+Upload characteristics to communicate via protocol. More at `PROTOCOL.md`.
 | Name | Uuid |
 | :--- | :--- |
 | Rx | `dac89194-35a1-11ef-aba1-b37714ad9a54` |

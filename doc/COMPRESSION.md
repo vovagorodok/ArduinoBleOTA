@@ -1,4 +1,4 @@
-## Overal
+## Overall
 Only zlib compression format is supported.
 
 ## Example

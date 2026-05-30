@@ -1,4 +1,4 @@
-## Overal
+## Overall
 There are possibilities:
 - disable upload
 - sign the software
@@ -53,7 +53,7 @@ Central removes pin
 | Header | `u8` | `0x33` |
 
 ## Disable upload
-Upload can be disabled at the bagining in `begin()` method or later by `setUploadEnable(false)` method.
+Upload can be disabled at the beginning in `begin()` method or later by `setUploadEnable(false)` method.
 
 ## Signature
 Generate private key (keep this secret)
@@ -68,7 +68,7 @@ Generate signature file if needed by using SHA256 and private key
 ```
 openssl dgst -sign priv_key.pem -keyform PEM -sha256 -out signature.sig -binary firmware.bin
 ```
-Create firmware file with signatue if needed
+Create firmware file with signature if needed
 ```
 cat firmware.bin signature.sig > firmware.sig.bin
 ```

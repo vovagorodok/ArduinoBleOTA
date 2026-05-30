@@ -1,4 +1,4 @@
-## Overal
+## Overall
 Library advertises 5 characteristics in order to indicate device information.
 See `ADVERTISING.md`.  
 Central can handle this data and check if software should be updated.
@@ -23,8 +23,8 @@ Central found new software where:
 | Software ver     | `2.0.0`        |
 
 As we see:
-- manufacture names are mathed
-- hardware names and versions are mathed
+- manufacture names are matched
+- hardware names and versions are matched
 - software version in central side is higher
 
 We can update our peripheral device to software version `2.0.0`.
