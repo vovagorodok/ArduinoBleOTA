@@ -137,6 +137,8 @@ void BleOtaUploader::handleBeginReq(const BleOtaBeginReq& req) {
                 req.firmwareSize, req.packageSize, req.bufferSize, req.compressedSize, req.flags.compression,
                 req.flags.checksum);
 
+    _uploadCallbacks->handleUploadBegin();
+
     if (_state == State::Disable) {
         handleError(BleOtaStatus::UploadDisabled);
         return;
@@ -183,8 +185,6 @@ void BleOtaUploader::handleBeginReq(const BleOtaBeginReq& req) {
     const uint32_t bufferSize = _buffer.begin(req.bufferSize, packageSize);
     BLE_OTA_LOG(TAG, "Send BeginResp: size: (pkg: %lu, buff: %lu)", packageSize, bufferSize);
     sendMessage(BleOtaBeginResp{packageSize, bufferSize});
-
-    _uploadCallbacks->handleUploadBegin();
 }
 
 void BleOtaUploader::handlePackageReq(const BleOtaPackageReq& req) {
