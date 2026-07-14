@@ -68,7 +68,7 @@ class BleOtaSignature {
     mbedtls_sha256_context _sha256ContextData;
     mbedtls_pk_context _pkContextData;
     uint8_t _hashData[BLE_OTA_SIGNATURE_HASH_SIZE];
-    uint8_t _signatureData[BLE_OTA_SIGNATURE_HASH_SIZE];
+    uint8_t _signatureData[BLE_OTA_SIGNATURE_SIZE];
 #endif
 #ifndef BLE_OTA_NO_SIGNATURE
     mbedtls_sha256_context* _sha256Context;

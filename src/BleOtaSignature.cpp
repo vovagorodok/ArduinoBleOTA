@@ -17,8 +17,8 @@ BleOtaSignature::BleOtaSignature() {
     _signatureData(),
     _sha256Context(&_sha256ContextData),
     _pkContext(&_pkContextData),
-    _hash(_hash),
-    _signature(_signature),
+    _hash(_hashData),
+    _signature(_signatureData),
 #endif
 #ifdef BLE_OTA_DYNAMIC_SIGNATURE
     _sha256Context(nullptr),
